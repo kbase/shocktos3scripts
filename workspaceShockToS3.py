@@ -15,7 +15,7 @@ import configparser
 import argparse
 import datetime
 
-parser = argparse.ArgumentParser(description='Import Shock Mongo data to blobstore Mongo.')
+parser = argparse.ArgumentParser(description='Import workspace Mongo data to blobstore Mongo.')
 parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
 args = parser.parse_args()
@@ -26,19 +26,19 @@ conf.read(configfile)
 
 ###### CONFIGURATION VARIABLES ######
 
-CONFIG_MONGO_HOST = conf['shock']['mongo_host']
-CONFIG_MONGO_DATABASE = conf['shock']['mongo_database']
+CONFIG_MONGO_HOST = conf['workspace']['mongo_host']
+CONFIG_MONGO_DATABASE = conf['workspace']['mongo_database']
 #CONFIG_MONGO_DATABASE = 'workspace_conv_test'
 #CONFIG_MONGO_DATABASE = 'workspace_conv_test_many_recs'
-CONFIG_MONGO_USER = conf['shock']['mongo_user']
-CONFIG_MONGO_PWD = conf['shock']['mongo_pwd']
+CONFIG_MONGO_USER = conf['workspace']['mongo_user']
+CONFIG_MONGO_PWD = conf['workspace']['mongo_pwd']
 # dumb but lazy
-CONFIG_START_YEAR = conf['shock']['start_year'] or 2000
-CONFIG_START_MONTH = conf['shock']['start_month'] or 1
-CONFIG_START_DAY = conf['shock']['start_day'] or 1
-CONFIG_END_YEAR = conf['shock']['end_year'] or 2037
-CONFIG_END_MONTH = conf['shock']['end_month'] or 12
-CONFIG_END_DAY = conf['shock']['end_day'] or 28
+CONFIG_START_YEAR = conf['workspace']['start_year'] or 2000
+CONFIG_START_MONTH = conf['workspace']['start_month'] or 1
+CONFIG_START_DAY = conf['workspace']['start_day'] or 1
+CONFIG_END_YEAR = conf['workspace']['end_year'] or 2037
+CONFIG_END_MONTH = conf['workspace']['end_month'] or 12
+CONFIG_END_DAY = conf['workspace']['end_day'] or 28
 
 CONFIG_START_DATE = datetime.datetime(CONFIG_START_YEAR,CONFIG_START_MONTH,CONFIG_START_DAY,0,0,0)
 CONFIG_END_DATE = datetime.datetime(CONFIG_END_YEAR,CONFIG_END_MONTH,CONFIG_END_DAY,0,0,0)
