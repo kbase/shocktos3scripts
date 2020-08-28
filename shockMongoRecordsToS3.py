@@ -138,7 +138,8 @@ def main():
             if count % 100 == 0:
                 backspace = '\b' * len(lastPrint)
                 lastPrint = 'Processed {} records'.format(count)
-                print(backspace + lastPrint, end='', flush=True)
+#                print(backspace + lastPrint, end='', flush=True)
+                print (lastPrint)
 
     backspace = '\b' * len(lastPrint)
     lastPrint = 'Processed {} records'.format(count)
