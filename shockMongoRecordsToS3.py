@@ -18,32 +18,55 @@ To use:
 2) Fill in the configuration variables below and run the script normally.
 '''
 
-###### CONFIGURATION VARIABLES ######
-
-CONFIG_MONGO_SHOCK_HOST = 'localhost'
-CONFIG_MONGO_SHOCK_USER = ''
-CONFIG_MONGO_SHOCK_PWD = ''
-CONFIG_MONGO_SHOCK_DATABASE = 'ShockDB'
-
-CONFIG_MONGO_BLOBSTORE_HOST = 'localhost'
-CONFIG_MONGO_BLOBSTORE_USER = ''
-CONFIG_MONGO_BLOBSTORE_PWD = ''
-CONFIG_MONGO_BLOBSTORE_DATABASE = 'bs_test'
-
-CONFIG_S3_HOST = 'http://localhost:9000'
-# The bucket name must obey https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
-# with the extra restriction that periods are not allowed.
-CONFIG_S3_BUCKET = 'blobstore'
-CONFIG_S3_ACCESS_KEY = 'access key goes here'
-CONFIG_S3_ACCESS_SECRET = 'access secret goes here'
-CONFIG_S3_REGION = 'us-west-1'
-
-#### END CONFIGURATION VARIABLES ####
-
+import configparser
+import argparse
+import datetime
 import boto3
 import uuid
 import botocore.config as bcfg
 from pymongo.mongo_client import MongoClient
+
+parser = argparse.ArgumentParser(description='Import Shock Mongo data to blobstore Mongo.')
+parser.add_argument('--config-file', dest='configfile', required=True,
+		    help='Path to config file (INI format). (required)')
+args = parser.parse_args()
+
+configfile=args.configfile
+conf=configparser.ConfigParser()
+conf.read(configfile)
+
+###### CONFIGURATION VARIABLES ######
+
+CONFIG_MONGO_SHOCK_HOST = conf['shock']['mongo_host']
+CONFIG_MONGO_SHOCK_DATABASE = conf['shock']['mongo_database']
+CONFIG_MONGO_USER = conf['shock']['mongo_user']
+CONFIG_MONGO_PWD = conf['shock']['mongo_pwd']
+
+CONFIG_MONGO_BLOBSTORE_HOST = conf['blobstore']['mongo_host']
+CONFIG_MONGO_BLOBSTORE_DATABASE = conf['blobstore']['mongo_database']
+CONFIG_MONGO_BLOBSTORE_USER = conf['blobstore']['mongo_user']
+CONFIG_MONGO_BLOBSTORE_PWD = conf['blobstore']['mongo_pwd']
+
+# dumb but lazy
+CONFIG_START_YEAR = conf['shock']['start_year'] or 2000
+CONFIG_START_MONTH = conf['shock']['start_month'] or 1
+CONFIG_START_DAY = conf['shock']['start_day'] or 1
+CONFIG_END_YEAR = conf['shock']['end_year'] or 2037
+CONFIG_END_MONTH = conf['shock']['end_month'] or 12
+CONFIG_END_DAY = conf['shock']['end_day'] or 28
+
+CONFIG_START_DATE = datetime.datetime(CONFIG_START_YEAR,CONFIG_START_MONTH,CONFIG_START_DAY,0,0,0)
+CONFIG_END_DATE = datetime.datetime(CONFIG_END_YEAR,CONFIG_END_MONTH,CONFIG_END_DAY,0,0,0)
+
+CONFIG_S3_HOST = conf['s3']['host']
+# The bucket name must obey https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
+# with the extra restriction that periods are not allowed.
+CONFIG_S3_BUCKET = conf['s3']['blobstore']
+CONFIG_S3_ACCESS_KEY = conf['s3']['access_key']
+CONFIG_S3_ACCESS_SECRET = conf['s3']['secret_key']
+CONFIG_S3_REGION = conf['s3']['region']
+
+#### END CONFIGURATION VARIABLES ####
 
 BS_COL_NODES = 'nodes'
 BS_COL_USERS = 'users'
