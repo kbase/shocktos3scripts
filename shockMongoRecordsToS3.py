@@ -39,8 +39,8 @@ conf.read(configfile)
 
 CONFIG_MONGO_SHOCK_HOST = conf['shock']['mongo_host']
 CONFIG_MONGO_SHOCK_DATABASE = conf['shock']['mongo_database']
-CONFIG_MONGO_USER = conf['shock']['mongo_user']
-CONFIG_MONGO_PWD = conf['shock']['mongo_pwd']
+CONFIG_MONGO_SHOCK_USER = conf['shock']['mongo_user']
+CONFIG_MONGO_SHOCK_PWD = conf['shock']['mongo_pwd']
 
 CONFIG_MONGO_BLOBSTORE_HOST = conf['blobstore']['mongo_host']
 CONFIG_MONGO_BLOBSTORE_DATABASE = conf['blobstore']['mongo_database']
