@@ -11,14 +11,37 @@ To run:
 2) fill in the configuration variables for mongo DB below and run the script normally.
 '''
 
+import configparser
+import argparse
+import datetime
+
+parser = argparse.ArgumentParser(description='Import Shock Mongo data to blobstore Mongo.')
+parser.add_argument('--config-file', dest='configfile', required=True,
+		    help='Path to config file (INI format). (required)')
+args = parser.parse_args()
+
+configfile=args.configfile
+conf=configparser.ConfigParser()
+conf.read(configfile)
+
 ###### CONFIGURATION VARIABLES ######
 
-CONFIG_MONGO_HOST = 'localhost'
-CONFIG_MONGO_DATABASE = 'workspace'
+CONFIG_MONGO_HOST = conf['shock']['mongo_host']
+CONFIG_MONGO_DATABASE = conf['shock']['mongo_database']
 #CONFIG_MONGO_DATABASE = 'workspace_conv_test'
 #CONFIG_MONGO_DATABASE = 'workspace_conv_test_many_recs'
-CONFIG_MONGO_USER = ''
-CONFIG_MONGO_PWD = ''
+CONFIG_MONGO_USER = conf['shock']['mongo_user']
+CONFIG_MONGO_PWD = conf['shock']['mongo_pwd']
+# dumb but lazy
+CONFIG_START_YEAR = conf['shock']['start_year'] or 2000
+CONFIG_START_MONTH = conf['shock']['start_month'] or 1
+CONFIG_START_DAY = conf['shock']['start_day'] or 1
+CONFIG_END_YEAR = conf['shock']['end_year'] or 2037
+CONFIG_END_MONTH = conf['shock']['end_month'] or 12
+CONFIG_END_DAY = conf['shock']['end_day'] or 28
+
+CONFIG_START_DATE = datetime.datetime(CONFIG_START_YEAR,CONFIG_START_MONTH,CONFIG_START_DAY,0,0,0)
+CONFIG_END_DATE = datetime.datetime(CONFIG_END_YEAR,CONFIG_END_MONTH,CONFIG_END_DAY,0,0,0)
 
 #### END CONFIGURATION VARIABLES ####
 
@@ -52,7 +75,7 @@ def main():
     count = 0
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint, end='', flush=True)
-    for o in db[COLLECTION_SHOCK].find():
+    for node in db[COLLECTION_SHOCK].find({'created_on': {'$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE}},batch_size=10000,no_cursor_timeout=True):
         db[COLLECTION_S3].update_one(
             {KEY_S3_CHKSUM: o[KEY_SHOCK_CHKSUM]},
             {'$set': {
