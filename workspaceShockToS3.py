@@ -72,6 +72,7 @@ def main():
 
     db = client[CONFIG_MONGO_DATABASE]
     query = {'created_on': {'$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE}}
+    print(query)
     ttl = db[COLLECTION_SHOCK].count_documents(query)
     count = 0
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
