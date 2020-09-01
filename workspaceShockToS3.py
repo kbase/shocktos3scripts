@@ -86,11 +86,11 @@ def main():
         if count % 100 == 0:
             backspace = '\b' * len(lastPrint)
             lastPrint = 'Processed {}/{} records'.format(count, ttl)
-            print(backspace + lastPrint, end='', flush=True)
+            print(lastPrint)
 
     backspace = '\b' * len(lastPrint)
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
-    print(backspace + lastPrint)
+    print(lastPrint)
 
 def toS3Key(node):
     return node[0:2] + '/' + node[2:4] + '/' + node[4:6] + '/' + node
