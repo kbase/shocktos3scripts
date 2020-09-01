@@ -74,7 +74,7 @@ def main():
     ttl = db[COLLECTION_SHOCK].count_documents({})
     count = 0
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
-    print(lastPrint, end='', flush=True)
+    print(lastPrint)
     for node in db[COLLECTION_SHOCK].find({'created_on': {'$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE}},batch_size=10000,no_cursor_timeout=True):
         db[COLLECTION_S3].update_one(
             {KEY_S3_CHKSUM: o[KEY_SHOCK_CHKSUM]},
