@@ -40,7 +40,7 @@ from pymongo.mongo_client import MongoClient
 COLLECTION_SHOCK = 'Nodes'
 
 def main():
-    if CONFIG_MONGO_SHOCK_USR:
+    if CONFIG_MONGO_SHOCK_USER:
         client_src = MongoClient(CONFIG_MONGO_SHOCK_HOST, authSource=CONFIG_MONGO_SHOCK_DATABASE, username=CONFIG_MONGO_SHOCK_USER, password=CONFIG_MONGO_SHOCK_PWD)
     else:
         client_src = MongoClient(CONFIG_MONGO_SHOCK_HOST)
