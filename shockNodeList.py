@@ -49,8 +49,14 @@ def main():
 
     db_src = client_src[CONFIG_MONGO_SHOCK_DATABASE]
 
-    query = {'created_on': {'$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE}}
-    print(query)
+    if (args.nodemode == 'ws'):
+        query = { 'acl.owner': { '$eq', CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
+    elsif (args.nodemode == 'shock'):
+        query = { 'acl.owner': { '$ne', CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
+    else:
+        query = { 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
+
+    #    print(query)
     for node in db_src[COLLECTION_SHOCK].find(query,batch_size=10000,no_cursor_timeout=True):
         #print(node['id'])
         print (node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] + '/' + node['id'] + '.data')
