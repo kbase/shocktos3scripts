@@ -7,6 +7,8 @@ import argparse
 parser = argparse.ArgumentParser(description='Import Shock Mongo data to blobstore Mongo.')
 parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
+parser.add_argument('--node-mode', dest='nodemode', required=True,
+		    help='Use workspace or shock mode to produce node list. (required)')
 args = parser.parse_args()
 
 configfile=args.configfile
@@ -20,7 +22,7 @@ CONFIG_MONGO_SHOCK_DATABASE = conf['shock']['mongo_database']
 CONFIG_MONGO_SHOCK_USER = conf['shock']['mongo_user']
 CONFIG_MONGO_SHOCK_PWD = conf['shock']['mongo_pwd']
 
-CONFIG_SHOCK_WS_UUID = '000000'
+CONFIG_SHOCK_WS_UUID = conf['shock']['ws_uuid']
 
 # dumb but lazy
 CONFIG_START_YEAR = conf['shock']['start_year'] or 2000
@@ -47,7 +49,9 @@ def main():
 
     db_src = client_src[CONFIG_MONGO_SHOCK_DATABASE]
 
-    for node in db_src[COLLECTION_SHOCK].find({'created_on': {'$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE}},batch_size=10000,no_cursor_timeout=True):
+    query = "{'created_on': {'$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE}}"
+    print(query)
+    for node in db_src[COLLECTION_SHOCK].find(query,batch_size=10000,no_cursor_timeout=True):
         #print(node['id'])
         print (node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] + '/' + node['id'] + '.data')
 
