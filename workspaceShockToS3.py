@@ -40,8 +40,8 @@ CONFIG_END_YEAR = conf['workspace']['end_year'] or 2037
 CONFIG_END_MONTH = conf['workspace']['end_month'] or 12
 CONFIG_END_DAY = conf['workspace']['end_day'] or 28
 
-CONFIG_START_DATE = datetime.datetime(CONFIG_START_YEAR,CONFIG_START_MONTH,CONFIG_START_DAY,0,0,0)
-CONFIG_END_DATE = datetime.datetime(CONFIG_END_YEAR,CONFIG_END_MONTH,CONFIG_END_DAY,0,0,0)
+CONFIG_START_DATE = datetime.datetime(int(CONFIG_START_YEAR),int(CONFIG_START_MONTH),int(CONFIG_START_DAY),0,0,0)
+CONFIG_END_DATE = datetime.datetime(int(CONFIG_END_YEAR),int(CONFIG_END_MONTH),int(CONFIG_END_DAY),0,0,0)
 
 #### END CONFIGURATION VARIABLES ####
 
