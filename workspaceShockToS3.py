@@ -11,6 +11,8 @@ To run:
 2) fill in the configuration variables for mongo DB below and run the script normally.
 '''
 
+from pymongo.mongo_client import MongoClient
+import bson
 import configparser
 import argparse
 import datetime
@@ -33,11 +35,9 @@ CONFIG_MONGO_DATABASE = conf['workspace']['mongo_database']
 CONFIG_MONGO_USER = conf['workspace']['mongo_user']
 CONFIG_MONGO_PWD = conf['workspace']['mongo_pwd']
 
-CONFIG_WS_OBJECTID = conf['workspace']['ws_objectid'] or 0
+CONFIG_WS_OBJECTID = conf['workspace']['ws_objectid'] or '000000000000000000000000'
 
 #### END CONFIGURATION VARIABLES ####
-
-from pymongo.mongo_client import MongoClient
 
 COLLECTION_SHOCK = 'shock_nodeMap'
 COLLECTION_S3 = 's3_objects'
@@ -63,7 +63,7 @@ def main():
         client = MongoClient(CONFIG_MONGO_HOST)
 
     db = client[CONFIG_MONGO_DATABASE]
-    query = {'_id': {'$gt': ObjectId(CONFIG_WS_OBJECTID)}}
+    query = {'_id': {'$gt': bson.ObjectId(CONFIG_WS_OBJECTID)}}
     print(query)
     ttl = db[COLLECTION_SHOCK].count_documents(query)
     count = 0
