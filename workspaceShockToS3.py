@@ -76,7 +76,7 @@ def main():
 #                KEY_S3_KEY: toS3Key(o[KEY_SHOCK_NODE]),
 #                KEY_S3_SORTED: True if o.get(KEY_SHOCK_SORTED) else False}},
 #            upsert=True)
-        print(KEY_S3_CHKSUM + ' ' + node[KEY_SHOCK_CHKSUM] + ' ' + KEY_S3_KEY + ' ' + toS3Key(node[KEY_SHOCK_NODE]) + KEY_S3_SORTED + ' ' + KEY_SHOCK_SORTED)
+        print(KEY_S3_CHKSUM + ' ' + node[KEY_SHOCK_CHKSUM] + ' ' + KEY_S3_KEY + ' ' + toS3Key(node[KEY_SHOCK_NODE]) + ' ' + KEY_S3_SORTED + ' ' + KEY_SHOCK_SORTED)
         count += 1
         if count % 100 == 0:
             backspace = '\b' * len(lastPrint)
