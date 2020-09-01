@@ -32,16 +32,8 @@ CONFIG_MONGO_DATABASE = conf['workspace']['mongo_database']
 #CONFIG_MONGO_DATABASE = 'workspace_conv_test_many_recs'
 CONFIG_MONGO_USER = conf['workspace']['mongo_user']
 CONFIG_MONGO_PWD = conf['workspace']['mongo_pwd']
-# dumb but lazy
-CONFIG_START_YEAR = conf['workspace']['start_year'] or 2000
-CONFIG_START_MONTH = conf['workspace']['start_month'] or 1
-CONFIG_START_DAY = conf['workspace']['start_day'] or 1
-CONFIG_END_YEAR = conf['workspace']['end_year'] or 2037
-CONFIG_END_MONTH = conf['workspace']['end_month'] or 12
-CONFIG_END_DAY = conf['workspace']['end_day'] or 28
 
-CONFIG_START_DATE = datetime.datetime(int(CONFIG_START_YEAR),int(CONFIG_START_MONTH),int(CONFIG_START_DAY),0,0,0)
-CONFIG_END_DATE = datetime.datetime(int(CONFIG_END_YEAR),int(CONFIG_END_MONTH),int(CONFIG_END_DAY),0,0,0)
+CONFIG_WS_OBJECTID = conf['workspace']['ws_objectid'] or 0
 
 #### END CONFIGURATION VARIABLES ####
 
@@ -71,7 +63,7 @@ def main():
         client = MongoClient(CONFIG_MONGO_HOST)
 
     db = client[CONFIG_MONGO_DATABASE]
-    query = {'created_on': {'$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE}}
+    query = {'_id': {'$gt': ObjectId(CONFIG_WS_OBJECTID)}}
     print(query)
     ttl = db[COLLECTION_SHOCK].count_documents(query)
     count = 0
