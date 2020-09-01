@@ -59,7 +59,7 @@ the ws down, and then run with the object id filter to just process the new reco
 def main():
     if CONFIG_MONGO_USER:
         client = MongoClient(CONFIG_MONGO_HOST, authSource=CONFIG_MONGO_DATABASE,
-            username=CONFIG_MONGO_USER, password=CONFIG_MONGO_PWD)
+            username=CONFIG_MONGO_USER, password=CONFIG_MONGO_PWD, retryWrites=false)
     else:
         client = MongoClient(CONFIG_MONGO_HOST)
 
