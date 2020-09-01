@@ -51,7 +51,7 @@ def main():
 
     if (args.nodemode == 'ws'):
         query = { 'acl.owner': { '$eq', CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
-    elsif (args.nodemode == 'shock'):
+    elif (args.nodemode == 'shock'):
         query = { 'acl.owner': { '$ne', CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
     else:
         query = { 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
