@@ -72,10 +72,10 @@ def main():
     print(lastPrint)
     for node in db[COLLECTION_SHOCK].find(query, batch_size=10000, no_cursor_timeout=True):
         db[COLLECTION_S3].update_one(
-            {KEY_S3_CHKSUM: o[KEY_SHOCK_CHKSUM]},
+            {KEY_S3_CHKSUM: node[KEY_SHOCK_CHKSUM]},
             {'$set': {
-                KEY_S3_KEY: toS3Key(o[KEY_SHOCK_NODE]),
-                KEY_S3_SORTED: True if o.get(KEY_SHOCK_SORTED) else False}},
+                KEY_S3_KEY: toS3Key(node[KEY_SHOCK_NODE]),
+                KEY_S3_SORTED: True if node.get(KEY_SHOCK_SORTED) else False}},
             upsert=True)
 #        print(KEY_S3_CHKSUM + ' ' + node[KEY_SHOCK_CHKSUM] + ' ' + KEY_S3_KEY + ' ' + toS3Key(node[KEY_SHOCK_NODE]) + ' ' + KEY_S3_SORTED + ' ' + KEY_SHOCK_SORTED)
         count += 1
