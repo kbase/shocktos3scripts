@@ -76,7 +76,13 @@ def main():
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint)
     for node in db[COLLECTION_SHOCK].find({'created_on': {'$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE}},batch_size=10000,no_cursor_timeout=True):
-        db[COLLECTION_S3].update_one(
+#        db[COLLECTION_S3].update_one(
+#            {KEY_S3_CHKSUM: o[KEY_SHOCK_CHKSUM]},
+#            {'$set': {
+#                KEY_S3_KEY: toS3Key(o[KEY_SHOCK_NODE]),
+#                KEY_S3_SORTED: True if o.get(KEY_SHOCK_SORTED) else False}},
+#            upsert=True)
+        print(
             {KEY_S3_CHKSUM: o[KEY_SHOCK_CHKSUM]},
             {'$set': {
                 KEY_S3_KEY: toS3Key(o[KEY_SHOCK_NODE]),
