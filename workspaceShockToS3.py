@@ -8,6 +8,7 @@ The script does not alter the Shock backend records and may be re-run multiple t
 To run:
 1) Start the workspace at least once with the S3 backend enabled to create the appropriate
     MongoDB indexes.
+    ( or run `db.s3_objects.createIndex({chksum:1},{unique:1})` in the workspace db (untested) )
 2) fill in the configuration variables for mongo DB below and run the script normally.
 '''
 
@@ -70,13 +71,13 @@ def main():
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint)
     for node in db[COLLECTION_SHOCK].find(query, batch_size=10000, no_cursor_timeout=True):
-#        db[COLLECTION_S3].update_one(
-#            {KEY_S3_CHKSUM: o[KEY_SHOCK_CHKSUM]},
-#            {'$set': {
-#                KEY_S3_KEY: toS3Key(o[KEY_SHOCK_NODE]),
-#                KEY_S3_SORTED: True if o.get(KEY_SHOCK_SORTED) else False}},
-#            upsert=True)
-        print(KEY_S3_CHKSUM + ' ' + node[KEY_SHOCK_CHKSUM] + ' ' + KEY_S3_KEY + ' ' + toS3Key(node[KEY_SHOCK_NODE]) + ' ' + KEY_S3_SORTED + ' ' + KEY_SHOCK_SORTED)
+        db[COLLECTION_S3].update_one(
+            {KEY_S3_CHKSUM: o[KEY_SHOCK_CHKSUM]},
+            {'$set': {
+                KEY_S3_KEY: toS3Key(o[KEY_SHOCK_NODE]),
+                KEY_S3_SORTED: True if o.get(KEY_SHOCK_SORTED) else False}},
+            upsert=True)
+#        print(KEY_S3_CHKSUM + ' ' + node[KEY_SHOCK_CHKSUM] + ' ' + KEY_S3_KEY + ' ' + toS3Key(node[KEY_SHOCK_NODE]) + ' ' + KEY_S3_SORTED + ' ' + KEY_SHOCK_SORTED)
         count += 1
         if count % 100 == 0:
             backspace = '\b' * len(lastPrint)
