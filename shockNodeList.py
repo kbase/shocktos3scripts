@@ -49,7 +49,7 @@ def main():
 
     db_src = client_src[CONFIG_MONGO_SHOCK_DATABASE]
 
-    query = "{'created_on': {'$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE}}"
+    query = {'created_on': {'$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE}}
     print(query)
     for node in db_src[COLLECTION_SHOCK].find(query,batch_size=10000,no_cursor_timeout=True):
         #print(node['id'])
