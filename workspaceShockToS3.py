@@ -82,12 +82,13 @@ def main():
 #                KEY_S3_KEY: toS3Key(o[KEY_SHOCK_NODE]),
 #                KEY_S3_SORTED: True if o.get(KEY_SHOCK_SORTED) else False}},
 #            upsert=True)
-        print(
-            "{KEY_S3_CHKSUM: o[KEY_SHOCK_CHKSUM]},
+        print("""
+            {KEY_S3_CHKSUM: o[KEY_SHOCK_CHKSUM]},
             {'$set': {
                 KEY_S3_KEY: toS3Key(o[KEY_SHOCK_NODE]),
                 KEY_S3_SORTED: True if o.get(KEY_SHOCK_SORTED) else False}},
-            upsert=True")
+            upsert=True
+	    """)
         count += 1
         if count % 100 == 0:
             backspace = '\b' * len(lastPrint)
