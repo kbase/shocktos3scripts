@@ -13,6 +13,10 @@ To run:
 '''
 
 from pymongo.mongo_client import MongoClient
+from pymongo.errors import ServerSelectionTimeoutError
+from pymongo.errors import BulkWriteError
+from pymongo import UpdateOne
+from pprint import pprint
 import bson
 import configparser
 import argparse
@@ -70,19 +74,46 @@ def main():
     count = 0
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint)
+    doc_update_list = []
+
     for node in db[COLLECTION_SHOCK].find(query, batch_size=10000, no_cursor_timeout=True):
-        db[COLLECTION_S3].update_one(
-            {KEY_S3_CHKSUM: node[KEY_SHOCK_CHKSUM]},
-            {'$set': {
+
+#	doc[KEY_S3_CHKSUM] = node[KEY_SHOCK_CHKSUM]
+#	doc[KEY_S3_KEY] = toS3Key(node[KEY_SHOCK_NODE])
+#	doc[KEY_S3_SORTED] = True if node.get(KEY_SHOCK_SORTED) else False
+
+        doc_update_list.append(UpdateOne(
+	    { KEY_S3_CHKSUM: node[KEY_SHOCK_CHKSUM] },
+	    {'$set': {
                 KEY_S3_KEY: toS3Key(node[KEY_SHOCK_NODE]),
-                KEY_S3_SORTED: True if node.get(KEY_SHOCK_SORTED) else False}},
-            upsert=True)
+                KEY_S3_SORTED: True if node.get(KEY_SHOCK_SORTED) else False
+	    }},
+	    upsert=True
+	))
+
+	if len(doc_update_list) % 5000 == 0:
+            try:
+                update_result = db[COLLECTION_S3].bulk_write(doc_update_list,ordered=False)
+            except BulkWriteError as bwe:
+                print(bwe.details)
+	    pprint(update_result.bulk_api_result)
+#            print ('inserted {} records'.format(len(insert_result.inserted_ids)))
+            doc_update_list = []
+
+#        db[COLLECTION_S3].update_one(
+#            {KEY_S3_CHKSUM: node[KEY_SHOCK_CHKSUM]},
+#            {'$set': {
+#                KEY_S3_KEY: toS3Key(node[KEY_SHOCK_NODE]),
+#                KEY_S3_SORTED: True if node.get(KEY_SHOCK_SORTED) else False}},
+#            upsert=True)
 #        print(KEY_S3_CHKSUM + ' ' + node[KEY_SHOCK_CHKSUM] + ' ' + KEY_S3_KEY + ' ' + toS3Key(node[KEY_SHOCK_NODE]) + ' ' + KEY_S3_SORTED + ' ' + KEY_SHOCK_SORTED)
         count += 1
-        if count % 100 == 0:
+        if count % 5000 == 0:
             backspace = '\b' * len(lastPrint)
             lastPrint = 'Processed {}/{} records'.format(count, ttl)
             print(lastPrint)
+
+### to do: do final upsert
 
     backspace = '\b' * len(lastPrint)
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
