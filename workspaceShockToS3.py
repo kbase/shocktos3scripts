@@ -115,6 +115,12 @@ def main():
 
 ### to do: do final upsert
 
+    try:
+        update_result = db[COLLECTION_S3].bulk_write(doc_update_list,ordered=False)
+    except BulkWriteError as bwe:
+        print(bwe.details)
+    pprint(update_result.bulk_api_result)
+
     backspace = '\b' * len(lastPrint)
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint)
