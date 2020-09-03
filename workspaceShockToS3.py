@@ -57,7 +57,7 @@ KEY_S3_CHKSUM = 'chksum'
 KEY_S3_KEY = 'key'
 KEY_S3_SORTED = 'sorted'
 
-def bulk_update(doc_update_list):
+def bulk_update(db, doc_update_list):
     try:
         update_result = db[COLLECTION_S3].bulk_write(doc_update_list,ordered=False)
     except BulkWriteError as bwe:
@@ -106,7 +106,7 @@ def main():
         count += 1
 
 	if len(doc_update_list) % CONFIG_BATCH_SIZE == 0:
-	    bulk_update(doc_update_list)
+	    bulk_update(db, doc_update_list)
             doc_update_list = []
 
         if count % CONFIG_BATCH_SIZE == 0:
@@ -114,7 +114,7 @@ def main():
             print(lastPrint)
 
 # final docs
-    bulk_update(doc_update_list)
+    bulk_update(db, doc_update_list)
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint)
 
