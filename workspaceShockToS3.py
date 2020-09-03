@@ -57,6 +57,16 @@ KEY_S3_CHKSUM = 'chksum'
 KEY_S3_KEY = 'key'
 KEY_S3_SORTED = 'sorted'
 
+def bulk_update(doc_update_list):
+    try:
+        update_result = db[COLLECTION_S3].bulk_write(doc_update_list,ordered=False)
+    except BulkWriteError as bwe:
+        print(bwe.details)
+    pprint(update_result.bulk_api_result['nInserted'])
+    pprint(update_result.bulk_api_result['nUpserted'])
+    pprint(update_result.bulk_api_result['writeErrors'])
+#    pprint(update_result.bulk_api_result)
+
 '''
 Potential improvement: allow filtering by > object id. Then you can run this script while
 the workspace is up (since it could take hours), figure out the last object id processed, bring
@@ -93,32 +103,18 @@ def main():
 	    upsert=True
 	))
 
+        count += 1
+
 	if len(doc_update_list) % CONFIG_BATCH_SIZE == 0:
-            try:
-                update_result = db[COLLECTION_S3].bulk_write(doc_update_list,ordered=False)
-            except BulkWriteError as bwe:
-                print(bwe.details)
-	    pprint(update_result.bulk_api_result['nInserted'])
-	    pprint(update_result.bulk_api_result['nUpserted'])
-	    pprint(update_result.bulk_api_result['writeErrors'])
-#            print ('inserted {} records'.format(len(insert_result.inserted_ids)))
+	    bulk_update(doc_update_list)
             doc_update_list = []
 
-        count += 1
         if count % CONFIG_BATCH_SIZE == 0:
-            backspace = '\b' * len(lastPrint)
             lastPrint = 'Processed {}/{} records'.format(count, ttl)
             print(lastPrint)
 
-### to do: do final upsert
-
-    try:
-        update_result = db[COLLECTION_S3].bulk_write(doc_update_list,ordered=False)
-    except BulkWriteError as bwe:
-        print(bwe.details)
-    pprint(update_result.bulk_api_result)
-
-    backspace = '\b' * len(lastPrint)
+# final docs
+    bulk_update(doc_update_list)
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint)
 
