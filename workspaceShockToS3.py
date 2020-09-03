@@ -131,9 +131,7 @@ def bulk_update(db, doc_update_list):
         update_result = db[COLLECTION_S3].bulk_write(doc_update_list,ordered=False)
     except BulkWriteError as bwe:
         print(bwe.details)
-    pprint(update_result.bulk_api_result['nInserted'])
-    pprint(update_result.bulk_api_result['nUpserted'])
-    pprint(update_result.bulk_api_result['writeErrors'])
+    pprint('nInserted: ' + str(update_result.bulk_api_result['nInserted']) + ' ; nUpserted: ' + str(update_result.bulk_api_result['nUpserted']) + ' ; writeErrors: ' + update_result.bulk_api_result['writeErrors'])
 #    pprint(update_result.bulk_api_result)
 
 
