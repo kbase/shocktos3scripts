@@ -98,17 +98,12 @@ def main():
                 update_result = db[COLLECTION_S3].bulk_write(doc_update_list,ordered=False)
             except BulkWriteError as bwe:
                 print(bwe.details)
-	    pprint(update_result.bulk_api_result)
+	    pprint(update_result.bulk_api_result['nInserted'])
+	    pprint(update_result.bulk_api_result['nUpserted'])
+	    pprint(update_result.bulk_api_result['writeErrors'])
 #            print ('inserted {} records'.format(len(insert_result.inserted_ids)))
             doc_update_list = []
 
-#        db[COLLECTION_S3].update_one(
-#            {KEY_S3_CHKSUM: node[KEY_SHOCK_CHKSUM]},
-#            {'$set': {
-#                KEY_S3_KEY: toS3Key(node[KEY_SHOCK_NODE]),
-#                KEY_S3_SORTED: True if node.get(KEY_SHOCK_SORTED) else False}},
-#            upsert=True)
-#        print(KEY_S3_CHKSUM + ' ' + node[KEY_SHOCK_CHKSUM] + ' ' + KEY_S3_KEY + ' ' + toS3Key(node[KEY_SHOCK_NODE]) + ' ' + KEY_S3_SORTED + ' ' + KEY_SHOCK_SORTED)
         count += 1
         if count % CONFIG_BATCH_SIZE == 0:
             backspace = '\b' * len(lastPrint)
