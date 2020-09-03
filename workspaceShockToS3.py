@@ -57,15 +57,6 @@ KEY_S3_CHKSUM = 'chksum'
 KEY_S3_KEY = 'key'
 KEY_S3_SORTED = 'sorted'
 
-def bulk_update(db, doc_update_list):
-    try:
-        update_result = db[COLLECTION_S3].bulk_write(doc_update_list,ordered=False)
-    except BulkWriteError as bwe:
-        print(bwe.details)
-    pprint(update_result.bulk_api_result['nInserted'])
-    pprint(update_result.bulk_api_result['nUpserted'])
-    pprint(update_result.bulk_api_result['writeErrors'])
-#    pprint(update_result.bulk_api_result)
 
 '''
 Potential improvement: allow filtering by > object id. Then you can run this script while
@@ -118,8 +109,21 @@ def main():
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint)
 
+
 def toS3Key(node):
     return node[0:2] + '/' + node[2:4] + '/' + node[4:6] + '/' + node
+
+
+def bulk_update(db, doc_update_list):
+    try:
+        update_result = db[COLLECTION_S3].bulk_write(doc_update_list,ordered=False)
+    except BulkWriteError as bwe:
+        print(bwe.details)
+    pprint(update_result.bulk_api_result['nInserted'])
+    pprint(update_result.bulk_api_result['nUpserted'])
+    pprint(update_result.bulk_api_result['writeErrors'])
+#    pprint(update_result.bulk_api_result)
+
 
 if __name__ == '__main__':
     main()
