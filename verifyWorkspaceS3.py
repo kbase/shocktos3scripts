@@ -88,15 +88,16 @@ def main():
         client = MongoClient(CONFIG_MONGO_HOST)
 
     db = client[CONFIG_MONGO_DATABASE]
-    query = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
-#    pprint(query)
+    shockQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
+#    pprint(shockQuery)
     ttl = db[COLLECTION_SHOCK].count_documents(query)
     count = 0
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint)
 
-    for node in db[COLLECTION_SHOCK].find(query, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
-        pprint(node)
+    for node in db[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
+        s3Query = {'chksum': node['chksum']}
+        pprint(db[COLLECTION_S3].findOne(s3Query))
 
 if __name__ == '__main__':
     main()
