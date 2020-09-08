@@ -90,7 +90,7 @@ def main():
     db = client[CONFIG_MONGO_DATABASE]
     shockQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 #    pprint(shockQuery)
-    ttl = db[COLLECTION_SHOCK].count_documents(query)
+    ttl = db[COLLECTION_SHOCK].count_documents(shockQuery)
     count = 0
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint)
