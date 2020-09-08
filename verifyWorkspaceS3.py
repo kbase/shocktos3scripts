@@ -105,7 +105,7 @@ def main():
 	    pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching chksum in ' + COLLECTION_S3)
 #	pprint(s3doc)
         try:
-	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key']))
+	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
 	except botocore.exceptions.ClientError as e:
 	    pprint(e)
 
