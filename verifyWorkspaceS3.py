@@ -80,10 +80,10 @@ def main():
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
 #    pprint(s3.list_buckets())
-    try:
+#    try:
 #        pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.dat'))
-    except botocore.exceptions.ClientError as e:
-	pprint(e)
+#    except botocore.exceptions.ClientError as e:
+#	pprint(e)
 
     if CONFIG_MONGO_USER:
         client = MongoClient(CONFIG_MONGO_HOST, authSource=CONFIG_MONGO_DATABASE,
