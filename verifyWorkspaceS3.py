@@ -91,19 +91,20 @@ def main():
     else:
         client = MongoClient(CONFIG_MONGO_HOST)
 
-    db = client[CONFIG_MONGO_DATABASE]
-    shockQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
-#    pprint(shockQuery)
-#    ttl = db[COLLECTION_SHOCK].count_documents(shockQuery)
-#    count = 0
-#    lastPrint = 'Processed {}/{} records'.format(count, ttl)
-#    print(lastPrint)
-
     count = dict()
     count['good_mongo'] = 0
     count['bad_mongo'] = 0
     count['good_s3'] = 0
     count['bad_s3'] = 0
+
+    db = client[CONFIG_MONGO_DATABASE]
+    shockQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
+#    pprint(shockQuery)
+    count[COLLECTION_SHOCK] = db[COLLECTION_SHOCK].count_documents(shockQuery)
+#    count = 0
+#    lastPrint = 'Processed {}/{} records'.format(count, ttl)
+#    print(lastPrint)
+
 
     for node in db[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
         s3Query = {'chksum': node['chksum']}
