@@ -49,3 +49,14 @@ CONFIG_WS_OBJECTID_START = bson.ObjectId.from_datetime(CONFIG_START_DATE)
 CONFIG_WS_OBJECTID_END = bson.ObjectId.from_datetime(CONFIG_END_DATE)
 
 CONFIG_BATCH_SIZE = 10000
+
+#### END CONFIGURATION VARIABLES ####
+
+COLLECTION_SHOCK = 'shock_nodeMap'
+COLLECTION_S3 = 's3_objects'
+
+KEY_SHOCK_CHKSUM = 'chksum'
+KEY_SHOCK_NODE = 'node'
+
+KEY_S3_CHKSUM = 'chksum'
+KEY_S3_KEY = 'key'
