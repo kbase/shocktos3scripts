@@ -97,7 +97,7 @@ def main():
 
     for node in db[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
         s3Query = {'chksum': node['chksum']}
-        pprint(db[COLLECTION_S3].findOne(s3Query))
+        pprint(db[COLLECTION_S3].find_one(s3Query))
 
 if __name__ == '__main__':
     main()
