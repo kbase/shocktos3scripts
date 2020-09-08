@@ -4,6 +4,7 @@
 This script converts MongoDB records for the Workspace Shock backend into records for the
 workspace S3 backend.
 The script does not alter the Shock backend records and may be re-run multiple times without issue.
+The script also does not add resources to the S3 backend.
 
 To run:
 1) Start the workspace at least once with the S3 backend enabled to create the appropriate
