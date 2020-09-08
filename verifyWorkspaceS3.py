@@ -11,6 +11,7 @@ the chksum.
 
 from pymongo.mongo_client import MongoClient
 from pprint import pprint
+import boto3
 import bson
 import configparser
 import argparse
@@ -66,3 +67,16 @@ KEY_SHOCK_NODE = 'node'
 
 KEY_S3_CHKSUM = 'chksum'
 KEY_S3_KEY = 'key'
+
+def main():
+   s3 = boto3.client(
+        's3',
+        endpoint_url=CONFIG_S3_ENDPOINT,
+        aws_access_key_id=CONFIG_S3_ACCESS_KEY,
+        aws_secret_access_key=CONFIG_S3_ACCESS_SECRET,
+        region_name=CONFIG_S3_REGION,
+        config=bcfg.Config(s3={'addressing_style': 'path'})
+    )
+
+if __name__ == '__main__':
+    main()
