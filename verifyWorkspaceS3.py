@@ -123,7 +123,7 @@ def main():
 	    else:
 		raise(e)
 	else:
-            count_good_s3= += 1
+            count_good_s3 += 1
 
 if __name__ == '__main__':
     main()
