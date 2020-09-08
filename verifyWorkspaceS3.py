@@ -107,7 +107,8 @@ def main():
 
 
     for node in db[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
-        s3Query = {'chksum': node['chksum']}
+        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
+	s3Query = {'chksum': node['chksum']}
         s3doc = db[COLLECTION_S3].find_one(s3Query)
 	if (s3doc == None):
 	    pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching chksum in ' + COLLECTION_S3)
@@ -115,6 +116,7 @@ def main():
 	else:
             count['good_mongo'] += 1
 #	pprint(s3doc)
+        pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
         try:
 	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
 #	    pprint (s3stat)
