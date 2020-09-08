@@ -79,7 +79,10 @@ def main():
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
 #    pprint(s3.list_buckets())
-    pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550'))
+    try:
+        pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.dat'))
+    except botocore.exceptions.ClientError as e:
+	pprint(e)
 
     if CONFIG_MONGO_USER:
         client = MongoClient(CONFIG_MONGO_HOST, authSource=CONFIG_MONGO_DATABASE,
@@ -101,7 +104,10 @@ def main():
 	if (s3doc == None):
 	    pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching chksum in ' + COLLECTION_S3)
 #	pprint(s3doc)
-	pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key']))
+        try:
+	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key']))
+	except botocore.exceptions.ClientError as e:
+	    pprint(e)
 
 
 if __name__ == '__main__':
