@@ -78,8 +78,25 @@ def main():
         region_name=CONFIG_S3_REGION,
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
-    pprint(s3.list_buckets())
-    pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.data'))
+#    pprint(s3.list_buckets())
+#    pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.data'))
+
+    if CONFIG_MONGO_USER:
+        client = MongoClient(CONFIG_MONGO_HOST, authSource=CONFIG_MONGO_DATABASE,
+            username=CONFIG_MONGO_USER, password=CONFIG_MONGO_PWD, retryWrites=False)
+    else:
+        client = MongoClient(CONFIG_MONGO_HOST)
+
+    db = client[CONFIG_MONGO_DATABASE]
+    query = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
+#    pprint(query)
+    ttl = db[COLLECTION_SHOCK].count_documents(query)
+    count = 0
+    lastPrint = 'Processed {}/{} records'.format(count, ttl)
+    print(lastPrint)
+
+    for node in db[COLLECTION_SHOCK].find(query, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
+        pprint(node)
 
 if __name__ == '__main__':
     main()
