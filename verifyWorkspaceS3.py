@@ -81,7 +81,7 @@ def main():
     )
 #    pprint(s3.list_buckets())
     try:
-        pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.dat'))
+#        pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.dat'))
     except botocore.exceptions.ClientError as e:
 	pprint(e)
 
@@ -117,7 +117,7 @@ def main():
 	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
 	    pprint (s3stat)
 	except botocore.exceptions.ClientError as e:
-	    if '404' in e.args:
+	    if '404' in e.message:
 	        count_bad_s3 += 1
 	        pprint(e)
 	    else:
