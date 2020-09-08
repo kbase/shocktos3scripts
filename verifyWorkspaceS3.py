@@ -73,7 +73,7 @@ def main():
         's3',
         endpoint_url=CONFIG_S3_ENDPOINT,
         aws_access_key_id=CONFIG_S3_ACCESS_KEY,
-        aws_secret_access_key=CONFIG_S3_ACCESS_SECRET,
+        aws_secret_access_key=CONFIG_S3_SECRET_KEY,
         region_name=CONFIG_S3_REGION,
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
