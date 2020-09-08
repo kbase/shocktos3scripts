@@ -79,7 +79,7 @@ def main():
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
 #    pprint(s3.list_buckets())
-#    pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.data'))
+    pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550'))
 
     if CONFIG_MONGO_USER:
         client = MongoClient(CONFIG_MONGO_HOST, authSource=CONFIG_MONGO_DATABASE,
@@ -90,15 +90,17 @@ def main():
     db = client[CONFIG_MONGO_DATABASE]
     shockQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 #    pprint(shockQuery)
-    ttl = db[COLLECTION_SHOCK].count_documents(shockQuery)
-    count = 0
-    lastPrint = 'Processed {}/{} records'.format(count, ttl)
-    print(lastPrint)
+#    ttl = db[COLLECTION_SHOCK].count_documents(shockQuery)
+#    count = 0
+#    lastPrint = 'Processed {}/{} records'.format(count, ttl)
+#    print(lastPrint)
 
     for node in db[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
         s3Query = {'chksum': node['chksum']}
         s3doc = db[COLLECTION_S3].find_one(s3Query)
-	pprint(s3doc)
+	if (s3doc == None):
+	    pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching chksum in ' + COLLECTION_S3)
+#	pprint(s3doc)
 	pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key']))
 
 
