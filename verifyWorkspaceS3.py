@@ -48,6 +48,12 @@ CONFIG_END_DATE = datetime.datetime(int(CONFIG_END_YEAR),int(CONFIG_END_MONTH),i
 CONFIG_WS_OBJECTID_START = bson.ObjectId.from_datetime(CONFIG_START_DATE)
 CONFIG_WS_OBJECTID_END = bson.ObjectId.from_datetime(CONFIG_END_DATE)
 
+CONFIG_S3_ENDPOINT = conf['s3']['endpoint']
+CONFIG_S3_BUCKET = conf['s3']['endpoint']
+CONFIG_S3_ACCESS_KEY = conf['s3']['access_key']
+CONFIG_S3_SECRET_KEY = conf['s3']['secret_key']
+CONFIG_S3_REGION = conf['s3']['region']
+
 CONFIG_BATCH_SIZE = 10000
 
 #### END CONFIGURATION VARIABLES ####
