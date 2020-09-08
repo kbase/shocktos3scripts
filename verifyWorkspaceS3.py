@@ -117,7 +117,7 @@ def main():
 	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
 	    pprint (s3stat)
 	except botocore.exceptions.ClientError as e:
-	    if '404' in e.message:
+	    if '403' in e.message:
 	        count_bad_s3 += 1
 	        pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching resource in S3 ' + CONFIG_S3_ENDPOINT)
 	    else:
