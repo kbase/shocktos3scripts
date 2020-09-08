@@ -78,7 +78,7 @@ def main():
         region_name=CONFIG_S3_REGION,
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
-    pprint(s3)
+    pprint(s3.list_buckets())
    
 
 if __name__ == '__main__':
