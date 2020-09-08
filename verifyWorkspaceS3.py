@@ -12,6 +12,7 @@ the chksum.
 from pymongo.mongo_client import MongoClient
 from pprint import pprint
 import boto3
+import botocore
 import botocore.config as bcfg
 import bson
 import configparser
