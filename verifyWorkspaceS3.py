@@ -79,7 +79,7 @@ def main():
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
     pprint(s3.list_buckets())
-    pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='ff/ff/fa/fffffa04-23cd-4f8b-b9f6-5a83bd6f3439/fffffa04-23cd-4f8b-b9f6-5a83bd6f3439.data'))
+    pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.data'))
 
 if __name__ == '__main__':
     main()
