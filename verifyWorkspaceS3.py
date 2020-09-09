@@ -132,9 +132,12 @@ def main():
 	else:
             count['good_s3'] += 1
         count['processed'] += 1
-	if count['processed'] % 10000 == 0:
+	if count['processed'] % CONFIG_BATCH_SIZE == 0:
 	    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
 	    print(lastPrint)
+
+    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
+    print(lastPrint)
 
     pprint(count)
 
