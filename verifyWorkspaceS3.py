@@ -119,11 +119,11 @@ def main():
 #	pprint(s3doc)
 #        pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
         try:
-	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
+	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
 #	    pprint (s3stat)
 	except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
-	    if '404' in e.message:
+	    if '403' in e.message:
 	        count['bad_s3'] += 1
 	        pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
 	    else:
