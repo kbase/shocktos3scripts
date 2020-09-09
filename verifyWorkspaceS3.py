@@ -96,14 +96,15 @@ def main():
     count['bad_mongo'] = 0
     count['good_s3'] = 0
     count['bad_s3'] = 0
+    count['processed'] = 0
 
     db = client[CONFIG_MONGO_DATABASE]
     shockQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 #    pprint(shockQuery)
     count[COLLECTION_SHOCK] = db[COLLECTION_SHOCK].count_documents(shockQuery)
 #    count = 0
-#    lastPrint = 'Processed {}/{} records'.format(count, ttl)
-#    print(lastPrint)
+    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
+    print(lastPrint)
 
 
     for node in db[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
@@ -130,6 +131,9 @@ def main():
 		raise(e)
 	else:
             count['good_s3'] += 1
+        count['processed'] += 1
+	if count['processed'] % 10000:
+	    print(lastPrint)
 
     pprint(count)
 
