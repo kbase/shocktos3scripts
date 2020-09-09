@@ -120,7 +120,7 @@ def main():
 #        pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
         try:
 	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
-	    pprint (s3stat)
+#	    pprint (s3stat)
 	except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
 	    if '404' in e.message:
