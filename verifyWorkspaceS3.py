@@ -137,6 +137,7 @@ def main():
 	if count['processed'] % 1000 == 0:
 	    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
 	    print(lastPrint)
+            pprint(count)
 
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
     print(lastPrint)
