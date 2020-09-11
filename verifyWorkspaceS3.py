@@ -118,21 +118,21 @@ def main():
             count['good_mongo'] += 1
 #	pprint(s3doc)
 #        pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
-        try:
-	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
+            try:
+	        s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
 # use this instead to simulate a 404
 #	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
 #	    pprint (s3stat)
-	except botocore.exceptions.ClientError as e:
+	    except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
-	    if '404' in e.message:
-	        count['bad_s3'] += 1
-	        pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
-	    else:
+	        if '404' in e.message:
+	            count['bad_s3'] += 1
+	            pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
+	        else:
 # otherwise, something bad happened, raise a real exception
-		raise(e)
-	else:
-            count['good_s3'] += 1
+		    raise(e)
+	    else:
+                count['good_s3'] += 1
         count['processed'] += 1
 	if count['processed'] % 1000 == 0:
 	    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
