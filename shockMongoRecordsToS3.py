@@ -124,7 +124,7 @@ def main():
     query = { 'acl.owner': { '$ne': CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
 
     #    print(query)
-    for node in shockdb[COLLECTION_SHOCK].find(query,batch_size=10000,no_cursor_timeout=True):
+    for node in shockdb[SHOCK_COL_NODES].find(query,batch_size=10000,no_cursor_timeout=True):
         #print(node['id'])
         print (node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] + '/' + node['id'] + '.data')
 
