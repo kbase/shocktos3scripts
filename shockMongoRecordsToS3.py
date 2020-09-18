@@ -139,7 +139,7 @@ def main():
         #print (node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] + '/' + node['id'] + '.data')
 
 	bsnode = toBSNode(node, seenusers, shockdb, bsdb)
-#	pprint(bsnode)
+	pprint(bsnode)
         doc_update_list.append(UpdateOne(
             { BS_KEY_NODES_ID: node } ,
 	    { '$set': bsnode  } 
