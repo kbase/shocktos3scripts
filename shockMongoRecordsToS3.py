@@ -68,6 +68,8 @@ CONFIG_S3_ACCESS_KEY = conf['s3']['access_key']
 CONFIG_S3_ACCESS_SECRET = conf['s3']['secret_key']
 CONFIG_S3_REGION = conf['s3']['region']
 
+CONFIG_BATCH_SIZE = 10000
+
 #### END CONFIGURATION VARIABLES ####
 
 BS_COL_NODES = 'nodes'
@@ -127,13 +129,13 @@ def main():
     count = 0
     seenusers = {}
 
-    for node in shockdb[SHOCK_COL_NODES].find(query,batch_size=10000,no_cursor_timeout=True):
-        print(node['id'])
+    for node in shockdb[SHOCK_COL_NODES].find(query,batch_size=CONFIG_BATCH_SIZE,no_cursor_timeout=True):
+#        print(node['id'])
         #print (node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] + '/' + node['id'] + '.data')
         bsnode = toBSNode(node, seenusers, shockdb, bsdb)
         bsdb[BS_COL_NODES].update_one({BS_KEY_NODES_ID: node}, {'$set': bsnode}, upsert=True)
         count += 1
-        if count % 100 == 0:
+        if count % CONFIG_BATCH_SIZE == 0:
             lastPrint = 'Processed {} records'.format(count)
             print (lastPrint)
 
