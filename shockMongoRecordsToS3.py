@@ -141,7 +141,7 @@ def main():
 	bsnode = toBSNode(node, seenusers, shockdb, bsdb)
 	pprint(bsnode)
         doc_update_list.append(UpdateOne(
-            { BS_KEY_NODES_ID: node } ,
+            { BS_KEY_NODES_ID: node['id'] } ,
 	    { '$set': bsnode }   
 		 , upsert=True
 	))
@@ -196,8 +196,8 @@ def toBSNode(shocknode, seenusers, shockdb, bsdb):
     pub = SHOCK_KEY_NODES_ACLS_PUBLIC in readers
     while SHOCK_KEY_NODES_ACLS_PUBLIC in readers: readers.remove(SHOCK_KEY_NODES_ACLS_PUBLIC)  
 
-#        BS_KEY_NODES_ID: n[SHOCK_KEY_NODES_ID],
     bsnode = {
+        BS_KEY_NODES_ID: n[SHOCK_KEY_NODES_ID],
         BS_KEY_NODES_OWNER: get_user(owner, seenusers, shockdb, bsdb),
         BS_KEY_NODES_READERS: [get_user(r, seenusers, shockdb, bsdb) for r in readers],
         BS_KEY_NODES_STORED: n[SHOCK_KEY_NODES_CREATED],
