@@ -25,6 +25,9 @@ import boto3
 import uuid
 import botocore.config as bcfg
 from pymongo.mongo_client import MongoClient
+from pymongo import UpdateOne
+from pymongo.errors import ServerSelectionTimeoutError
+from pymongo.errors import BulkWriteError
 
 parser = argparse.ArgumentParser(description='Import Shock Mongo data to blobstore Mongo.')
 parser.add_argument('--config-file', dest='configfile', required=True,
@@ -128,17 +131,31 @@ def main():
 
     count = 0
     seenusers = {}
+    doc_update_list = []
 
     for node in shockdb[SHOCK_COL_NODES].find(query,batch_size=CONFIG_BATCH_SIZE,no_cursor_timeout=True):
 #        print(node['id'])
         #print (node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] + '/' + node['id'] + '.data')
-        bsnode = toBSNode(node, seenusers, shockdb, bsdb)
-        bsdb[BS_COL_NODES].update_one({BS_KEY_NODES_ID: node}, {'$set': bsnode}, upsert=True)
+
+	bsnode = toBSNode(node, seenusers, shockdb, bsdb)
+        doc_update_list.append(UpdateOne(
+            { BS_KEY_NODES_ID: node } ,
+	    { '$set': { bsnode } } 
+		} , upsert=True
+	))
+
+#        bsdb[BS_COL_NODES].update_one({BS_KEY_NODES_ID: node}, {'$set': bsnode}, upsert=True)
         count += 1
-        if count % CONFIG_BATCH_SIZE == 0:
+
+	if len(doc_update_list) % CONFIG_BATCH_SIZE == 0:
+	    bulk_update_blobstore_nodes(bsdb, doc_update_list)
+            doc_update_list = []
+
+	if count % CONFIG_BATCH_SIZE == 0:
             lastPrint = 'Processed {} records'.format(count)
             print (lastPrint)
 
+    bulk_update_blobstore_nodes(bsdb, doc_update_list)
     lastPrint = 'Processed {} records'.format(count)
     print(lastPrint)
 
@@ -220,6 +237,15 @@ def get_mongo_client(host, db, user, pwd):
         return MongoClient(host, authSource=db, username=user, password=pwd, retryWrites=False)
     else:
         return MongoClient(host, retryWrites=False)
+
+
+def bulk_update_blobstore_nodes(db, doc_update_list):
+    try:
+        update_result = db[BS_COL_NODES].bulk_write(doc_update_list,ordered=False)
+    except BulkWriteError as bwe:
+        print(bwe.details)
+    print('nInserted: ' + str(update_result.bulk_api_result['nInserted']) + ' ; nUpserted: ' + str(update_result.bulk_api_result['nUpserted']) + ' ; writeErrors: ' + str(update_result.bulk_api_result['writeErrors']))
+#    pprint(update_result.bulk_api_result)
 
 if __name__ == '__main__':
     main()
