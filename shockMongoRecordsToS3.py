@@ -124,6 +124,7 @@ def main():
     query = { 'acl.owner': { '$ne': CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
     #    print(query)
 
+    count = 0
     seenusers = {}
 
     for node in shockdb[SHOCK_COL_NODES].find(query,batch_size=10000,no_cursor_timeout=True):
