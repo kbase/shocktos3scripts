@@ -130,7 +130,7 @@ def main():
         print(node['id'])
         #print (node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] + '/' + node['id'] + '.data')
         bsnode = toBSNode(node, seenusers, shockdb, bsdb)
-        bsdb[BS_COL_NODES].update_one({BS_KEY_NODES_ID: n}, {'$set': bsnode}, upsert=True)
+        bsdb[BS_COL_NODES].update_one({BS_KEY_NODES_ID: node}, {'$set': bsnode}, upsert=True)
         count += 1
         if count % 100 == 0:
             lastPrint = 'Processed {} records'.format(count)
