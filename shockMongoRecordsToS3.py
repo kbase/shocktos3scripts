@@ -130,6 +130,8 @@ def main():
     query = { 'acl.owner': { '$ne': CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
     #    print(query)
 
+    totalNodes = shockdb[SHOCK_COL_NODES].count_documents(query)
+
     count = 0
     seenusers = {}
     doc_update_list = []
@@ -154,13 +156,13 @@ def main():
             doc_update_list = []
 
 	if count % CONFIG_BATCH_SIZE == 0:
-            lastPrint = 'Processed {} records'.format(count)
+            lastPrint = 'Processed {}/{} records'.format(count,totalNodes)
             print (lastPrint)
 
 # last update
     if len(doc_update_list) > 0:
         bulk_update_blobstore_nodes(bsdb, doc_update_list)
-        lastPrint = 'Processed {} records'.format(count)
+        lastPrint = 'Processed {}/{} records'.format(count,totalNodes)
         print(lastPrint)
 
 ##### comment out S3 master query code
