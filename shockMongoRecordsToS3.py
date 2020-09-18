@@ -58,7 +58,7 @@ CONFIG_END_DAY = conf['shock']['end_day'] or 28
 CONFIG_START_DATE = datetime.datetime(int(CONFIG_START_YEAR),int(CONFIG_START_MONTH),int(CONFIG_START_DAY),0,0,0)
 CONFIG_END_DATE = datetime.datetime(int(CONFIG_END_YEAR),int(CONFIG_END_MONTH),int(CONFIG_END_DAY),0,0,0)
 
-CONFIG_S3_HOST = conf['s3']['host']
+CONFIG_S3_ENDPOINT = conf['s3']['endpoint']
 # The bucket name must obey https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
 # with the extra restriction that periods are not allowed.
 CONFIG_S3_BUCKET = conf['s3']['bucket']
@@ -105,14 +105,14 @@ SHOCK_KEY_NODES_ACLS_READERS = 'read'
 SHOCK_KEY_NODES_ACLS_PUBLIC = 'public'
 
 def main():
-    shockdb = get_client(CONFIG_MONGO_SHOCK_HOST, CONFIG_MONGO_SHOCK_DATABASE,
+    shockdb = get_mongo_client(CONFIG_MONGO_SHOCK_HOST, CONFIG_MONGO_SHOCK_DATABASE,
         CONFIG_MONGO_SHOCK_USER, CONFIG_MONGO_SHOCK_PWD)[CONFIG_MONGO_SHOCK_DATABASE]
-    bsdb = get_client(CONFIG_MONGO_BLOBSTORE_HOST, CONFIG_MONGO_BLOBSTORE_DATABASE,
+    bsdb = get_mongo_client(CONFIG_MONGO_BLOBSTORE_HOST, CONFIG_MONGO_BLOBSTORE_DATABASE,
         CONFIG_MONGO_BLOBSTORE_USER, CONFIG_MONGO_BLOBSTORE_PWD)[CONFIG_MONGO_BLOBSTORE_DATABASE]
 
     s3 = boto3.client(
         's3',
-        endpoint_url=CONFIG_S3_HOST,
+        endpoint_url=CONFIG_S3_ENDPOINT,
         aws_access_key_id=CONFIG_S3_ACCESS_KEY,
         aws_secret_access_key=CONFIG_S3_ACCESS_SECRET,
         region_name=CONFIG_S3_REGION,
@@ -191,7 +191,7 @@ def toUUID(s3key):
         raise ValueError("Illegal S3 key: " + uuidStr)
     return uuidStr
     
-def get_client(host, db, user, pwd):
+def get_mongo_client(host, db, user, pwd):
     if user:
         return MongoClient(host, authSource=db, username=user, password=pwd)
     else:
