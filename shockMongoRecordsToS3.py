@@ -141,7 +141,7 @@ def main():
         doc_update_list.append(UpdateOne(
             { BS_KEY_NODES_ID: node } ,
 	    { '$set': { bsnode } } 
-		} , upsert=True
+		 , upsert=True
 	))
 
 #        bsdb[BS_COL_NODES].update_one({BS_KEY_NODES_ID: node}, {'$set': bsnode}, upsert=True)
