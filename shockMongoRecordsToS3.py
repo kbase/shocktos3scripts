@@ -72,7 +72,7 @@ CONFIG_S3_ACCESS_KEY = conf['s3']['access_key']
 CONFIG_S3_ACCESS_SECRET = conf['s3']['secret_key']
 CONFIG_S3_REGION = conf['s3']['region']
 
-CONFIG_BATCH_SIZE = 10000
+CONFIG_BATCH_SIZE = 1
 
 #### END CONFIGURATION VARIABLES ####
 
