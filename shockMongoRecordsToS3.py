@@ -47,6 +47,8 @@ CONFIG_MONGO_BLOBSTORE_DATABASE = conf['blobstore']['mongo_database']
 CONFIG_MONGO_BLOBSTORE_USER = conf['blobstore']['mongo_user']
 CONFIG_MONGO_BLOBSTORE_PWD = conf['blobstore']['mongo_pwd']
 
+CONFIG_SHOCK_WS_UUID = conf['shock']['ws_uuid']
+
 # dumb but lazy
 CONFIG_START_YEAR = conf['shock']['start_year'] or 2000
 CONFIG_START_MONTH = conf['shock']['start_month'] or 1
@@ -119,31 +121,40 @@ def main():
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
 
-    paginator = s3.get_paginator('list_objects_v2')
-    seenusers = {}
+    query = { 'acl.owner': { '$ne': CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
+
+    #    print(query)
+    for node in db_src[COLLECTION_SHOCK].find(query,batch_size=10000,no_cursor_timeout=True):
+        #print(node['id'])
+        print (node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] + '/' + node['id'] + '.data')
+
+##### comment out S3 master query code
+#    paginator = s3.get_paginator('list_objects_v2')
+#    seenusers = {}
 
     # no way to get object count in a bucket other than listing them, apparently
 
-    count = 0
-    lastPrint = ''
-    for page in paginator.paginate(Bucket=CONFIG_S3_BUCKET):
-        nodes = [toUUID(o['Key']) for o in page['Contents']]
-        for n in nodes:
-            node = shockdb[SHOCK_COL_NODES].find_one({'id': n})
-            if not node:
-                raise ValueError("Missing shock node " + n)
-            bsnode = toBSNode(node, seenusers, shockdb, bsdb)
-            bsdb[BS_COL_NODES].update_one({BS_KEY_NODES_ID: n}, {'$set': bsnode}, upsert=True)
-            count += 1
-            if count % 100 == 0:
-                backspace = '\b' * len(lastPrint)
-                lastPrint = 'Processed {} records'.format(count)
-#                print(backspace + lastPrint, end='', flush=True)
-                print (lastPrint)
-
-    backspace = '\b' * len(lastPrint)
-    lastPrint = 'Processed {} records'.format(count)
-    print(backspace + lastPrint)
+#    count = 0
+#    lastPrint = ''
+#    for page in paginator.paginate(Bucket=CONFIG_S3_BUCKET):
+#        nodes = [toUUID(o['Key']) for o in page['Contents']]
+#        for n in nodes:
+#            node = shockdb[SHOCK_COL_NODES].find_one({'id': n})
+#            if not node:
+#                raise ValueError("Missing shock node " + n)
+#            bsnode = toBSNode(node, seenusers, shockdb, bsdb)
+#            bsdb[BS_COL_NODES].update_one({BS_KEY_NODES_ID: n}, {'$set': bsnode}, upsert=True)
+#            count += 1
+#            if count % 100 == 0:
+#                backspace = '\b' * len(lastPrint)
+#                lastPrint = 'Processed {} records'.format(count)
+##                print(backspace + lastPrint, end='', flush=True)
+#                print (lastPrint)
+#
+#    backspace = '\b' * len(lastPrint)
+#    lastPrint = 'Processed {} records'.format(count)
+#    print(backspace + lastPrint)
+#####
 
 def toBSNode(shocknode, seenusers, shockdb, bsdb):
     n = shocknode
