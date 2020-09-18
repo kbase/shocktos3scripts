@@ -61,7 +61,7 @@ CONFIG_END_DATE = datetime.datetime(int(CONFIG_END_YEAR),int(CONFIG_END_MONTH),i
 CONFIG_S3_ENDPOINT = conf['s3']['endpoint']
 # The bucket name must obey https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
 # with the extra restriction that periods are not allowed.
-CONFIG_S3_BUCKET = conf['s3']['bucket']
+CONFIG_S3_BUCKET = conf['s3']['blobstore_bucket']
 CONFIG_S3_ACCESS_KEY = conf['s3']['access_key']
 CONFIG_S3_ACCESS_SECRET = conf['s3']['secret_key']
 CONFIG_S3_REGION = conf['s3']['region']
