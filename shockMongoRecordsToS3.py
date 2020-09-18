@@ -193,9 +193,9 @@ def toUUID(s3key):
     
 def get_mongo_client(host, db, user, pwd):
     if user:
-        return MongoClient(host, authSource=db, username=user, password=pwd)
+        return MongoClient(host, authSource=db, username=user, password=pwd, retryWrites=False)
     else:
-        return MongoClient(host)
+        return MongoClient(host, retryWrites=False)
 
 if __name__ == '__main__':
     main()
