@@ -142,7 +142,7 @@ def main():
 	pprint(bsnode)
         doc_update_list.append(UpdateOne(
             { BS_KEY_NODES_ID: node } ,
-	    { '$set': bsnode  } 
+	    bsnode   
 		 , upsert=True
 	))
 
