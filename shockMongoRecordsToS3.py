@@ -138,7 +138,7 @@ def main():
             print (lastPrint)
 
     lastPrint = 'Processed {} records'.format(count)
-    print(backspace + lastPrint)
+    print(lastPrint)
 
 ##### comment out S3 master query code
 #    paginator = s3.get_paginator('list_objects_v2')
