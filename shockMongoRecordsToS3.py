@@ -194,6 +194,7 @@ def main():
 
 def toBSNode(shocknode, seenusers, shockdb, bsdb):
     n = shocknode
+    pprint(n)
     owner = n[SHOCK_KEY_NODES_ACLS][SHOCK_KEY_NODES_ACLS_OWNER]
     md5 = n[SHOCK_KEY_NODES_FILE][SHOCK_KEY_NODES_FILE_CHKSUM][SHOCK_KEY_NODES_FILE_CHKSUM_MD5]
     readers = n[SHOCK_KEY_NODES_ACLS][SHOCK_KEY_NODES_ACLS_READERS]
