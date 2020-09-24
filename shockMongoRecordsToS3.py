@@ -194,9 +194,13 @@ def main():
 
 def toBSNode(shocknode, seenusers, shockdb, bsdb):
     n = shocknode
-    pprint(n)
+#    pprint(n['id'])
     owner = n[SHOCK_KEY_NODES_ACLS][SHOCK_KEY_NODES_ACLS_OWNER]
-    md5 = n[SHOCK_KEY_NODES_FILE][SHOCK_KEY_NODES_FILE_CHKSUM][SHOCK_KEY_NODES_FILE_CHKSUM_MD5]
+    try:
+        md5 = n[SHOCK_KEY_NODES_FILE][SHOCK_KEY_NODES_FILE_CHKSUM][SHOCK_KEY_NODES_FILE_CHKSUM_MD5]
+    except KeyError:
+	pprint('node ' + n['id'] + ' has no md5, assigning None')
+	md5 = None
     readers = n[SHOCK_KEY_NODES_ACLS][SHOCK_KEY_NODES_ACLS_READERS]
     pub = SHOCK_KEY_NODES_ACLS_PUBLIC in readers
     while SHOCK_KEY_NODES_ACLS_PUBLIC in readers: readers.remove(SHOCK_KEY_NODES_ACLS_PUBLIC)  
