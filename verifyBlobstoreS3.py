@@ -118,11 +118,11 @@ def main():
 	blobstoreQuery = {'id': node['id']}
         blobstoreDoc = blobstoreDb[COLLECTION_BLOBSTORE].find_one(blobstoreQuery)
 	if (blobstoreDoc == None):
-	    pprint(COLLECTION_SHOCK + ' Shock node ' + node['id'] + ' is missing matching entry in blobstore ' + COLLECTION_BLOBSTORE)
+	    print(COLLECTION_SHOCK + ' Shock node ' + node['id'] + ' is missing matching entry in blobstore ' + COLLECTION_BLOBSTORE)
 	    count['bad_mongo'] += 1
 	elif ( blobstoreDoc['md5'] == None ):
             count['good_mongo'] += 1
-	    pprint(COLLECTION_SHOCK + ' Shock node ' + node['id'] + ' found in blobstore but has no MD5, skipping S3 verify')
+	    print(COLLECTION_SHOCK + ' Shock node ' + node['id'] + ' found in blobstore but has no MD5, skipping S3 verify')
             count['missing_md5'] += 1
 	else:
             count['good_mongo'] += 1
@@ -138,7 +138,7 @@ def main():
 # if 404 not found, just note the missing object and continue
 	        if '404' in e.message:
 	            count['bad_s3'] += 1
-	            pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
+	            print(COLLECTION_SHOCK + ' node ' + node['id'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
 	        else:
 # otherwise, something bad happened, raise a real exception
 		    raise(e)
