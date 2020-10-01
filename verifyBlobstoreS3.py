@@ -115,14 +115,14 @@ def main():
 	s3Query = {'id': node['id']}
         s3doc = db[COLLECTION_S3].find_one(s3Query)
 	if (s3doc == None):
-	    pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' is missing matching entry in ' + COLLECTION_S3)
+	    pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' is missing matching entry in ' + COLLECTION_BLOBSTORE)
 	    count['bad_mongo'] += 1
 	else:
             count['good_mongo'] += 1
 #	pprint(s3doc)
 #        pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
             try:
-	        s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
+	        s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['md5'])
 # use this instead to simulate a 404
 #	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
 #	    pprint (s3stat)
