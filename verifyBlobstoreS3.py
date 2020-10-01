@@ -4,8 +4,8 @@
 This script verifies that old and converted MongoDB records for the blobstore,
 and S3 backend resources, all match.  For each record in the ShockDB.Nodes (or equivalent)
 collection, it checks for a matching record in the blobstore.nodes (or equivalent
-S3 backend) collection, and checks that the Minio resource exists and that its MD5 matches
-the chksum.
+S3 backend) collection, and checks that the Minio resource exists and that the MD5 records
+in Minio and MongoDB all match.
 
 '''
 
@@ -19,7 +19,7 @@ import configparser
 import argparse
 import datetime
 
-parser = argparse.ArgumentParser(description='Validate Workspace Mongo records against an S3 store.')
+parser = argparse.ArgumentParser(description='Validate Shock Mongo records against blobstore and an S3 store.')
 parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
 args = parser.parse_args()
@@ -30,29 +30,34 @@ conf.read(configfile)
 
 ###### CONFIGURATION VARIABLES ######
 
-CONFIG_MONGO_HOST = conf['workspace']['mongo_host']
-CONFIG_MONGO_DATABASE = conf['workspace']['mongo_database']
-#CONFIG_MONGO_DATABASE = 'workspace_conv_test'
-#CONFIG_MONGO_DATABASE = 'workspace_conv_test_many_recs'
-CONFIG_MONGO_USER = conf['workspace']['mongo_user']
-CONFIG_MONGO_PWD = conf['workspace']['mongo_pwd']
+CONFIG_MONGO_SHOCK_HOST = conf['shock']['mongo_host']
+CONFIG_MONGO_SHOCK_DATABASE = conf['shock']['mongo_database']
+CONFIG_MONGO_SHOCK_USER = conf['shock']['mongo_user']
+CONFIG_MONGO_SHOCK_PWD = conf['shock']['mongo_pwd']
+
+CONFIG_SHOCK_WS_UUID = conf['shock']['ws_uuid']
 
 # dumb but lazy
-CONFIG_START_YEAR = conf['workspace']['start_year'] or 2000
-CONFIG_START_MONTH = conf['workspace']['start_month'] or 1
-CONFIG_START_DAY = conf['workspace']['start_day'] or 1
-CONFIG_END_YEAR = conf['workspace']['end_year'] or 2037
-CONFIG_END_MONTH = conf['workspace']['end_month'] or 12
-CONFIG_END_DAY = conf['workspace']['end_day'] or 28
+CONFIG_START_YEAR = conf['shock']['start_year'] or 2000
+CONFIG_START_MONTH = conf['shock']['start_month'] or 1
+CONFIG_START_DAY = conf['shock']['start_day'] or 1
+CONFIG_END_YEAR = conf['shock']['end_year'] or 2037
+CONFIG_END_MONTH = conf['shock']['end_month'] or 12
+CONFIG_END_DAY = conf['shock']['end_day'] or 28
 
 CONFIG_START_DATE = datetime.datetime(int(CONFIG_START_YEAR),int(CONFIG_START_MONTH),int(CONFIG_START_DAY),0,0,0)
 CONFIG_END_DATE = datetime.datetime(int(CONFIG_END_YEAR),int(CONFIG_END_MONTH),int(CONFIG_END_DAY),0,0,0)
 
-CONFIG_WS_OBJECTID_START = bson.ObjectId.from_datetime(CONFIG_START_DATE)
-CONFIG_WS_OBJECTID_END = bson.ObjectId.from_datetime(CONFIG_END_DATE)
+#CONFIG_WS_OBJECTID_START = bson.ObjectId.from_datetime(CONFIG_START_DATE)
+#CONFIG_WS_OBJECTID_END = bson.ObjectId.from_datetime(CONFIG_END_DATE)
+
+CONFIG_MONGO_BLOBSTORE_HOST = conf['blobstore']['mongo_host']
+CONFIG_MONGO_BLOBSTORE_DATABASE = conf['blobstore']['mongo_database']
+CONFIG_MONGO_BLOBSTORE_USER = conf['blobstore']['mongo_user']
+CONFIG_MONGO_BLOBSTORE_PWD = conf['blobstore']['mongo_pwd']
 
 CONFIG_S3_ENDPOINT = conf['s3']['endpoint']
-CONFIG_S3_BUCKET = conf['s3']['workspace_bucket']
+CONFIG_S3_BUCKET = conf['s3']['blobstore_bucket']
 CONFIG_S3_ACCESS_KEY = conf['s3']['access_key']
 CONFIG_S3_SECRET_KEY = conf['s3']['secret_key']
 CONFIG_S3_REGION = conf['s3']['region']
@@ -61,14 +66,8 @@ CONFIG_BATCH_SIZE = 10000
 
 #### END CONFIGURATION VARIABLES ####
 
-COLLECTION_SHOCK = 'shock_nodeMap'
-COLLECTION_S3 = 's3_objects'
-
-KEY_SHOCK_CHKSUM = 'chksum'
-KEY_SHOCK_NODE = 'node'
-
-KEY_S3_CHKSUM = 'chksum'
-KEY_S3_KEY = 'key'
+COLLECTION_SHOCK = 'Nodes'
+COLLECTION_BLOBSTORE = 'nodes'
 
 def main():
     s3 = boto3.client(
@@ -85,11 +84,16 @@ def main():
 #    except botocore.exceptions.ClientError as e:
 #	pprint(e)
 
-    if CONFIG_MONGO_USER:
-        client = MongoClient(CONFIG_MONGO_HOST, authSource=CONFIG_MONGO_DATABASE,
-            username=CONFIG_MONGO_USER, password=CONFIG_MONGO_PWD, retryWrites=False)
+    if CONFIG_MONGO_SHOCK_USER:
+        shockClient = MongoClient(CONFIG_MONGO_SHOCK_HOST, authSource=CONFIG_MONGO_SHOCK_DATABASE,
+            username=CONFIG_MONGO_SHOCK_USER, password=CONFIG_MONGO_SHOCK_PWD, retryWrites=False)
     else:
-        client = MongoClient(CONFIG_MONGO_HOST)
+        shockClient = MongoClient(CONFIG_MONGO_SHOCK_HOST)
+    if CONFIG_MONGO_BLOBSTORE_USER:
+        blobstoreClient = MongoClient(CONFIG_MONGO_BLOBSTORE_HOST, authSource=CONFIG_MONGO_BLOBSTORE_DATABASE,
+            username=CONFIG_MONGO_BLOBSTORE_USER, password=CONFIG_MONGO_BLOBSTORE_PWD, retryWrites=False)
+    else:
+        blobstoreClient = MongoClient(CONFIG_MONGO_BLOBSTORE_HOST)
 
     count = dict()
     count['good_mongo'] = 0
@@ -98,8 +102,8 @@ def main():
     count['bad_s3'] = 0
     count['processed'] = 0
 
-    db = client[CONFIG_MONGO_DATABASE]
-    shockQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
+    db = shockClient[CONFIG_MONGO_DATABASE]
+    shockQuery = { 'acl.owner': { '$ne': CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
 #    pprint(shockQuery)
     count[COLLECTION_SHOCK] = db[COLLECTION_SHOCK].count_documents(shockQuery)
 #    count = 0
@@ -108,7 +112,7 @@ def main():
 
 
     for node in db[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
-#        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
+        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_BLOBSTORE)
 	s3Query = {'chksum': node['chksum']}
         s3doc = db[COLLECTION_S3].find_one(s3Query)
 	if (s3doc == None):
