@@ -113,7 +113,7 @@ def main():
     for node in db[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
         pprint('examining node ' + node['id'] + ' in mongo collection ' + COLLECTION_BLOBSTORE)
 	s3Query = {'id': node['id']}
-        s3doc = db[COLLECTION_S3].find_one(s3Query)
+        s3doc = db[COLLECTION_BLOBSTORE].find_one(s3Query)
 	if (s3doc == None):
 	    pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' is missing matching entry in ' + COLLECTION_BLOBSTORE)
 	    count['bad_mongo'] += 1
