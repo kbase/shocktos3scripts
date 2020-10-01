@@ -118,11 +118,11 @@ def main():
 	blobstoreQuery = {'id': node['id']}
         blobstoreDoc = blobstoreDb[COLLECTION_BLOBSTORE].find_one(blobstoreQuery)
 	if (blobstoreDoc == None):
-	    pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' is missing matching entry in ' + COLLECTION_BLOBSTORE)
+	    pprint(COLLECTION_SHOCK + ' Shock node ' + node['id'] + ' is missing matching entry in blobstore ' + COLLECTION_BLOBSTORE)
 	    count['bad_mongo'] += 1
 	elif ( blobstoreDoc['md5'] == None ):
             count['good_mongo'] += 1
-	    pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' found in blobstore but has no MD5, skipping S3 verify')
+	    pprint(COLLECTION_SHOCK + ' Shock node ' + node['id'] + ' found in blobstore but has no MD5, skipping S3 verify')
             count['missing_md5'] += 1
 	else:
             count['good_mongo'] += 1
