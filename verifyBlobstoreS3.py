@@ -120,12 +120,12 @@ def main():
 	if (blobstoreDoc == None):
 	    pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' is missing matching entry in ' + COLLECTION_BLOBSTORE)
 	    count['bad_mongo'] += 1
-	else:
+	elif ( blobstoreDoc['md5'] == None ):
             count['good_mongo'] += 1
-	    if ( blobstoreDoc['md5'] == None ):
 	        pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' has no MD5, skipping')
                 count['missing_md5'] += 1
-	        continue
+	else:
+            count['good_mongo'] += 1
 #	pprint(s3doc)
 #        pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
             s3path = ( node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] )
