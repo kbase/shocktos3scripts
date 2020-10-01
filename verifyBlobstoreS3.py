@@ -122,7 +122,7 @@ def main():
 	    count['bad_mongo'] += 1
 	elif ( blobstoreDoc['md5'] == None ):
             count['good_mongo'] += 1
-	    pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' has no MD5, skipping')
+	    pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' found in blobstore but has no MD5, skipping S3 verify')
             count['missing_md5'] += 1
 	else:
             count['good_mongo'] += 1
