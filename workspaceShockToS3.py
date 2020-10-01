@@ -124,7 +124,11 @@ def main():
 
 
 def toS3Key(node):
-    return node[0:2] + '/' + node[2:4] + '/' + node[4:6] + '/' + node + '/' + node + '.data'
+
+# for CI and next ws only, using original bulkS3upload that doesn't munge the object path
+#    return node[0:2] + '/' + node[2:4] + '/' + node[4:6] + '/' + node + '/' + node + '.data'
+# for future imports, use the path ws and blobstore expect
+    return node[0:2] + '/' + node[2:4] + '/' + node[4:6] + '/' + node
 
 
 def bulk_update(db, doc_update_list):
