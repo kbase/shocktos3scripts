@@ -107,7 +107,7 @@ def main():
 
     shockQuery = { 'acl.owner': { '$ne': CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
 #    pprint(shockQuery)
-    count[COLLECTION_SHOCK] = db[COLLECTION_SHOCK].count_documents(shockQuery)
+    count[COLLECTION_SHOCK] = shockDb[COLLECTION_SHOCK].count_documents(shockQuery)
 #    count = 0
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
     print(lastPrint)
