@@ -102,7 +102,7 @@ def main():
     count['bad_s3'] = 0
     count['processed'] = 0
 
-    db = shockClient[CONFIG_MONGO_DATABASE]
+    db = shockClient[CONFIG_MONGO_SHOCK_DATABASE]
     shockQuery = { 'acl.owner': { '$ne': CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
 #    pprint(shockQuery)
     count[COLLECTION_SHOCK] = db[COLLECTION_SHOCK].count_documents(shockQuery)
@@ -110,13 +110,12 @@ def main():
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
     print(lastPrint)
 
-
     for node in db[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
-        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_BLOBSTORE)
-	s3Query = {'chksum': node['chksum']}
+        pprint('examining node ' + node['id'] + ' in mongo collection ' + COLLECTION_BLOBSTORE)
+	s3Query = {'id': node['id']}
         s3doc = db[COLLECTION_S3].find_one(s3Query)
 	if (s3doc == None):
-	    pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching chksum in ' + COLLECTION_S3)
+	    pprint(COLLECTION_SHOCK + ' node ' + node['id'] + ' is missing matching entry in ' + COLLECTION_S3)
 	    count['bad_mongo'] += 1
 	else:
             count['good_mongo'] += 1
