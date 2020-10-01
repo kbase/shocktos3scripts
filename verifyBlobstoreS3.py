@@ -123,8 +123,9 @@ def main():
             count['good_mongo'] += 1
 #	pprint(s3doc)
 #        pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
+            s3path = ( node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] )
             try:
-	        s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=blobstoreDoc['md5'])
+	        s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3path)
 # use this instead to simulate a 404
 #	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
 #	    pprint (s3stat)
