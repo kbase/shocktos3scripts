@@ -117,7 +117,6 @@ def main():
 #        pprint('examining node ' + node['id'] + ' in mongo collection ' + COLLECTION_BLOBSTORE)
 	blobstoreQuery = {'id': node['id']}
         blobstoreDoc = blobstoreDb[COLLECTION_BLOBSTORE].find_one(blobstoreQuery)
-	### TODO: verify that this query is working by running when there are nodes not imported to blobstore mongo yet
 	if (blobstoreDoc == None):
 	    print(COLLECTION_SHOCK + ' Shock node ' + node['id'] + ' is missing matching entry in blobstore ' + COLLECTION_BLOBSTORE)
 	    count['bad_mongo'] += 1
