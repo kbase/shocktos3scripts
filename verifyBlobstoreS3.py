@@ -117,6 +117,7 @@ def main():
 #        pprint('examining node ' + node['id'] + ' in mongo collection ' + COLLECTION_BLOBSTORE)
 	blobstoreQuery = {'id': node['id']}
         blobstoreDoc = blobstoreDb[COLLECTION_BLOBSTORE].find_one(blobstoreQuery)
+	### TODO: verify that this query is working by running when there are nodes not imported to blobstore mongo yet
 	if (blobstoreDoc == None):
 	    print(COLLECTION_SHOCK + ' Shock node ' + node['id'] + ' is missing matching entry in blobstore ' + COLLECTION_BLOBSTORE)
 	    count['bad_mongo'] += 1
@@ -136,6 +137,7 @@ def main():
 #	    pprint (s3stat)
 	    except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
+		### TODO: look at Shock data dir to see if .data file is missing
 	        if '404' in e.message:
 	            count['bad_s3'] += 1
 	            print(COLLECTION_SHOCK + ' node ' + node['id'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
