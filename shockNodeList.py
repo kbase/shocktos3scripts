@@ -9,6 +9,14 @@ parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
 parser.add_argument('--node-mode', dest='nodemode', required=True,
 		    help='Use workspace or shock mode to produce node list. (required)')
+parser.add_argument('--start-year', dest='startyear', type=int,
+		    help='Override config file start year')
+parser.add_argument('--start-month', dest='startmonth', type=int,
+		    help='Override config file start month')
+parser.add_argument('--end-year', dest='endyear', type=int,
+		    help='Override config file end year')
+parser.add_argument('--end-month', dest='endmonth', type=int,
+		    help='Override config file end month')
 args = parser.parse_args()
 
 configfile=args.configfile
@@ -25,11 +33,11 @@ CONFIG_MONGO_SHOCK_PWD = conf['shock']['mongo_pwd']
 CONFIG_SHOCK_WS_UUID = conf['shock']['ws_uuid']
 
 # dumb but lazy
-CONFIG_START_YEAR = conf['shock']['start_year'] or 2000
-CONFIG_START_MONTH = conf['shock']['start_month'] or 1
+CONFIG_START_YEAR = args.startyear or conf['shock']['start_year'] or 2000
+CONFIG_START_MONTH = args.startmonth or conf['shock']['start_month'] or 1
 CONFIG_START_DAY = conf['shock']['start_day'] or 1
-CONFIG_END_YEAR = conf['shock']['end_year'] or 2037
-CONFIG_END_MONTH = conf['shock']['end_month'] or 12
+CONFIG_END_YEAR = args.endyear or conf['shock']['end_year'] or 2037
+CONFIG_END_MONTH = args.endmonth or conf['shock']['end_month'] or 12
 CONFIG_END_DAY = conf['shock']['end_day'] or 28
 
 CONFIG_START_DATE = datetime.datetime(int(CONFIG_START_YEAR),int(CONFIG_START_MONTH),int(CONFIG_START_DAY),0,0,0)
