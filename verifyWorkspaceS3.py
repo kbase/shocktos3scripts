@@ -118,7 +118,7 @@ def main():
     for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
 #        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
 
-        if (mongosource == 'shock'):
+        if (args.mongosource == 'shock'):
 	    s3Query = {'chksum': node['chksum']}
             s3doc = db[COLLECTION_S3].find_one(s3Query)
 	else:
