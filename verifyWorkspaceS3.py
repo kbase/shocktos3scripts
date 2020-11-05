@@ -74,8 +74,10 @@ KEY_S3_KEY = 'key'
 
 if (args.mongosource == 'shock'):
     COLLECTION_SOURCE=COLLECTION_SHOCK
+    KEY_SOURCEID = KEY_SHOCK_NODE
 elif (args.mongosource == 's3'):
     COLLECTION_SOURCE=COLLECTION_S3
+    KEY_SOURCEID = KEY_S3_KEY
 else:
     raise("invalid mongosource specified! use shock or s3")
 
@@ -125,7 +127,7 @@ def main():
 	    s3doc = node
 
 	if (s3doc == None):
-	    pprint(COLLECTION_SOURCE + ' node ' + node['node'] + ' is missing matching chksum in ' + COLLECTION_S3)
+	    pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
 	    count['bad_mongo'] += 1
 	else:
             count['good_mongo'] += 1
@@ -140,7 +142,7 @@ def main():
 # if 404 not found, just note the missing object and continue
 	        if '404' in e.message:
 	            count['bad_s3'] += 1
-	            pprint(COLLECTION_SOURCE + ' node ' + node['node'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
+	            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
 	        else:
 # otherwise, something bad happened, raise a real exception
 		    raise(e)
