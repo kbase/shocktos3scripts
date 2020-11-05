@@ -74,7 +74,7 @@ KEY_S3_KEY = 'key'
 
 if (args.mongosource == 'shock'):
     COLLECTION_SOURCE=COLLECTION_SHOCK
-elif (args.mongosource == 's3):
+elif (args.mongosource == 's3'):
     COLLECTION_SOURCE=COLLECTION_S3
 else:
     raise("invalid mongosource specified! use shock or s3")
