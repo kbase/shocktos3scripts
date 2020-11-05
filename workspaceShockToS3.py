@@ -101,6 +101,7 @@ def main():
         doc_update_list.append(UpdateOne(
 	    { KEY_S3_CHKSUM: node[KEY_SHOCK_CHKSUM] },
 	    {'$set': {
+		'_id': node['_id'],
                 KEY_S3_KEY: toS3Key(node[KEY_SHOCK_NODE]),
                 KEY_S3_SORTED: True if node.get(KEY_SHOCK_SORTED) else False
 	    }},
