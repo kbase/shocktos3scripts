@@ -117,16 +117,18 @@ def main():
 
     for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
 #        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
-	if (mongosource == 'shock'):
+
+        if (mongosource == 'shock'):
 	    s3Query = {'chksum': node['chksum']}
             s3doc = db[COLLECTION_S3].find_one(s3Query)
-	    if (s3doc == None):
-	        pprint(COLLECTION_SOURCE + ' node ' + node['node'] + ' is missing matching chksum in ' + COLLECTION_S3)
-	        count['bad_mongo'] += 1
-	    else:
-                count['good_mongo'] += 1
 	else:
 	    s3doc = node
+
+	if (s3doc == None):
+	    pprint(COLLECTION_SOURCE + ' node ' + node['node'] + ' is missing matching chksum in ' + COLLECTION_S3)
+	    count['bad_mongo'] += 1
+	else:
+            count['good_mongo'] += 1
 #	pprint(s3doc)
         pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
             try:
