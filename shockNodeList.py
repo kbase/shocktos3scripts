@@ -11,9 +11,9 @@ parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
 parser.add_argument('--node-mode', dest='nodemode', required=True,
 		    help='Use workspace or shock mode to produce node list. (required)')
-parser.add_argument('--start-date', dest='startdate', type=string,
+parser.add_argument('--start-date', dest='startdate', type=str,
 		    help='Override config file start date')
-parser.add_argument('--end-date', dest='enddate', type=string,
+parser.add_argument('--end-date', dest='enddate', type=str,
 		    help='Override config file end date')
 args = parser.parse_args()
 
