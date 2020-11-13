@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 
 '''
-This script verifies that old and converted MongoDB records for the Workspace Shock backend,
-and S3 backend resources, all match.  For each record in the shock_nodeMap (or equivalent
+This script verifies S3 objects against MongoDB.  It has two modes, shock and s3.
+
+In s3 mode, it verifies that, for each document in the s3_objects collection (or equivalent
+S3 backend), that an S3 object exists and the MD5 matches.  This can be used to validate
+a backup copy of the primary S3 instance (e.g., at a secondary site, or in a cloud S3 instance).
+
+In shock mode, it verifies that old and converted MongoDB records for the Workspace Shock
+backend, and S3 backend resources, all match.  For each record in the shock_nodeMap (or equivalent
 Shock backend) collection, it checks for a matching record in the s3_objects (or equivalent
 S3 backend) collection, and checks that the Minio resource exists and that it's MD5 matches
 the chksum.
+
+When we no longer have any workspace instances using Shock, we can remove that code.
 
 '''
 
@@ -22,6 +30,8 @@ import datetime
 parser = argparse.ArgumentParser(description='Validate Workspace Mongo records against an S3 store.')
 parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
+parser.add_argument('--mongo-source', dest='mongosource', required=True,
+		    help='Which mongo source collection to use as master, shock or s3 . (required)')
 args = parser.parse_args()
 
 configfile=args.configfile
@@ -70,6 +80,15 @@ KEY_SHOCK_NODE = 'node'
 KEY_S3_CHKSUM = 'chksum'
 KEY_S3_KEY = 'key'
 
+if (args.mongosource == 'shock'):
+    COLLECTION_SOURCE=COLLECTION_SHOCK
+    KEY_SOURCEID = KEY_SHOCK_NODE
+elif (args.mongosource == 's3'):
+    COLLECTION_SOURCE=COLLECTION_S3
+    KEY_SOURCEID = KEY_S3_KEY
+else:
+    raise("invalid mongosource specified! use shock or s3")
+
 def main():
     s3 = boto3.client(
         's3',
@@ -99,25 +118,29 @@ def main():
     count['processed'] = 0
 
     db = client[CONFIG_MONGO_DATABASE]
-    shockQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
-#    pprint(shockQuery)
-    count[COLLECTION_SHOCK] = db[COLLECTION_SHOCK].count_documents(shockQuery)
+    idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
+#    pprint(idQuery)
+    count[COLLECTION_SOURCE] = db[COLLECTION_SOURCE].count_documents(idQuery)
 #    count = 0
-    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
+    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
 
-
-    for node in db[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
+    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
 #        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
-	s3Query = {'chksum': node['chksum']}
-        s3doc = db[COLLECTION_S3].find_one(s3Query)
+
+        if (args.mongosource == 'shock'):
+	    s3Query = {'chksum': node['chksum']}
+            s3doc = db[COLLECTION_S3].find_one(s3Query)
+	else:
+	    s3doc = node
+
 	if (s3doc == None):
-	    pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching chksum in ' + COLLECTION_S3)
+	    pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
 	    count['bad_mongo'] += 1
 	else:
             count['good_mongo'] += 1
 #	pprint(s3doc)
-#        pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
+#            pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
             try:
 	        s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
 # use this instead to simulate a 404
@@ -127,7 +150,7 @@ def main():
 # if 404 not found, just note the missing object and continue
 	        if '404' in e.message:
 	            count['bad_s3'] += 1
-	            pprint(COLLECTION_SHOCK + ' node ' + node['node'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
+	            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
 	        else:
 # otherwise, something bad happened, raise a real exception
 		    raise(e)
@@ -135,11 +158,11 @@ def main():
                 count['good_s3'] += 1
         count['processed'] += 1
 	if count['processed'] % 1000 == 0:
-	    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
+	    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
 	    print(lastPrint)
             pprint(count)
 
-    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
+    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
 
     pprint(count)
