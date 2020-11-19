@@ -41,6 +41,12 @@ CONFIG_MONGO_DATABASE = conf['workspace']['mongo_database']
 CONFIG_MONGO_USER = conf['workspace']['mongo_user']
 CONFIG_MONGO_PWD = conf['workspace']['mongo_pwd']
 
+# can use a different db for destination
+CONFIG_MONGO_S3_HOST = conf['s3']['mongo_host']
+CONFIG_MONGO_S3_DATABASE = conf['s3']['mongo_database']
+CONFIG_MONGO_S3_USER = conf['s3']['mongo_user']
+CONFIG_MONGO_S3_PWD = conf['s3']['mongo_pwd']
+
 # dumb but lazy
 CONFIG_START_YEAR = conf['workspace']['start_year'] or 2000
 CONFIG_START_MONTH = conf['workspace']['start_month'] or 1
@@ -82,8 +88,14 @@ def main():
             username=CONFIG_MONGO_USER, password=CONFIG_MONGO_PWD, retryWrites=False)
     else:
         client = MongoClient(CONFIG_MONGO_HOST)
+    if CONFIG_MONGO_S3_USER:
+        client_s3 = MongoClient(CONFIG_MONGO_S3_HOST, authSource=CONFIG_MONGO_S3_DATABASE,
+            username=CONFIG_MONGO_S3_USER, password=CONFIG_MONGO_S3_PWD, retryWrites=False)
+    else:
+        client_s3 = MongoClient(CONFIG_MONGO_S3_HOST)
 
     db = client[CONFIG_MONGO_DATABASE]
+    db_s3 = client[CONFIG_MONGO_S3_DATABASE]
     query = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
     print(query)
     ttl = db[COLLECTION_SHOCK].count_documents(query)
@@ -111,7 +123,7 @@ def main():
         count += 1
 
 	if len(doc_update_list) % CONFIG_BATCH_SIZE == 0:
-	    bulk_update(db, doc_update_list)
+	    bulk_update(db_s3, doc_update_list)
             doc_update_list = []
 
         if count % CONFIG_BATCH_SIZE == 0:
@@ -119,7 +131,7 @@ def main():
             print(lastPrint)
 
 # final docs
-    bulk_update(db, doc_update_list)
+    bulk_update(db_s3, doc_update_list)
     lastPrint = 'Processed {}/{} records'.format(count, ttl)
     print(lastPrint)
 
