@@ -95,7 +95,7 @@ def main():
         client_s3 = MongoClient(CONFIG_MONGO_S3_HOST)
 
     db = client[CONFIG_MONGO_DATABASE]
-    db_s3 = client[CONFIG_MONGO_S3_DATABASE]
+    db_s3 = client_s3[CONFIG_MONGO_S3_DATABASE]
     query = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
     print(query)
     ttl = db[COLLECTION_SHOCK].count_documents(query)
