@@ -97,7 +97,7 @@ else:
 
 def main():
 
-    print >> sys.stderr, "verifying blobstore S3 against " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE)
+    print >> sys.stderr, "verifying blobstore S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE)
 
     s3 = boto3.client(
         's3',
