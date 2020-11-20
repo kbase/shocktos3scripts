@@ -22,6 +22,8 @@ import datetime
 parser = argparse.ArgumentParser(description='Validate Shock Mongo records against blobstore and an S3 store.')
 parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
+parser.add_argument('--mongo-source', dest='mongosource', required=True,
+		    help='Which mongo source collection to use as master, shock or s3 . (required)')
 args = parser.parse_args()
 
 configfile=args.configfile
@@ -69,6 +71,13 @@ CONFIG_BATCH_SIZE = 10000
 COLLECTION_SHOCK = 'Nodes'
 COLLECTION_BLOBSTORE = 'nodes'
 
+if (args.mongosource == 'shock'):
+    COLLECTION_SOURCE=COLLECTION_SHOCK
+elif (args.mongosource == 's3'):
+    COLLECTION_SOURCE=COLLECTION_BLOBSTORE
+else:
+    raise("invalid mongosource specified! use shock or s3")
+
 def main():
     s3 = boto3.client(
         's3',
@@ -78,11 +87,6 @@ def main():
         region_name=CONFIG_S3_REGION,
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
-#    pprint(s3.list_buckets())
-#    try:
-#        pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.dat'))
-#    except botocore.exceptions.ClientError as e:
-#	pprint(e)
 
     if CONFIG_MONGO_SHOCK_USER:
         shockClient = MongoClient(CONFIG_MONGO_SHOCK_HOST, authSource=CONFIG_MONGO_SHOCK_DATABASE,
@@ -108,21 +112,33 @@ def main():
 
     shockQuery = { 'acl.owner': { '$ne': CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
 #    pprint(shockQuery)
-    count[COLLECTION_SHOCK] = shockDb[COLLECTION_SHOCK].count_documents(shockQuery)
+    blobstoreQuery = { 'time': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
+    if (args.mongosource == 'shock'):
+        sourceQuery=shockQuery
+        sourceDb=shockDb
+    elif (args.mongosource == 's3'):
+        sourceQuery=blobstoreQuery
+        sourceDb=blobstoreDb
+
+    count[COLLECTION_SOURCE] = sourceDb[COLLECTION_SOURCE].count_documents(sourceQuery)
 #    count = 0
-    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
+    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
 
-    for node in shockDb[COLLECTION_SHOCK].find(shockQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
+    for node in sourceDb[COLLECTION_SOURCE].find(sourceQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
 #        pprint('examining node ' + node['id'] + ' in mongo collection ' + COLLECTION_BLOBSTORE)
-	blobstoreQuery = {'id': node['id']}
-        blobstoreDoc = blobstoreDb[COLLECTION_BLOBSTORE].find_one(blobstoreQuery)
+	if (args.mongosource =='shock'):
+	    blobstoreSingleQuery = {'id': node['id']}
+            blobstoreDoc = blobstoreDb[COLLECTION_BLOBSTORE].find_one(blobstoreSingleQuery)
+	else:
+	    blobstoreDoc = node
+
 	if (blobstoreDoc == None):
-	    print(COLLECTION_SHOCK + ' Shock node ' + node['id'] + ' is missing matching entry in blobstore ' + COLLECTION_BLOBSTORE)
+	    print(COLLECTION_SOURCE + ' Shock node ' + node['id'] + ' is missing matching entry in blobstore ' + COLLECTION_BLOBSTORE)
 	    count['bad_mongo'] += 1
 	elif ( blobstoreDoc['md5'] == None ):
             count['good_mongo'] += 1
-	    print(COLLECTION_SHOCK + ' Shock node ' + node['id'] + ' found in blobstore but has no MD5, skipping S3 verify')
+	    print(COLLECTION_SOURCE + ' Shock node ' + node['id'] + ' found in blobstore but has no MD5, skipping S3 verify')
             count['missing_md5'] += 1
 	else:
             count['good_mongo'] += 1
@@ -139,7 +155,7 @@ def main():
 		### TODO: look at Shock data dir to see if .data file is missing
 	        if '404' in e.message:
 	            count['bad_s3'] += 1
-	            print(COLLECTION_SHOCK + ' node ' + node['id'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
+	            print(COLLECTION_SOURCE + ' node ' + node['id'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
 	        else:
 # otherwise, something bad happened, raise a real exception
 		    raise(e)
@@ -147,11 +163,11 @@ def main():
                 count['good_s3'] += 1
         count['processed'] += 1
 	if count['processed'] % 1000 == 0:
-	    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
+	    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
 	    print(lastPrint)
             pprint(count)
 
-    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SHOCK])
+    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
 
     pprint(count)
