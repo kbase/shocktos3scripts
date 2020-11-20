@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 
 '''
-This script verifies that old and converted MongoDB records for the blobstore,
+This script verifies non-workspace (blobstore) objects against MongoDB.  It has two modes,
+shock and s3.
+
+In s3 mode, it verifies that, for each document in the blobstore.nodes collection, that an
+S3 object exists and the MD5 matches.  This can be used to validate a backup copy of the
+primary S3 instance (e.g., at a secondary site, or in a cloud S3 instance).
+
+In shock mode, it verifies that old and converted MongoDB records for the blobstore,
 and S3 backend resources, all match.  For each record in the ShockDB.Nodes (or equivalent)
 collection, it checks for a matching record in the blobstore.nodes (or equivalent
 S3 backend) collection, and checks that the Minio resource exists and that the MD5 records
