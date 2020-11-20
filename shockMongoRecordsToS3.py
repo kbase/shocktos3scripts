@@ -23,7 +23,6 @@ import argparse
 import datetime
 import uuid
 from pprint import pprint
-import botocore.config as bcfg
 from pymongo.mongo_client import MongoClient
 from pymongo import UpdateOne
 from pymongo.errors import ServerSelectionTimeoutError
