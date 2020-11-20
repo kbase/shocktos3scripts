@@ -95,6 +95,9 @@ else:
     raise("invalid mongosource specified! use shock or s3")
 
 def main():
+
+    print >> sys.stderr, "verifying blobstore S# against " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE)
+
     s3 = boto3.client(
         's3',
         endpoint_url=CONFIG_S3_ENDPOINT,
