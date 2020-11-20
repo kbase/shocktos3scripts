@@ -109,6 +109,9 @@ def main():
     count = dict()
     count['good_mongo'] = 0
     count['bad_mongo'] = 0
+# bad_mongo for s3 checks is irrelevant
+    if (args.mongosource == 's3'):
+        count['bad_mongo'] = None
     count['missing_md5'] = 0
     count['good_s3'] = 0
     count['bad_s3'] = 0
