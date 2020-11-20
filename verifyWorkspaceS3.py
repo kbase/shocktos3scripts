@@ -26,6 +26,7 @@ import bson
 import configparser
 import argparse
 import datetime
+import sys
 
 parser = argparse.ArgumentParser(description='Validate Workspace Mongo records against an S3 store.')
 parser.add_argument('--config-file', dest='configfile', required=True,
