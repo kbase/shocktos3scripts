@@ -25,12 +25,17 @@ import bson
 import configparser
 import argparse
 import datetime
+import sys
 
 parser = argparse.ArgumentParser(description='Validate Shock Mongo records against blobstore and an S3 store.')
 parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
 parser.add_argument('--mongo-source', dest='mongosource', required=True,
 		    help='Which mongo source collection to use as master, shock or s3 . (required)')
+parser.add_argument('--start-date', dest='startdate', type=str,
+		    help='Override config file start date')
+parser.add_argument('--end-date', dest='enddate', type=str,
+		    help='Override config file end date')
 args = parser.parse_args()
 
 configfile=args.configfile
@@ -53,6 +58,11 @@ CONFIG_START_DAY = conf['shock']['start_day'] or 1
 CONFIG_END_YEAR = conf['shock']['end_year'] or 2037
 CONFIG_END_MONTH = conf['shock']['end_month'] or 12
 CONFIG_END_DAY = conf['shock']['end_day'] or 28
+
+if args.startdate is not None:
+    (CONFIG_START_YEAR,CONFIG_START_MONTH,CONFIG_START_DAY) = args.startdate.split('-')
+if args.enddate is not None:
+    (CONFIG_END_YEAR,CONFIG_END_MONTH,CONFIG_END_DAY) = args.enddate.split('-')
 
 CONFIG_START_DATE = datetime.datetime(int(CONFIG_START_YEAR),int(CONFIG_START_MONTH),int(CONFIG_START_DAY),0,0,0)
 CONFIG_END_DATE = datetime.datetime(int(CONFIG_END_YEAR),int(CONFIG_END_MONTH),int(CONFIG_END_DAY),0,0,0)
@@ -86,6 +96,9 @@ else:
     raise("invalid mongosource specified! use shock or s3")
 
 def main():
+
+    print >> sys.stderr, "verifying blobstore S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE)
+
     s3 = boto3.client(
         's3',
         endpoint_url=CONFIG_S3_ENDPOINT,
