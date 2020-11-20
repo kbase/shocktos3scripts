@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-This script verifies S3 objects against MongoDB.  It has two modes, shock and s3.
+This script verifies S3 workspace objects against MongoDB.  It has two modes, shock and s3.
 
 In s3 mode, it verifies that, for each document in the s3_objects collection (or equivalent
 S3 backend), that an S3 object exists and the MD5 matches.  This can be used to validate
