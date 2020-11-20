@@ -2,11 +2,11 @@
 
 '''
 This script converts a subset of Shock (https://github.com/kbase/Shock) node records to
-BlobStore (https://github.com/kbase/blobstore) records.
+BlobStore (https://github.com/kbase/blobstore) records in MongoDB only.
 The script does not alter the Shock backend records and may be re-run multiple times without issue.
+It also does not copy any files to S3.
 
-The script determines which files to transfer by looking in the S3 bucket that contains the
-converted Shock files. It expects key names based on a uuid in the same way Shock directories are
+The script expects key names based on a uuid in the same way Shock directories are
 based on the UUID; for example the UUID 06f5d3ec-8ebf-4d32-8c1c-41e27e40b7fd would be
 
 06/f5/d3/06f5d3ec-8ebf-4d32-8c1c-41e27e40b7fd
@@ -21,10 +21,8 @@ To use:
 import configparser
 import argparse
 import datetime
-import boto3
 import uuid
 from pprint import pprint
-import botocore.config as bcfg
 from pymongo.mongo_client import MongoClient
 from pymongo import UpdateOne
 from pymongo.errors import ServerSelectionTimeoutError
@@ -63,14 +61,6 @@ CONFIG_END_DAY = conf['shock']['end_day'] or 28
 
 CONFIG_START_DATE = datetime.datetime(int(CONFIG_START_YEAR),int(CONFIG_START_MONTH),int(CONFIG_START_DAY),0,0,0)
 CONFIG_END_DATE = datetime.datetime(int(CONFIG_END_YEAR),int(CONFIG_END_MONTH),int(CONFIG_END_DAY),0,0,0)
-
-CONFIG_S3_ENDPOINT = conf['s3']['endpoint']
-# The bucket name must obey https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
-# with the extra restriction that periods are not allowed.
-CONFIG_S3_BUCKET = conf['s3']['blobstore_bucket']
-CONFIG_S3_ACCESS_KEY = conf['s3']['access_key']
-CONFIG_S3_ACCESS_SECRET = conf['s3']['secret_key']
-CONFIG_S3_REGION = conf['s3']['region']
 
 CONFIG_BATCH_SIZE = 10000
 
@@ -118,15 +108,6 @@ def main():
     bsdb = get_mongo_client(CONFIG_MONGO_BLOBSTORE_HOST, CONFIG_MONGO_BLOBSTORE_DATABASE,
         CONFIG_MONGO_BLOBSTORE_USER, CONFIG_MONGO_BLOBSTORE_PWD)[CONFIG_MONGO_BLOBSTORE_DATABASE]
 
-    s3 = boto3.client(
-        's3',
-        endpoint_url=CONFIG_S3_ENDPOINT,
-        aws_access_key_id=CONFIG_S3_ACCESS_KEY,
-        aws_secret_access_key=CONFIG_S3_ACCESS_SECRET,
-        region_name=CONFIG_S3_REGION,
-        config=bcfg.Config(s3={'addressing_style': 'path'})
-    )
-
     query = { 'acl.owner': { '$ne': CONFIG_SHOCK_WS_UUID }, 'created_on': { '$gt': CONFIG_START_DATE, '$lt': CONFIG_END_DATE } }
     #    print(query)
 
@@ -164,33 +145,6 @@ def main():
         bulk_update_blobstore_nodes(bsdb, doc_update_list)
         lastPrint = 'Processed {}/{} records'.format(count,totalNodes)
         print(lastPrint)
-
-##### comment out S3 master query code
-#    paginator = s3.get_paginator('list_objects_v2')
-
-    # no way to get object count in a bucket other than listing them, apparently
-
-#    count = 0
-#    lastPrint = ''
-#    for page in paginator.paginate(Bucket=CONFIG_S3_BUCKET):
-#        nodes = [toUUID(o['Key']) for o in page['Contents']]
-#        for n in nodes:
-#            node = shockdb[SHOCK_COL_NODES].find_one({'id': n})
-#            if not node:
-#                raise ValueError("Missing shock node " + n)
-#            bsnode = toBSNode(node, seenusers, shockdb, bsdb)
-#            bsdb[BS_COL_NODES].update_one({BS_KEY_NODES_ID: n}, {'$set': bsnode}, upsert=True)
-#            count += 1
-#            if count % 100 == 0:
-#                backspace = '\b' * len(lastPrint)
-#                lastPrint = 'Processed {} records'.format(count)
-##                print(backspace + lastPrint, end='', flush=True)
-#                print (lastPrint)
-#
-#    backspace = '\b' * len(lastPrint)
-#    lastPrint = 'Processed {} records'.format(count)
-#    print(backspace + lastPrint)
-#####
 
 def toBSNode(shocknode, seenusers, shockdb, bsdb):
     n = shocknode
