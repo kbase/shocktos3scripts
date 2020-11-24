@@ -6,6 +6,7 @@ S3 to S3 sync instead.
 
 To do:
   * support full date/time instead of just day, to avoid recopying files (in case script is run multiple times/day)
+    * use datetime.fromisoformat
   * use configparser instead of configobj
   * configure source and destination as separate sections in config file
   * better documentation of files used
