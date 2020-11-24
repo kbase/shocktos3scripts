@@ -1,5 +1,15 @@
 #!/usr/bin/python
 
+```
+This is a proof of concept modifying our existing synctool.py for Shock sync to do
+S3 to S3 sync instead.
+
+To do:
+  * support full date/time instead of just day, to avoid recopying files (in case script is run multiple times/day)
+  * use configparser instead of configobj
+  * configure source and destination as separate sections in config file
+```
+
 import os
 import sys
 import pymongo
@@ -70,6 +80,7 @@ def syncnode(id):
   
   print "syncing %s"%(id)
   # example from vadmin1:
+  # assumes `minio` and `prod-ws01` are defined endpoints in ~/.mc/config.json
   # /opt/mc/mc cp minio/prod-ws/00/00/00/000000e7-0d44-494b-bd17-638f2a904329 prod-ws01.gcp/prod-ws01/00/00/00/000000e7-0d44-494b-bd17-638f2a904329
   comm=("rsync","-aqz","--bwlimit=%d"%(int(conf['bw'])),spath,dpath)
   result=call(comm)
