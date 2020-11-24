@@ -18,7 +18,9 @@ import datetime
 from time import sleep
 from multiprocessing import Pool
 from subprocess import call
-from configobj import ConfigObj
+from pprint import pprint
+import configparser
+import argparse
 
 done=dict()
 retry=dict()
@@ -43,27 +45,31 @@ def readlog(filename,list):
     f.close()
   
 
-def readcp(filename):
+def readdatefile(filename):
   fo=open(filename,"r")
   date=fo.readline()
   fo.close()
   return date.replace('\n','').split('-')
   
 
-def writecp(filename,date):
+def writedatefile(filename,date):
   fo=open(filename,"w")
   fo.write("%s\n"%(date))
   fo.close()
 
-def getnodes(start):
-  c = pymongo.MongoClient(conf['mongo_host']);
-  db=c.ShockDB
-  db.authenticate( conf['mongo_user'],conf['mongo_pwd'])
+def getObjects(start):
+  if conf['main']['mongo_user']:
+    client = MongoClient(conf['main']['mongo_host'], authSource=conf['main']['mongo_database'],
+      username=conf['main']['mongo_user'], password=conf['main']['mongo_pwd'], retryWrites=False)
+  else:
+    client = MongoClient(conf['main']['mongo_host'])
+  db = client.[conf['main']['mongo_database']]
 
   ct=0
   ids=[]
-  for x in db.Nodes.find({ 'created_on': {'$gt': start}}, {'id': 1, '_id': 0}):
-    ids.append(x['id']) #.split(': u\'')[1].replace("'}\n",''))
+  # to do: use ObjectID for ws. maybe for all queries?  or use date field for blobstore queries?
+  for object in db.conf['main']['mongo_collection'].find({ 'created_on': {'$gt': start}}, {'id': 1, '_id': 0}):
+    ids.append(object['id']) #.split(': u\'')[1].replace("'}\n",''))
     ct+=1
   return ids
 
@@ -71,6 +77,7 @@ def syncnode(id):
   if id in done:
     #writelog(conf['logfile'],id)
     return 0
+  # to do: both ws and blobstore collections should have full S3 paths already
   spath="%s/%s/%s/%s/%s"%(conf['src'],id[0:2],id[2:4],id[4:6],id)
   dpath="%s/%s/%s/%s/"%(conf['dst'],id[0:2],id[2:4],id[4:6])
   if not os.path.isdir(spath):
@@ -92,34 +99,30 @@ def syncnode(id):
    
   return result 
 
-  
-def usage():
-  print "Usage: synctool <config file>"
-
-
 if __name__ == '__main__':
-  if len(sys.argv)<2:
-    usage()
-    sys.exit(-1) 
-  conffile=sys.argv[1]
-  conf=ConfigObj(sys.argv[1])
-  if 'bw' not in conf:
-    usage()
-    sys.exit(-1)
-  if os.path.exists(conf['cpfile']):
-    startl=readcp(conf['cpfile'])
+  parser = argparse.ArgumentParser(description='Validate Workspace Mongo records against an S3 store.')
+  parser.add_argument('--config-file', dest='configfile', required=True,
+		    help='Path to config file (INI format). (required)')
+  args = parser.parse_args()
+
+  configfile=args.configfile
+  conf=configparser.ConfigParser()
+  conf.read(configfile)
+  
+  if os.path.exists(conf['main']['datefile']):
+    startl=readdatefile(conf['main']['datefile'])
   else:
-    print "Warning: no cpfile.  Using today."
+    print "Warning: no datefile.  Using today."
     startl=str(datetime.date.today()).split('-')
   start = datetime.datetime(int(startl[0]),int(startl[1]),int(startl[2]),0,0,0)
-  readlog(conf['logfile'],done)
-  readlog(conf['retryfile'],retry)
+  readlog(conf['main']['logfile'],done)
+  readlog(conf['main']['retryfile'],retry)
   mystart=datetime.date.today()
-  if debug in conf and int(conf['debug'])==1:
+  if debug in conf['main'] and int(conf['main']['debug'])==1:
     debug=1
   if debug:
     print "querying mongo"
-  dolist=getnodes(start)
+  objectList=getObjects(start)
   # TODO append retry to dolist
   for item in retry:
     dolist.append(item)
