@@ -66,12 +66,15 @@ def getObjects(start):
     client = MongoClient(conf['main']['mongo_host'])
   db = client.conf['main']['mongo_database']
 
+  pprint(db)
+
   ct=0
   ids=[]
 
 # to do: use ObjectID for ws. maybe for all queries?  or use date field for blobstore queries?
 #bson.ObjectId.from_datetime(CONFIG_START_DATE)
 #    idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
+
 
   idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
  
