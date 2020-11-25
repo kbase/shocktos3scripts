@@ -64,7 +64,7 @@ def getObjects(start):
       username=conf['main']['mongo_user'], password=conf['main']['mongo_pwd'], retryWrites=False)
   else:
     client = MongoClient(conf['main']['mongo_host'])
-  db = client.conf['main']['mongo_database']
+  db = client.(conf['main']['mongo_database'])
 
   pprint(db)
 
