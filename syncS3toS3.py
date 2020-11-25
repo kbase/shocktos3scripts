@@ -129,14 +129,14 @@ if __name__ == '__main__':
   for item in retry:
     objectList.append(item)
   print >> sys.stderr, 'ct=%d'%(len(objectList))
-  if int(conf['resetlog'])==1:
-    initlog(conf['logfile'])  
+  if int(conf['main']['resetlog'])==1:
+    initlog(conf['main']['logfile'])  
 
-  initlog(conf['retryfile'])  
+  initlog(conf['main']['retryfile'])
 
   print >> sys.stderr, 'start=%s'%(start)
 
-  pool = Pool(processes=int(conf['nthreads']))
+  pool = Pool(processes=int(conf['main']['nthreads']))
   results=pool.map(syncnode, objectList)
   failed=0
   for result in results:
@@ -144,5 +144,5 @@ if __name__ == '__main__':
       failed+=1
   print "failed: %d"%(failed)
     
-  writecp(conf['cpfile'],mystart)
+  writedatefile(conf['main']['datefile'],mystart)
   
