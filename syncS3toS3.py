@@ -109,16 +109,18 @@ if __name__ == '__main__':
   conf=configparser.ConfigParser()
   conf.read(configfile)
   
+  now = startString=datetime.datetime.now().isoformat()
+
   if os.path.exists(conf['main']['datefile']):
     startString=readdatefile(conf['main']['datefile'])
   else:
     print "Warning: no datefile.  Using now."
-    startString=datetime.datetime.now().isoformat()
+    startString=now
 # datetime.datetime.strptime("2007-03-04T21:08:12Z", "%Y-%m-%dT%H:%M:%SZ")
   start = datetime.datetime.strptime(startString,"%Y-%m-%dT%H:%M:%S.%f")
   readlog(conf['main']['logfile'],done)
   readlog(conf['main']['retryfile'],retry)
-  mystart=datetime.date.today()
+
   if int(conf['main']['debug'])==1:
     debug=1
 
@@ -144,5 +146,4 @@ if __name__ == '__main__':
       failed+=1
   print "failed: %d"%(failed)
     
-  writedatefile(conf['main']['datefile'],mystart)
-  
+  writedatefile(conf['main']['datefile'],now)
