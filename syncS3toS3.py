@@ -119,7 +119,7 @@ if __name__ == '__main__':
   readlog(conf['main']['logfile'],done)
   readlog(conf['main']['retryfile'],retry)
   mystart=datetime.date.today()
-  if debug in conf['main'] and int(conf['main']['debug'])==1:
+  if int(conf['main']['debug'])==1:
     debug=1
   if debug:
     print "querying mongo"
