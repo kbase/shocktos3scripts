@@ -5,10 +5,7 @@ This is a proof of concept modifying our existing synctool.py for Shock sync to 
 S3 to S3 sync instead.
 
 To do:
-  * support full date/time instead of just day, to avoid recopying files (in case script is run multiple times/day)
-    * use datetime.fromisoformat
-  * use configparser instead of configobj
-  * configure source and destination as separate sections in config file
+  * configure source and destination as separate sections in config file (in progress)
   * better documentation of files used
 '''
 
