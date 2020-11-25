@@ -15,6 +15,7 @@ To do:
 import os
 import sys
 from pymongo.mongo_client import MongoClient
+import bson
 import datetime
 from multiprocessing import Pool
 from subprocess import call
@@ -67,9 +68,15 @@ def getObjects(start):
 
   ct=0
   ids=[]
-  # to do: use ObjectID for ws. maybe for all queries?  or use date field for blobstore queries?
-  for object in db.conf['main']['mongo_collection'].find({ 'created_on': {'$gt': start}}, {'id': 1, '_id': 0}):
-    ids.append(object['id']) #.split(': u\'')[1].replace("'}\n",''))
+
+# to do: use ObjectID for ws. maybe for all queries?  or use date field for blobstore queries?
+#bson.ObjectId.from_datetime(CONFIG_START_DATE)
+#    idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
+
+  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
+ 
+  for object in db.conf['main']['mongo_collection'].find(idQuery):
+    ids.append(object['key']) #.split(': u\'')[1].replace("'}\n",''))
     ct+=1
   return ids
 
