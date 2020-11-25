@@ -89,8 +89,8 @@ def syncnode(id):
     #writelog(conf['logfile'],id)
     return 0
   # to do: both ws and blobstore collections should have full S3 paths already
-  spath="%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id)
-  dpath="%s/%s/%s/%s/"%(conf['dst'],id[0:2],id[2:4],id[4:6])
+  spath="%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id)
+  dpath="%s/%s/%s"%(conf['destination']['endpoint'],conf['destination']['bucket'],id)
  
   print "syncing %s"%(id)
   # example from vadmin1:
