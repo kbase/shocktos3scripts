@@ -49,7 +49,7 @@ def readdatefile(filename):
   fo=open(filename,"r")
   date=fo.readline()
   fo.close()
-  return date.replace('\n','').split('-')
+  return date.replace('\n','')
   
 
 def writedatefile(filename,date):
