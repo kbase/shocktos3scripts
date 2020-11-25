@@ -65,8 +65,7 @@ def getObjects(start):
   else:
     client = MongoClient(conf['main']['mongo_host'])
   db = client[conf['main']['mongo_database']]
-
-  pprint(db)
+# pprint(db)
 
   ct=0
   ids=[]
