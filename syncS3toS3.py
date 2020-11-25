@@ -64,8 +64,7 @@ def getObjects(start):
       username=conf['main']['mongo_user'], password=conf['main']['mongo_pwd'], retryWrites=False)
   else:
     client = MongoClient(conf['main']['mongo_host'])
-  dbName=conf['main']['mongo_database']
-  db = client.dbName
+  db = client[conf['main']['mongo_database']]
 
   pprint(db)
 
@@ -79,7 +78,7 @@ def getObjects(start):
 
   idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
  
-  for object in db.conf['main']['mongo_collection'].find(idQuery):
+  for object in db[conf['main']['mongo_collection'].find(idQuery):
     print object
     ids.append(object['key']) #.split(': u\'')[1].replace("'}\n",''))
     ct+=1
