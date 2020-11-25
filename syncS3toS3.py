@@ -125,10 +125,10 @@ if __name__ == '__main__':
   if debug:
     print "querying mongo"
   objectList=getObjects(start)
-  # TODO append retry to dolist
+  # TODO append retry to objectList
   for item in retry:
-    dolist.append(item)
-  print >> sys.stderr, 'ct=%d'%(len(dolist))
+    objectList.append(item)
+  print >> sys.stderr, 'ct=%d'%(len(objectList))
   if int(conf['resetlog'])==1:
     initlog(conf['logfile'])  
 
@@ -137,7 +137,7 @@ if __name__ == '__main__':
   print >> sys.stderr, 'start=%s'%(start)
 
   pool = Pool(processes=int(conf['nthreads']))
-  results=pool.map(syncnode, dolist)
+  results=pool.map(syncnode, objectList)
   failed=0
   for result in results:
     if result:
