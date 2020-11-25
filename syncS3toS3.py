@@ -79,7 +79,7 @@ def getObjects(start):
   idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
  
   for object in db[conf['main']['mongo_collection'].find(idQuery):
-    print object
+    print(object)
     ids.append(object['key']) #.split(': u\'')[1].replace("'}\n",''))
     ct+=1
   return ids
