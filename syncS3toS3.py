@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-```
+'''
 This is a proof of concept modifying our existing synctool.py for Shock sync to do
 S3 to S3 sync instead.
 
@@ -10,7 +10,7 @@ To do:
   * use configparser instead of configobj
   * configure source and destination as separate sections in config file
   * better documentation of files used
-```
+'''
 
 import os
 import sys
