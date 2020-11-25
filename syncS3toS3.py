@@ -115,7 +115,7 @@ if __name__ == '__main__':
     print "Warning: no datefile.  Using now."
     startString=datetime.datetime.now().isoformat()
 # datetime.datetime.strptime("2007-03-04T21:08:12Z", "%Y-%m-%dT%H:%M:%SZ")
-  start = datetime.datetime.strptime(startString,"%Y-%m-%dT%H:%M:%SZ")
+  start = datetime.datetime.strptime(startString,"%Y-%m-%dT%H:%M:%S.%f")
   readlog(conf['main']['logfile'],done)
   readlog(conf['main']['retryfile'],retry)
   mystart=datetime.date.today()
