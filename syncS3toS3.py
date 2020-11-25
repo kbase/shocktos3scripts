@@ -16,7 +16,6 @@ import os
 import sys
 import pymongo
 import datetime
-from time import sleep
 from multiprocessing import Pool
 from subprocess import call
 from pprint import pprint
@@ -91,7 +90,7 @@ def syncnode(id):
   # example from vadmin1:
   # assumes `minio` and `prod-ws01` are defined endpoints in ~/.mc/config.json
   # /opt/mc/mc cp minio/prod-ws/00/00/00/000000e7-0d44-494b-bd17-638f2a904329 prod-ws01.gcp/prod-ws01/00/00/00/000000e7-0d44-494b-bd17-638f2a904329
-  comm=("rsync","-aqz","--bwlimit=%d"%(int(conf['bw'])),spath,dpath)
+  comm=("echo","mc","cp",spath,dpath)
   result=call(comm)
   if result==0:
     writelog(conf['logfile'],id)
@@ -101,7 +100,7 @@ def syncnode(id):
   return result 
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description='Validate Workspace Mongo records against an S3 store.')
+  parser = argparse.ArgumentParser(description='Copy object list from a MongoDB collection from one S3 store to another.')
   parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
   args = parser.parse_args()
@@ -111,11 +110,12 @@ if __name__ == '__main__':
   conf.read(configfile)
   
   if os.path.exists(conf['main']['datefile']):
-    startl=readdatefile(conf['main']['datefile'])
+    startString=readdatefile(conf['main']['datefile'])
   else:
-    print "Warning: no datefile.  Using today."
-    startl=str(datetime.date.today()).split('-')
-  start = datetime.datetime(int(startl[0]),int(startl[1]),int(startl[2]),0,0,0)
+    print "Warning: no datefile.  Using now."
+    startString=datetime.datetime.now().isoformat()
+# datetime.datetime.strptime("2007-03-04T21:08:12Z", "%Y-%m-%dT%H:%M:%SZ")
+  start = datetime.datetime.strptime(startString,"%Y-%m-%dT%H:%M:%SZ")
   readlog(conf['main']['logfile'],done)
   readlog(conf['main']['retryfile'],retry)
   mystart=datetime.date.today()
