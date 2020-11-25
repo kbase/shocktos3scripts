@@ -14,7 +14,7 @@ To do:
 
 import os
 import sys
-import pymongo
+from pymongo.mongo_client import MongoClient
 import datetime
 from multiprocessing import Pool
 from subprocess import call
@@ -121,6 +121,7 @@ if __name__ == '__main__':
   mystart=datetime.date.today()
   if int(conf['main']['debug'])==1:
     debug=1
+
   if debug:
     print "querying mongo"
   objectList=getObjects(start)
