@@ -99,9 +99,9 @@ def syncnode(id):
   comm=("echo","mc","cp",spath,dpath)
   result=call(comm)
   if result==0:
-    writelog(conf['logfile'],id)
+    writelog(conf['main']['logfile'],id)
   else:
-    writelog(conf['retryfile'],id)
+    writelog(conf['main']['retryfile'],id)
    
   return result 
 
