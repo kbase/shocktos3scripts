@@ -92,9 +92,9 @@ def syncnode(id):
   # example from vadmin1:
   # assumes `minio` and `prod-ws01` are defined endpoints in ~/.mc/config.json
   # /opt/mc/mc cp minio/prod-ws/00/00/00/000000e7-0d44-494b-bd17-638f2a904329 prod-ws01.gcp/prod-ws01/00/00/00/000000e7-0d44-494b-bd17-638f2a904329
-  comm=(conf['main']['mcpath'],'cp',spath,dpath)
+  comm=(conf['main']['mcpath'],'--quiet','cp',spath,dpath)
   if (conf['main'].getboolean('insecureminio') == True):
-      comm=(conf['main']['mcpath'],'--insecure','cp',spath,dpath)
+      comm=(conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
   result=call(comm)
   if result==0:
     writelog(conf['main']['logfile'],id)
