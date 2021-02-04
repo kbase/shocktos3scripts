@@ -116,6 +116,8 @@ def main():
     count = 0
     seenusers = {}
     doc_update_list = []
+    lastPrint = 'Processed {}/{} records'.format(count,totalNodes)
+    print (lastPrint)
 
     for node in shockdb[SHOCK_COL_NODES].find(query,batch_size=CONFIG_BATCH_SIZE,no_cursor_timeout=True):
 #        print(node['id'])
