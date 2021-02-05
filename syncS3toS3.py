@@ -124,6 +124,8 @@ if __name__ == '__main__':
 		    help='Path to config file (INI format). (required)')
   parser.add_argument('--end-date', dest='enddate',
 		    help='End date for query in ISO8601 format (optional, default now)')
+  parser.add_argument('--start-date', dest='startdate',
+		    help='Start date for query in ISO8601 format (optional, default now)')
   args = parser.parse_args()
 
   configfile=args.configfile
@@ -140,6 +142,8 @@ if __name__ == '__main__':
 # datetime.datetime.strptime("2007-03-04T21:08:12Z", "%Y-%m-%dT%H:%M:%SZ")
   start = datetime.datetime.strptime(startString,"%Y-%m-%dT%H:%M:%S.%f")
   end = datetime.datetime.strptime(now,"%Y-%m-%dT%H:%M:%S.%f")
+  if (args.startdate):
+    start = datetime.datetime.strptime(args.startdate,"%Y-%m-%dT%H:%M:%S.%f")
   if (args.enddate):
     end = datetime.datetime.strptime(args.enddate,"%Y-%m-%dT%H:%M:%S.%f")
   readlog(conf['main']['logfile'],done)
