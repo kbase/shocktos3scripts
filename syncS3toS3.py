@@ -5,8 +5,8 @@ This is a beta version modifying our existing synctool.py for Shock sync to do
 S3 to S3 sync instead.
 
 To do:
-  * support ws/blobstore mode
-  * check for target object and skip if exists (check MD5 too?)
+  * support ws/blobstore mode (done)
+  * check for target object and skip if exists (check MD5 too?) (make a cmdline/config opt?)
   * add support for end date
   * better documentation of files used
 '''
@@ -57,7 +57,7 @@ def writedatefile(filename,date):
   fo.write("%s\n"%(date))
   fo.close()
 
-def getObjects(start):
+def getObjects(start, end):
   if conf['main']['mongo_user']:
     client = MongoClient(conf['main']['mongo_host'], authSource=conf['main']['mongo_database'],
       username=conf['main']['mongo_user'], password=conf['main']['mongo_pwd'], retryWrites=False)
@@ -73,8 +73,8 @@ def getObjects(start):
 #bson.ObjectId.from_datetime(CONFIG_START_DATE)
 #    idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 
-
-  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
+  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) , '$lt': bson.ObjectId.from_datetime(end)} }
+  pprint(idQuery)
  
   for object in db[conf['main']['mongo_collection']].find(idQuery):
 #    pprint(object)
@@ -118,7 +118,7 @@ if __name__ == '__main__':
   parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
   parser.add_argument('--end-date', dest='enddate',
-		    help='End date for query (optional, default now)')
+		    help='End date for query in ISO8601 format (optional, default now)')
   args = parser.parse_args()
 
   configfile=args.configfile
@@ -134,6 +134,9 @@ if __name__ == '__main__':
     startString=now
 # datetime.datetime.strptime("2007-03-04T21:08:12Z", "%Y-%m-%dT%H:%M:%SZ")
   start = datetime.datetime.strptime(startString,"%Y-%m-%dT%H:%M:%S.%f")
+  end = datetime.datetime.strptime(now,"%Y-%m-%dT%H:%M:%S.%f")
+  if (args.enddate):
+    end = datetime.datetime.strptime(args.enddate,"%Y-%m-%dT%H:%M:%S.%f")
   readlog(conf['main']['logfile'],done)
   readlog(conf['main']['retryfile'],retry)
 
@@ -142,7 +145,7 @@ if __name__ == '__main__':
 
   if debug:
     print "querying mongo"
-  objectList=getObjects(start)
+  objectList=getObjects(start, end)
   # TODO append retry to objectList
   for item in retry:
     objectList.append(item)
