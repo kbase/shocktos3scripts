@@ -21,6 +21,9 @@ from subprocess import call
 from pprint import pprint
 import configparser
 import argparse
+import boto3
+import botocore
+import botocore.config as bcfg
 
 done=dict()
 retry=dict()
@@ -90,7 +93,6 @@ def syncnode(id):
     #writelog(conf['logfile'],id)
     return 0
 
-
   spath="%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id)
   dpath="%s/%s/%s"%(conf['destination']['endpoint'],conf['destination']['bucket'],id)
   if (conf['main']['mode'] == 'blobstore'):
@@ -145,6 +147,15 @@ if __name__ == '__main__':
 
   if int(conf['main']['debug'])==1:
     debug=1
+
+  targetS3 = boto3.client(
+        's3',
+        endpoint_url=conf['destination']['url'],
+        aws_access_key_id=conf['destination']['accessKey'],
+        aws_secret_access_key=conf['destination']['secretKey'],
+        region_name=conf['destination']['region'],
+        config=bcfg.Config(s3={'addressing_style': 'path'})
+    )
 
   print >> sys.stderr, 'start=%s'%(start)
   print >> sys.stderr, 'end=%s'%(end)
