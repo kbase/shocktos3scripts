@@ -74,6 +74,8 @@ def getObjects(start, end):
 #    idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 
   idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) , '$lt': bson.ObjectId.from_datetime(end)} }
+  if (conf['main']['mode'] == 'blobstore'):
+    idQuery = {'time': {'$gt': start) , '$lt': end} }
 #  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
   pprint(idQuery)
  
@@ -87,8 +89,8 @@ def syncnode(id):
   if id in done:
     #writelog(conf['logfile'],id)
     return 0
-  # to do: ws collection has full S3 paths already
-  # blobstore does not so need to convert
+
+
   spath="%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id)
   dpath="%s/%s/%s"%(conf['destination']['endpoint'],conf['destination']['bucket'],id)
   if (conf['main']['mode'] == 'blobstore'):
