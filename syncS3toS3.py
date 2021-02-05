@@ -108,7 +108,7 @@ def syncnode(id):
 
   if (debug):
     print "looking for %s at destination %s" % (id,s3dpath)
-  deststat = None
+  deststat = dict()
   try:
     deststat = targetS3.head_object(Bucket=conf['destination']['bucket'],Key=s3dpath)
 #    pprint("deststat is %s" % deststat)
