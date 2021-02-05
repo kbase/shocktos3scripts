@@ -91,6 +91,8 @@ def getObjects(start, end):
 def syncnode(id):
   if id in done:
     #writelog(conf['logfile'],id)
+    if (debug):
+      pprint ("%s found in log, skipping" % (id))
     return 0
 
   spath="%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id)
