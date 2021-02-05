@@ -74,7 +74,7 @@ def getObjects(start, end):
 #    idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 
   idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) , '$lt': bson.ObjectId.from_datetime(end)} }
-  pprint(idQuery)
+#  pprint(idQuery)
  
   for object in db[conf['main']['mongo_collection']].find(idQuery):
 #    pprint(object)
@@ -156,6 +156,7 @@ if __name__ == '__main__':
   initlog(conf['main']['retryfile'])
 
   print >> sys.stderr, 'start=%s'%(start)
+  print >> sys.stderr, 'end=%s'%(end)
 
   pool = Pool(processes=int(conf['main']['nthreads']))
   results=pool.map(syncnode, objectList)
