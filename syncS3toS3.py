@@ -104,7 +104,8 @@ def syncnode(id):
     dpath="%s/%s/%s/%s/%s/%s"%(conf['destination']['endpoint'],conf['source']['bucket'],id[0:2],id[2:4],id[4:6],id)
     s3dpath="%s/%s/%s/%s"%(id[0:2],id[2:4],id[4:6],id)
 
-  print "looking for %s at destination %s" % (id,s3dpath)
+  if (debug):
+    print "looking for %s at destination %s" % (id,s3dpath)
   try:
     deststat = targetS3.head_object(Bucket=conf['destination']['bucket'],Key=s3dpath)
 #    pprint("deststat is %s" % deststat)
@@ -115,11 +116,12 @@ def syncnode(id):
     else:
 # otherwise, something bad happened, raise a real exception
       raise(e)
-  if ('ETag' in deststat):
+  if ('ETag' in deststat and debug):
     pprint ("%s found at destination %s with ETag %s, skipping" % (id, s3dpath, deststat['ETag']))
     return 0
 
-  print "copying %s to destination " % (id)
+  if (debug):
+    print "copying %s to destination " % (id)
   # example from vadmin1:
   # assumes `minio` and `prod-ws01` are defined endpoints in ~/.mc/config.json
   # /opt/mc/mc cp minio/prod-ws/00/00/00/000000e7-0d44-494b-bd17-638f2a904329 prod-ws01.gcp/prod-ws01/00/00/00/000000e7-0d44-494b-bd17-638f2a904329
