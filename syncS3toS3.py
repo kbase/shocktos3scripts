@@ -6,8 +6,10 @@ S3 to S3 sync instead.
 
 To do:
   * support ws/blobstore mode (done)
-  * check for target object and skip if exists (check MD5 too?) (make a cmdline/config opt?)
-  * add support for end date
+  * check for target object and skip if exists
+    * verify MD5 too?
+    * make a cmdline/config option
+  * add support for end date (done)
   * better documentation of files used
 '''
 
