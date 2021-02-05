@@ -5,6 +5,8 @@ This is a beta version modifying our existing synctool.py for Shock sync to do
 S3 to S3 sync instead.
 
 To do:
+  * support ws/blobstore mode
+  * check for target object and skip if exists (check MD5 too?)
   * add support for end date
   * better documentation of files used
 '''
@@ -76,7 +78,7 @@ def getObjects(start):
  
   for object in db[conf['main']['mongo_collection']].find(idQuery):
 #    pprint(object)
-    ids.append(object['key']) #.split(': u\'')[1].replace("'}\n",''))
+    ids.append(object[conf['main']['mongo_keyfield']]) #.split(': u\'')[1].replace("'}\n",''))
     ct+=1
   return ids
 
@@ -84,7 +86,8 @@ def syncnode(id):
   if id in done:
     #writelog(conf['logfile'],id)
     return 0
-  # to do: both ws and blobstore collections should have full S3 paths already
+  # to do: ws collection has full S3 paths already
+  # blobstore does not so need to convert
   spath="%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id)
   dpath="%s/%s/%s"%(conf['destination']['endpoint'],conf['destination']['bucket'],id)
  
@@ -92,7 +95,9 @@ def syncnode(id):
   # example from vadmin1:
   # assumes `minio` and `prod-ws01` are defined endpoints in ~/.mc/config.json
   # /opt/mc/mc cp minio/prod-ws/00/00/00/000000e7-0d44-494b-bd17-638f2a904329 prod-ws01.gcp/prod-ws01/00/00/00/000000e7-0d44-494b-bd17-638f2a904329
-  comm=(conf['main']['mcpath'],'--quiet','cp',spath,dpath)
+# use echo for testing
+  comm=('echo',conf['main']['mcpath'],'--quiet','cp',spath,dpath)
+#  comm=(conf['main']['mcpath'],'--quiet','cp',spath,dpath)
   if (conf['main'].getboolean('insecureminio') == True):
       comm=(conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
   result=call(comm)
@@ -107,6 +112,8 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Copy object list from a MongoDB collection from one S3 store to another.')
   parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
+  parser.add_argument('--end-date', dest='enddate',
+		    help='End date for query (optional, default now)')
   args = parser.parse_args()
 
   configfile=args.configfile
