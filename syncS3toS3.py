@@ -118,6 +118,7 @@ def syncnode(id):
       raise(e)
   if ('ETag' in deststat and debug):
     pprint ("%s found at destination %s with ETag %s, skipping" % (id, s3dpath, deststat['ETag']))
+    writelog(conf['main']['logfile'],id)
     return 0
 
   if (debug):
