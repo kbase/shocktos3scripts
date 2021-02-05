@@ -143,15 +143,15 @@ if __name__ == '__main__':
   if int(conf['main']['debug'])==1:
     debug=1
 
+  print >> sys.stderr, 'start=%s'%(start)
+  print >> sys.stderr, 'end=%s'%(end)
+
   if debug:
     print "querying mongo"
   objectList=getObjects(start, end)
   # TODO append retry to objectList
   for item in retry:
     objectList.append(item)
-
-  print >> sys.stderr, 'start=%s'%(start)
-  print >> sys.stderr, 'end=%s'%(end)
 
   print >> sys.stderr, 'ct=%d'%(len(objectList))
   if int(conf['main']['resetlog'])==1:
