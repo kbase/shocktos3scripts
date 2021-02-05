@@ -115,7 +115,7 @@ def syncnode(id):
     else:
 # otherwise, something bad happened, raise a real exception
       raise(e)
-  if (deststat['HTTPStatusCode'] == 200):
+  if ('HTTPStatusCode' in deststat and deststat['HTTPStatusCode'] == 200):
     pprint ("%s found at destination %s, skipping" % (id, s3dpath))
     return 0
 
