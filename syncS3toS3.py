@@ -89,6 +89,10 @@ def getObjects(start, end):
   return ids
 
 def syncnode(id):
+
+  if (debug):
+    pprint(targetS3)
+
   if id in done:
     #writelog(conf['logfile'],id)
     if (debug):
@@ -100,8 +104,6 @@ def syncnode(id):
   if (conf['main']['mode'] == 'blobstore'):
     spath="%s/%s/%s/%s/%s"%(conf['source']['endpoint'],id[0:2],id[2:4],id[4:6],id)
     dpath="%s/%s/%s/%s/%s"%(conf['destination']['endpoint'],id[0:2],id[2:4],id[4:6],id)
-
-  pprint(targetS3)
 
   print "syncing %s"%(id)
   # example from vadmin1:
