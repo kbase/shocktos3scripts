@@ -98,14 +98,13 @@ def syncnode(id):
 
   spath="%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id)
   dpath="%s/%s/%s"%(conf['destination']['endpoint'],conf['destination']['bucket'],id)
-  s3dpath="%s/%s/%s"%(conf['destination']['endpoint'],conf['destination']['bucket'],id)
+  s3dpath="%s/%s/%s"%(conf['destination']['endpoint'],id)
   if (conf['main']['mode'] == 'blobstore'):
     spath="%s/%s/%s/%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id[0:2],id[2:4],id[4:6],id)
     dpath="%s/%s/%s/%s/%s/%s"%(conf['destination']['endpoint'],conf['source']['bucket'],id[0:2],id[2:4],id[4:6],id)
-    s3dpath="%s/%s/%s/%s/%s"%(conf['destination']['bucket'],id[0:2],id[2:4],id[4:6],id)
+    s3dpath="%s/%s/%s/%s/%s"%(id[0:2],id[2:4],id[4:6],id)
 
   print "looking for %s at destination %s" % (id,s3dpath)
-  deststat = targetS3.head_object(Bucket=conf['destination']['bucket'],Key=s3dpath)
   try:
     deststat = targetS3.head_object(Bucket=conf['destination']['bucket'],Key=s3dpath)
     pprint("deststat is %s" % deststat)
