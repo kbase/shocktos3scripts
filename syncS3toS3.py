@@ -73,8 +73,8 @@ def getObjects(start, end):
 #bson.ObjectId.from_datetime(CONFIG_START_DATE)
 #    idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 
-#  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) , '$lt': bson.ObjectId.from_datetime(end)} }
-  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
+  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) , '$lt': bson.ObjectId.from_datetime(end)} }
+#  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
   pprint(idQuery)
  
   for object in db[conf['main']['mongo_collection']].find(idQuery):
