@@ -75,7 +75,7 @@ def getObjects(start, end):
 
   idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) , '$lt': bson.ObjectId.from_datetime(end)} }
   if (conf['main']['mode'] == 'blobstore'):
-    idQuery = {'time': {'$gt': start) , '$lt': end} }
+    idQuery = {'time': {'$gt': start , '$lt': end} }
 #  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
   pprint(idQuery)
  
