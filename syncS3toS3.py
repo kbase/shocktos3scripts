@@ -90,9 +90,6 @@ def getObjects(start, end):
 
 def syncnode(id):
 
-  if (debug):
-    pprint(targetS3)
-
   if id in done:
     #writelog(conf['logfile'],id)
     if (debug):
@@ -105,7 +102,19 @@ def syncnode(id):
     spath="%s/%s/%s/%s/%s"%(conf['source']['endpoint'],id[0:2],id[2:4],id[4:6],id)
     dpath="%s/%s/%s/%s/%s"%(conf['destination']['endpoint'],id[0:2],id[2:4],id[4:6],id)
 
-  print "syncing %s"%(id)
+  print "looking for %s at destination" % (id)
+  try:
+    deststat = s3.head_object(Bucket=conf['destination']['bucket'],Key=dpath)
+  except botocore.exceptions.ClientError as e:
+# if 404 not found, need to put
+    if '404' in e.message:
+      pass
+    else:
+# otherwise, something bad happened, raise a real exception
+      raise(e)
+  pprint(deststat)
+
+  print "copying %s to destination " % (id)
   # example from vadmin1:
   # assumes `minio` and `prod-ws01` are defined endpoints in ~/.mc/config.json
   # /opt/mc/mc cp minio/prod-ws/00/00/00/000000e7-0d44-494b-bd17-638f2a904329 prod-ws01.gcp/prod-ws01/00/00/00/000000e7-0d44-494b-bd17-638f2a904329
