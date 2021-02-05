@@ -134,7 +134,7 @@ def syncnode(id):
   if (conf['main'].getboolean('insecureminio') == True):
       comm=(conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
       # use echo for testing
-      comm=('echo',conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
+#      comm=('echo',conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
   result=call(comm)
   if result==0:
     writelog(conf['main']['logfile'],id)
