@@ -77,11 +77,8 @@ def getObjects(start):
   idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
  
   for object in db[conf['main']['mongo_collection']].find(idQuery):
-    id=object[conf['main']['mongo_keyfield']]
-    if (conf['main']['mode'] == 'blobstore'):
-        id=object[conf['main']['mongo_keyfield']].split(': u\'')[1].replace("'}\n",''))
 #    pprint(object)
-    ids.append(id)
+    ids.append(object[conf['main']['mongo_keyfield']])
     ct+=1
   return ids
 
@@ -93,7 +90,10 @@ def syncnode(id):
   # blobstore does not so need to convert
   spath="%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id)
   dpath="%s/%s/%s"%(conf['destination']['endpoint'],conf['destination']['bucket'],id)
- 
+  if (conf['main']['mode'] == 'blobstore'):
+    spath="%s/%s/%s/%s/%s"%(conf['source']['endpoint'],id[0:2],id[2:4],id[4:6],id)
+    dpath="%s/%s/%s/%s/%s"%(conf['destination']['endpoint'],id[0:2],id[2:4],id[4:6],id)
+
   print "syncing %s"%(id)
   # example from vadmin1:
   # assumes `minio` and `prod-ws01` are defined endpoints in ~/.mc/config.json
