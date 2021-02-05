@@ -102,7 +102,7 @@ def syncnode(id):
     spath="%s/%s/%s/%s/%s"%(conf['source']['endpoint'],id[0:2],id[2:4],id[4:6],id)
     dpath="%s/%s/%s/%s/%s"%(conf['destination']['endpoint'],id[0:2],id[2:4],id[4:6],id)
 
-  print "looking for %s at destination" % (id)
+  print "looking for %s at destination %s" % (id,dpath)
   try:
     deststat = targetS3.head_object(Bucket=conf['destination']['bucket'],Key=dpath)
     pprint("deststat is %s" % deststat)
