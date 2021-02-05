@@ -149,14 +149,15 @@ if __name__ == '__main__':
   # TODO append retry to objectList
   for item in retry:
     objectList.append(item)
+
+  print >> sys.stderr, 'start=%s'%(start)
+  print >> sys.stderr, 'end=%s'%(end)
+
   print >> sys.stderr, 'ct=%d'%(len(objectList))
   if int(conf['main']['resetlog'])==1:
     initlog(conf['main']['logfile'])  
 
   initlog(conf['main']['retryfile'])
-
-  print >> sys.stderr, 'start=%s'%(start)
-  print >> sys.stderr, 'end=%s'%(end)
 
   pool = Pool(processes=int(conf['main']['nthreads']))
   results=pool.map(syncnode, objectList)
