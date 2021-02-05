@@ -104,7 +104,7 @@ def syncnode(id):
 
   print "looking for %s at destination" % (id)
   try:
-    deststat = s3.head_object(Bucket=conf['destination']['bucket'],Key=dpath)
+    deststat = targetS3.head_object(Bucket=conf['destination']['bucket'],Key=dpath)
   except botocore.exceptions.ClientError as e:
 # if 404 not found, need to put
     if '404' in e.message:
