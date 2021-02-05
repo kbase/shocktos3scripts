@@ -77,8 +77,11 @@ def getObjects(start):
   idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
  
   for object in db[conf['main']['mongo_collection']].find(idQuery):
+    id=object[conf['main']['mongo_keyfield']]
+    if (conf['main']['mode'] == 'blobstore'):
+        id=object[conf['main']['mongo_keyfield']].split(': u\'')[1].replace("'}\n",''))
 #    pprint(object)
-    ids.append(object[conf['main']['mongo_keyfield']]) #.split(': u\'')[1].replace("'}\n",''))
+    ids.append(id)
     ct+=1
   return ids
 
