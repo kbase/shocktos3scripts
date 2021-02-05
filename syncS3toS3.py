@@ -99,6 +99,8 @@ def syncnode(id):
     spath="%s/%s/%s/%s/%s"%(conf['source']['endpoint'],id[0:2],id[2:4],id[4:6],id)
     dpath="%s/%s/%s/%s/%s"%(conf['destination']['endpoint'],id[0:2],id[2:4],id[4:6],id)
 
+  pprint(targetS3)
+
   print "syncing %s"%(id)
   # example from vadmin1:
   # assumes `minio` and `prod-ws01` are defined endpoints in ~/.mc/config.json
