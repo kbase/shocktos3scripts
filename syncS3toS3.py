@@ -9,6 +9,7 @@ To do:
   * better and more organized logging
   * make it possible to use same config file for ws/blobstore?
   * replace calling mc binary with making native python calls?
+    * currently mc stdout goes to the script stdout, which is a bit messy
   * support ws/blobstore mode (done)
   * check for target object and skip if exists (done)
     * verify MD5 too?
