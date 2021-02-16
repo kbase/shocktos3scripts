@@ -77,8 +77,8 @@ CONFIG_MONGO_BLOBSTORE_PWD = conf['blobstore']['mongo_pwd']
 
 CONFIG_S3_ENDPOINT = conf['s3']['endpoint']
 CONFIG_S3_BUCKET = conf['s3']['blobstore_bucket']
-CONFIG_S3_ACCESS_KEY = conf['s3']['access_key']
-CONFIG_S3_SECRET_KEY = conf['s3']['secret_key']
+CONFIG_S3_ACCESS_KEY = conf['s3']['blobstore_access_key']
+CONFIG_S3_SECRET_KEY = conf['s3']['blobstore_secret_key']
 CONFIG_S3_REGION = conf['s3']['region']
 
 CONFIG_BATCH_SIZE = 10000
