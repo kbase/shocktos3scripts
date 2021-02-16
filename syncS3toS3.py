@@ -85,7 +85,8 @@ def getObjects(start, end):
   if (conf['main']['mode'] == 'blobstore'):
     idQuery = {'time': {'$gt': start , '$lt': end} }
 #  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
-  pprint(idQuery,stream=sys.stderr)
+  if (debug):
+    pprint(idQuery,stream=sys.stderr)
  
   for object in db[conf['main']['mongo_collection']].find(idQuery):
 #    pprint(object)
