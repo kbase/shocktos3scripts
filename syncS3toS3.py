@@ -118,12 +118,12 @@ def syncnode(id):
   except botocore.exceptions.ClientError as e:
 # if 404 not found, need to put
     if ('404' in e.message and debug):
-      pprint("%s not found at destination %s" % (id, s3dpath), sys.stderr)
+      pprint("%s not found at destination %s" % (id, s3dpath), stream=sys.stderr)
     else:
 # otherwise, something bad happened, raise a real exception
       raise(e)
   if ('ETag' in deststat and debug):
-    pprint ("%s found at destination %s with ETag %s, skipping" % (id, s3dpath, deststat['ETag']))
+    pprint ("%s found at destination %s with ETag %s, skipping" % (id, s3dpath, deststat['ETag']), stream=sys.stderr)
     writelog(conf['main']['logfile'],id)
     return 0
 
@@ -200,7 +200,7 @@ if __name__ == '__main__':
   for item in retry:
     objectList.append(item)
 
-  pprint ('object count = %d'%(len(objectList)) , stream=sys.stderr)
+  pprint ('objectcount = %d'%(len(objectList)) , stream=sys.stderr)
   if int(conf['main']['resetlog'])==1:
     initlog(conf['main']['logfile'])  
 
