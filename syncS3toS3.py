@@ -118,7 +118,7 @@ def syncnode(id):
   except botocore.exceptions.ClientError as e:
 # if 404 not found, need to put
     if ('404' in e.message and debug):
-      pprint("%s not found at destination %s" % (id, s3dpath))
+      pprint("%s not found at destination %s" % (id, s3dpath), sys.stderr)
     else:
 # otherwise, something bad happened, raise a real exception
       raise(e)
