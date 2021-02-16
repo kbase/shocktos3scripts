@@ -217,5 +217,6 @@ if __name__ == '__main__':
     if result:
       failed+=1
   pprint("failed = %d"%(failed) , stream=sys.stderr)
+  pprint("==========" , stream=sys.stderr)
     
   writedatefile(conf['main']['datefile'],now)
