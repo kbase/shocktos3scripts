@@ -192,8 +192,8 @@ if __name__ == '__main__':
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
 
-  pprint ('start=%s'%(start) , stream=sys.stderr)
-  pprint ('end=%s'%(end) , stream=sys.stderr)
+  pprint ('start = %s'%(start) , stream=sys.stderr)
+  pprint ('end = %s'%(end) , stream=sys.stderr)
 
   if debug:
     pprint("querying mongo", stream=sys.stderr)
@@ -214,6 +214,6 @@ if __name__ == '__main__':
   for result in results:
     if result:
       failed+=1
-  pprint("failed: %d"%(failed) , stream=sys.stderr)
+  pprint("failed = %d"%(failed) , stream=sys.stderr)
     
   writedatefile(conf['main']['datefile'],now)
