@@ -7,6 +7,7 @@ S3 to S3 sync instead.
 To do:
   * better documentation of config file
   * make it possible to use same config file for ws/blobstore?
+  * replace calling mc binary with making native python calls?
   * support ws/blobstore mode (done)
   * check for target object and skip if exists (done)
     * verify MD5 too?
