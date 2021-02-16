@@ -5,12 +5,13 @@ This is a beta version modifying our existing synctool.py for Shock sync to do
 S3 to S3 sync instead.
 
 To do:
+  * better documentation of config file
+  * make it possible to use same config file for ws/blobstore?
   * support ws/blobstore mode (done)
-  * check for target object and skip if exists
+  * check for target object and skip if exists (done)
     * verify MD5 too?
-    * make a cmdline/config option
+    * make a cmdline/config option?
   * add support for end date (done)
-  * better documentation of files used
 '''
 
 import os
