@@ -5,7 +5,8 @@ This is a beta version modifying our existing synctool.py for Shock sync to do
 S3 to S3 sync instead.
 
 To do:
-  * better documentation of config file
+  * better documentation of config file (see syncS3ws.ini in this repo)
+  * better and more organized logging
   * make it possible to use same config file for ws/blobstore?
   * replace calling mc binary with making native python calls?
   * support ws/blobstore mode (done)
