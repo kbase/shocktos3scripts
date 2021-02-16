@@ -12,7 +12,7 @@ To do:
   * support ws/blobstore mode (done)
   * check for target object and skip if exists (done)
     * verify MD5 too?
-    * make a cmdline/config option?
+    * make a cmdline/config option (in case don't want to spend money and read ops on remote S3)
   * add support for end date (done)
 '''
 
