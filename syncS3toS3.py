@@ -85,7 +85,7 @@ def getObjects(start, end):
   if (conf['main']['mode'] == 'blobstore'):
     idQuery = {'time': {'$gt': start , '$lt': end} }
 #  idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(start) } }
-  pprint(idQuery)
+  pprint(idQuery,stream=sys.stderr)
  
   for object in db[conf['main']['mongo_collection']].find(idQuery):
 #    pprint(object)
@@ -98,7 +98,7 @@ def syncnode(id):
   if id in done:
     #writelog(conf['logfile'],id)
     if (debug):
-      pprint ("%s found in log, skipping" % (id))
+      pprint ("%s found in log, skipping" % (id), stream=sys.stderr)
     return 0
 
   spath="%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id)
@@ -110,14 +110,14 @@ def syncnode(id):
     s3dpath="%s/%s/%s/%s"%(id[0:2],id[2:4],id[4:6],id)
 
   if (debug):
-    print "looking for %s at destination %s" % (id,s3dpath)
+    pprint ("looking for %s at destination %s" % (id,s3dpath) , stream=sys.stderr)
   deststat = dict()
   try:
     deststat = targetS3.head_object(Bucket=conf['destination']['bucket'],Key=s3dpath)
 #    pprint("deststat is %s" % deststat)
   except botocore.exceptions.ClientError as e:
 # if 404 not found, need to put
-    if '404' in e.message:
+    if ('404' in e.message and debug):
       pprint("%s not found at destination %s" % (id, s3dpath))
     else:
 # otherwise, something bad happened, raise a real exception
@@ -166,7 +166,7 @@ if __name__ == '__main__':
   if os.path.exists(conf['main']['datefile']):
     startString=readdatefile(conf['main']['datefile'])
   else:
-    print "Warning: no datefile.  Using now."
+    pprint("Warning: no datefile.  Using now." , stream=sys.stderr)
     startString=now
 # datetime.datetime.strptime("2007-03-04T21:08:12Z", "%Y-%m-%dT%H:%M:%SZ")
   start = datetime.datetime.strptime(startString,"%Y-%m-%dT%H:%M:%S.%f")
@@ -190,17 +190,17 @@ if __name__ == '__main__':
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
 
-  print >> sys.stderr, 'start=%s'%(start)
-  print >> sys.stderr, 'end=%s'%(end)
+  pprint ('start=%s'%(start) , stream=sys.stderr)
+  pprint ('end=%s'%(end) , stream=sys.stderr)
 
   if debug:
-    print "querying mongo"
+    pprint("querying mongo", stream=sys.stderr)
   objectList=getObjects(start, end)
   # TODO append retry to objectList
   for item in retry:
     objectList.append(item)
 
-  print >> sys.stderr, 'ct=%d'%(len(objectList))
+  pprint ('object count = %d'%(len(objectList)) , stream=sys.stderr)
   if int(conf['main']['resetlog'])==1:
     initlog(conf['main']['logfile'])  
 
@@ -212,6 +212,6 @@ if __name__ == '__main__':
   for result in results:
     if result:
       failed+=1
-  print "failed: %d"%(failed)
+  pprint("failed: %d"%(failed) , stream=sys.stderr)
     
   writedatefile(conf['main']['datefile'],now)
