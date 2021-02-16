@@ -128,7 +128,7 @@ def syncnode(id):
     return 0
 
   if (debug):
-    print "copying %s to destination " % (id)
+    pprint ("copying %s to destination " % (id) , stream=sys.stderr)
   # example from vadmin1:
   # assumes `minio` and `prod-ws01` are defined endpoints in ~/.mc/config.json
   # /opt/mc/mc cp minio/prod-ws/00/00/00/000000e7-0d44-494b-bd17-638f2a904329 prod-ws01.gcp/prod-ws01/00/00/00/000000e7-0d44-494b-bd17-638f2a904329
