@@ -146,6 +146,7 @@ def syncnode(id):
   if result==0:
     writelog(conf['main']['logfile'],id)
   else:
+    pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
     writelog(conf['main']['retryfile'],id)
    
   return result 
