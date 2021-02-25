@@ -180,9 +180,9 @@ if __name__ == '__main__':
     start = datetime.datetime.strptime(args.startdate,"%Y-%m-%dT%H:%M:%S.%f")
   if (args.enddate):
     end = datetime.datetime.strptime(args.enddate,"%Y-%m-%dT%H:%M:%S.%f")
-  sslVerify = true
+  sslVerify = True
   if ('insecuredest' in keys(conf['main']) and conf['main']['insecuredest'] is True):
-    sslVerify = false
+    sslVerify = False
 
   readlog(conf['main']['logfile'],done)
   readlog(conf['main']['retryfile'],retry)
