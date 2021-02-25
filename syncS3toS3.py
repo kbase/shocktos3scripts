@@ -181,7 +181,7 @@ if __name__ == '__main__':
   if (args.enddate):
     end = datetime.datetime.strptime(args.enddate,"%Y-%m-%dT%H:%M:%S.%f")
   sslVerify = true
-  if ('insecuredest' in keys(conf['main'] and conf['main']['insecuredest'] is True):
+  if ('insecuredest' in keys(conf['main']) and conf['main']['insecuredest'] is True):
     sslVerify = false
 
   readlog(conf['main']['logfile'],done)
