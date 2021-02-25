@@ -181,7 +181,7 @@ if __name__ == '__main__':
   if (args.enddate):
     end = datetime.datetime.strptime(args.enddate,"%Y-%m-%dT%H:%M:%S.%f")
   sslVerify = True
-  if ('insecuredest' in conf['main'].keys() and conf['main']['insecuredest'] == True):
+  if ('insecuredest' in conf['main'].keys() and conf['main']['insecuredest'] == 1):
     sslVerify = False
 
   readlog(conf['main']['logfile'],done)
@@ -189,6 +189,9 @@ if __name__ == '__main__':
 
   if int(conf['main']['debug'])==1:
     debug=1
+
+  if debug:
+    pprint('sslVerify = ' + str(sslVerify))
 
   targetS3 = boto3.client(
         's3',
