@@ -126,8 +126,9 @@ def syncnode(id):
     else:
 # otherwise, something bad happened, raise a real exception
       raise(e)
-  if ('ETag' in deststat and debug):
-    pprint ("%s found at destination %s with ETag %s, skipping" % (id, s3dpath, deststat['ETag']), stream=sys.stderr)
+  if ('ETag' in deststat):
+    if (debug):
+      pprint ("%s found at destination %s with ETag %s, skipping" % (id, s3dpath, deststat['ETag']), stream=sys.stderr)
     writelog(conf['main']['logfile'],id)
     return 0
 
