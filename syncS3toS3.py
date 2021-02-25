@@ -180,6 +180,10 @@ if __name__ == '__main__':
     start = datetime.datetime.strptime(args.startdate,"%Y-%m-%dT%H:%M:%S.%f")
   if (args.enddate):
     end = datetime.datetime.strptime(args.enddate,"%Y-%m-%dT%H:%M:%S.%f")
+  sslVerify = true
+  if ('insecuredest' in keys(conf['main'] and conf['main']['insecuredest'] is True):
+    sslVerify = false
+
   readlog(conf['main']['logfile'],done)
   readlog(conf['main']['retryfile'],retry)
 
@@ -192,7 +196,8 @@ if __name__ == '__main__':
         aws_access_key_id=conf['destination']['accessKey'],
         aws_secret_access_key=conf['destination']['secretKey'],
         region_name=conf['destination']['region'],
-        config=bcfg.Config(s3={'addressing_style': 'path'})
+        config=bcfg.Config(s3={'addressing_style': 'path'}),
+	verify=sslVerify
     )
 
   pprint ('start = %s'%(start) , stream=sys.stderr)
