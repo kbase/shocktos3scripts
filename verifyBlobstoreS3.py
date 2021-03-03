@@ -81,6 +81,10 @@ CONFIG_S3_ACCESS_KEY = conf['s3']['blobstore_access_key']
 CONFIG_S3_SECRET_KEY = conf['s3']['blobstore_secret_key']
 CONFIG_S3_REGION = conf['s3']['region']
 
+CONFIG_S3_VERIFYCERT = True
+if int(conf['s3']['insecurecert']) == 1:
+    CONFIG_S3_VERIFYCERT = False
+
 CONFIG_BATCH_SIZE = 10000
 
 #### END CONFIGURATION VARIABLES ####
@@ -105,6 +109,7 @@ def main():
         aws_access_key_id=CONFIG_S3_ACCESS_KEY,
         aws_secret_access_key=CONFIG_S3_SECRET_KEY,
         region_name=CONFIG_S3_REGION,
+	verify=CONFIG_S3_VERIFYCERT,
         config=bcfg.Config(s3={'addressing_style': 'path'})
     )
 
