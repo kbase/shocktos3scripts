@@ -185,6 +185,8 @@ if __name__ == '__main__':
 #  if ('insecuredest' in conf['main'].keys() and conf['main']['insecuredest'] == 1):
   if int(conf['main']['insecuredest']) == 1:
     sslVerify = False
+    import botocore.vendored.requests.packages.urllib3 as urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
   readlog(conf['main']['logfile'],done)
   readlog(conf['main']['retryfile'],retry)
