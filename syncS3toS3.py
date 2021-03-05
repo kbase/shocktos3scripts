@@ -109,7 +109,7 @@ def syncnode(id):
   s3dpath=id
   if (conf['main']['mode'] == 'blobstore'):
     spath="%s/%s/%s/%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id[0:2],id[2:4],id[4:6],id)
-    dpath="%s/%s/%s/%s/%s/%s"%(conf['destination']['endpoint'],conf['source']['bucket'],id[0:2],id[2:4],id[4:6],id)
+    dpath="%s/%s/%s/%s/%s/%s"%(conf['destination']['endpoint'],conf['destination']['bucket'],id[0:2],id[2:4],id[4:6],id)
     s3dpath="%s/%s/%s/%s"%(id[0:2],id[2:4],id[4:6],id)
 
   if (debug):
