@@ -130,7 +130,7 @@ def syncnode(id):
     return 0
 
   if (debug):
-    pprint ("looking for %s at source %s" % (id,conf['source']['url']) , stream=sys.stderr)
+    pprint ("looking for %s at source %s" % (objectPath,conf['source']['url']) , stream=sys.stderr)
 
   try:
     sourceObject = sourceS3.get_object(
