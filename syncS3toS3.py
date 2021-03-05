@@ -104,55 +104,67 @@ def syncnode(id):
       pprint ("%s found in log, skipping" % (id), stream=sys.stderr)
     return 0
 
-  spath="%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id)
-  dpath="%s/%s/%s"%(conf['destination']['endpoint'],conf['destination']['bucket'],id)
-  s3dpath=id
+  objectPath=id
   if (conf['main']['mode'] == 'blobstore'):
-    spath="%s/%s/%s/%s/%s/%s"%(conf['source']['endpoint'],conf['source']['bucket'],id[0:2],id[2:4],id[4:6],id)
-    dpath="%s/%s/%s/%s/%s/%s"%(conf['destination']['endpoint'],conf['destination']['bucket'],id[0:2],id[2:4],id[4:6],id)
-    s3dpath="%s/%s/%s/%s"%(id[0:2],id[2:4],id[4:6],id)
+    objectPath="%s/%s/%s/%s"%(id[0:2],id[2:4],id[4:6],id)
 
   if (debug):
-    pprint ("looking for %s at destination %s" % (id,s3dpath) , stream=sys.stderr)
+    pprint ("looking for %s at destination %s" % (id,objectPath) , stream=sys.stderr)
   deststat = dict()
   try:
-    deststat = targetS3.head_object(Bucket=conf['destination']['bucket'],Key=s3dpath)
-    if (debug):
-      pprint("deststat is %s" % deststat)
+    deststat = destS3.head_object(Bucket=conf['destination']['bucket'],Key=objectPath)
+#    if (debug):
+#      pprint("deststat is %s" % deststat)
   except botocore.exceptions.ClientError as e:
 # if 404 not found, need to put
     if ('404' in e.message):
       if (debug):
-        pprint("%s not found at destination %s"%(id, s3dpath) , stream=sys.stderr)
+        pprint("%s not found at destination %s"%(id, objectPath) , stream=sys.stderr)
     else:
 # otherwise, something bad happened, raise a real exception
       raise(e)
   if ('ETag' in deststat):
     if (debug):
-      pprint ("%s found at destination %s with ETag %s, skipping" % (id, s3dpath, deststat['ETag']), stream=sys.stderr)
+      pprint ("%s found at destination %s with ETag %s, skipping" % (id, objectPath, deststat['ETag']), stream=sys.stderr)
     writelog(conf['main']['logfile'],id)
     return 0
 
+  try:
+    sourceObject = sourceS3.get_object(
+      Bucket=conf['source']['bucket'],
+      Key=objectPath
+    )
+  except botocore.exceptions.ClientError as e:
+# if 404 not found, just skip, likely bad Shock node
+    if ('404' in e.message):
+      if (debug):
+        pprint("%s not found at source %s, skipping" % (id, conf['source']['url']) , stream=sys.stderr)
+      return 0
+    else:
+# otherwise, something bad happened, raise a real exception
+      raise(e)
+
   if (debug):
-    pprint ("copying %s to destination %s" % (id,dpath) , stream=sys.stderr)
-  # example from vadmin1:
-  # assumes `minio` and `prod-ws01` are defined endpoints in ~/.mc/config.json
-  # /opt/mc/mc cp minio/prod-ws/00/00/00/000000e7-0d44-494b-bd17-638f2a904329 prod-ws01.gcp/prod-ws01/00/00/00/000000e7-0d44-494b-bd17-638f2a904329
-  comm=(conf['main']['mcpath'],'--quiet','cp',spath,dpath)
-# use echo for testing
-  #comm=('echo',conf['main']['mcpath'],'--quiet','cp',spath,dpath)
-  if (conf['main'].getboolean('insecureminio') == True):
-      comm=(conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
-      # use echo for testing
-      # comm=('echo',conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
-  if (int(debug) > 4):
-    pprint ("command is '%s'" % comm, stream=sys.stderr)
-  result=call(comm)
-  if result==0:
+    pprint ("copying %s to destination %s %s" % (id,conf['destination']['url'],objectPath) , stream=sys.stderr)
+
+  return 0
+
+  try:
+    destResult = destS3.put_object(
+      Bucket=conf['destination']['bucket'],
+      Key=objectId,
+      Body=sourceObject['Body'].read(),
+      Metadata=sourceObject['Metadata']
+    )
     writelog(conf['main']['logfile'],id)
-  else:
+    result = 0
+  except botocore.exceptions.ClientError as e:
+    # not sure what to do here yet
+    pprint(e.message)
     pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
     writelog(conf['main']['retryfile'],id)
+    result = 1
+#    raise(e)
    
   return result 
 
@@ -184,10 +196,15 @@ if __name__ == '__main__':
     start = datetime.datetime.strptime(args.startdate,"%Y-%m-%dT%H:%M:%S.%f")
   if (args.enddate):
     end = datetime.datetime.strptime(args.enddate,"%Y-%m-%dT%H:%M:%S.%f")
-  sslVerify = True
-#  if ('insecuredest' in conf['main'].keys() and conf['main']['insecuredest'] == 1):
-  if int(conf['main']['insecuredest']) == 1:
-    sslVerify = False
+  sslVerifySource = True
+  sslVerifyDest = True
+
+  if int(conf['source']['insecure']) == 1:
+    sslVerifySource = False
+    import botocore.vendored.requests.packages.urllib3 as urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+  if int(conf['destination']['insecure']) == 1:
+    sslVerifyDest = False
     import botocore.vendored.requests.packages.urllib3 as urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -198,16 +215,26 @@ if __name__ == '__main__':
     debug=1
 
   if debug:
-    pprint('sslVerify = ' + str(sslVerify), stream=sys.stderr)
+    pprint('sslVerifySource = %s , sslVerifyDest = %s' % (str(sslVerifySource),str(sslVerifyDest), stream=sys.stderr)
 
-  targetS3 = boto3.client(
+  sourceS3 = boto3.client(
+        's3',
+        endpoint_url=conf['source']['url'],
+        aws_access_key_id=conf['source']['accessKey'],
+        aws_secret_access_key=conf['source']['secretKey'],
+        region_name=conf['source']['region'],
+        config=bcfg.Config(s3={'addressing_style': 'path'}),
+	verify=sslVerifySource
+    )
+
+  destS3 = boto3.client(
         's3',
         endpoint_url=conf['destination']['url'],
         aws_access_key_id=conf['destination']['accessKey'],
         aws_secret_access_key=conf['destination']['secretKey'],
         region_name=conf['destination']['region'],
         config=bcfg.Config(s3={'addressing_style': 'path'}),
-	verify=sslVerify
+	verify=sslVerifyDest
     )
 
   pprint ('start = %s'%(start) , stream=sys.stderr)
