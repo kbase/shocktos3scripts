@@ -137,6 +137,8 @@ def syncnode(id):
       Bucket=conf['source']['bucket'],
       Key=objectPath
     )
+    if (debug):
+      pprint(sourceObject)
   except botocore.exceptions.ClientError as e:
 # if 404 not found, just skip, likely bad Shock node
     if ('404' in e.message):
