@@ -146,7 +146,7 @@ def syncnode(id):
       # use echo for testing
       comm=('echo',conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
   if (int(debug) > 4):
-    pprint ("command is '%s'" % comm), stream=sys.stderr)
+    pprint ("command is '%s'" % comm, stream=sys.stderr)
   result=call(comm)
   if result==0:
     writelog(conf['main']['logfile'],id)
