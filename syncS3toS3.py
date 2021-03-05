@@ -140,7 +140,7 @@ def syncnode(id):
   # /opt/mc/mc cp minio/prod-ws/00/00/00/000000e7-0d44-494b-bd17-638f2a904329 prod-ws01.gcp/prod-ws01/00/00/00/000000e7-0d44-494b-bd17-638f2a904329
   comm=(conf['main']['mcpath'],'--quiet','cp',spath,dpath)
 # use echo for testing
-  if (debug > 4):
+  if (int(debug) > 4):
     comm=('echo',conf['main']['mcpath'],'--quiet','cp',spath,dpath)
   if (conf['main'].getboolean('insecureminio') == True):
       comm=(conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
