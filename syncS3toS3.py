@@ -129,6 +129,9 @@ def syncnode(id):
     writelog(conf['main']['logfile'],id)
     return 0
 
+  if (debug):
+    pprint ("looking for %s at source %s" % (id,conf['source']['url']) , stream=sys.stderr)
+
   try:
     sourceObject = sourceS3.get_object(
       Bucket=conf['source']['bucket'],
