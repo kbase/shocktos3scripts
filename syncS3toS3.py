@@ -144,7 +144,7 @@ def syncnode(id):
   if (conf['main'].getboolean('insecureminio') == True):
       comm=(conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
       # use echo for testing
-      comm=('echo',conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
+      # comm=('echo',conf['main']['mcpath'],'--quiet','--insecure','cp',spath,dpath)
   if (int(debug) > 4):
     pprint ("command is '%s'" % comm, stream=sys.stderr)
   result=call(comm)
