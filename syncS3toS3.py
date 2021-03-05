@@ -215,7 +215,7 @@ if __name__ == '__main__':
     debug=1
 
   if debug:
-    pprint('sslVerifySource = %s , sslVerifyDest = %s' % (str(sslVerifySource),str(sslVerifyDest), stream=sys.stderr)
+    pprint('sslVerifySource = %s , sslVerifyDest = %s' % (str(sslVerifySource),str(sslVerifyDest)), stream=sys.stderr)
 
   sourceS3 = boto3.client(
         's3',
