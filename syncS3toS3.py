@@ -140,8 +140,7 @@ def syncnode(id):
   except botocore.exceptions.ClientError as e:
 # if 404 not found, just skip, likely bad Shock node
     if ('404' in e.message):
-      if (debug):
-        pprint("%s not found at source %s, skipping" % (id, conf['source']['url']) , stream=sys.stderr)
+      pprint("%s not found at source %s, skipping" % (id, conf['source']['url']) , stream=sys.stderr)
       return 0
     else:
 # otherwise, something bad happened, raise a real exception
