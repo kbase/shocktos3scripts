@@ -189,7 +189,7 @@ def syncnode(id):
     pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
     writelog(conf['main']['retryfile'],id)
     result = 1
-#    raise(e)
+    raise(e)
    
   return result 
 
