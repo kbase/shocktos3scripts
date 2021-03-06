@@ -164,7 +164,7 @@ def syncnode(id):
   try:
     destResult = destS3.put_object(
       Bucket=conf['destination']['bucket'],
-      Key=objectId,
+      Key=objectPath,
       Body=sourceObject['Body'].read(),
       Metadata=sourceObject['Metadata']
     )
