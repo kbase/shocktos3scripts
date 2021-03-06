@@ -175,12 +175,12 @@ def syncnode(id):
 #      Config=transferConfig
 #    )
 
-   destResult = destS3.put_object(
-     Bucket=conf['destination']['bucket'],
-     Key=objectPath,
-     Body=sourceObject['Body'].read(),
-     Metadata=sourceObject['Metadata']
-   )
+    destResult = destS3.put_object(
+      Bucket=conf['destination']['bucket'],
+      Key=objectPath,
+      Body=sourceObject['Body'].read(),
+      Metadata=sourceObject['Metadata']
+    )
     writelog(conf['main']['logfile'],id)
     result = 0
   except botocore.exceptions.ClientError as e:
