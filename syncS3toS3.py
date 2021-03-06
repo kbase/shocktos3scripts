@@ -167,11 +167,12 @@ def syncnode(id):
 #  return 0
 
   try:
-    destResult = destTransferClient.upload_fileobj(
+    destResult = destS3.upload_fileobj(
       sourceObject['Body'],
       conf['destination']['bucket'],
       objectPath,
-      ExtraArgs={ 'Metadata': sourceObject['Metadata'] }
+      ExtraArgs={ 'Metadata': sourceObject['Metadata']},
+      Config=transferConfig
     )
 
 #   destResult = destS3.put_object(
@@ -265,7 +266,6 @@ if __name__ == '__main__':
         max_concurrency=10,
         num_download_attempts=10,
     )
-  destTransferClient = boto3.s3.transfer.S3Transfer(destS3, transferConfig)
 
   pprint ('start = %s'%(start) , stream=sys.stderr)
   pprint ('end = %s'%(end) , stream=sys.stderr)
