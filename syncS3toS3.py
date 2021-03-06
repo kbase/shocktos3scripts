@@ -133,7 +133,7 @@ def syncnode(id):
     pprint ("looking for %s at source %s" % (objectPath,conf['source']['url']) , stream=sys.stderr)
 
   try:
-    sourceObject = sourceS3.get_object(
+    sourceObject = sourceS3.head_object(
       Bucket=conf['source']['bucket'],
       Key=objectPath
     )
