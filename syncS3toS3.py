@@ -110,9 +110,9 @@ def syncnode(id):
 
   if (debug):
     pprint ("looking for %s at destination %s" % (id,objectPath) , stream=sys.stderr)
-  deststat = dict()
+  destStat = dict()
   try:
-    deststat = destS3.head_object(Bucket=conf['destination']['bucket'],Key=objectPath)
+    destStat = destS3.head_object(Bucket=conf['destination']['bucket'],Key=objectPath)
 #    if (debug):
 #      pprint("deststat is %s" % deststat)
   except botocore.exceptions.ClientError as e:
@@ -123,9 +123,9 @@ def syncnode(id):
     else:
 # otherwise, something bad happened, raise a real exception
       raise(e)
-  if ('ETag' in deststat):
+  if ('ETag' in destStat):
     if (debug):
-      pprint ("%s found at destination %s with ETag %s, skipping" % (id, objectPath, deststat['ETag']), stream=sys.stderr)
+      pprint ("%s found at destination %s with ETag %s, skipping" % (id, objectPath, destStat['ETag']), stream=sys.stderr)
     writelog(conf['main']['logfile'],id)
     return 0
 
@@ -133,12 +133,10 @@ def syncnode(id):
     pprint ("looking for %s at source %s" % (objectPath,conf['source']['url']) , stream=sys.stderr)
 
   try:
-    sourceObject = sourceS3.head_object(
+    sourceStat = sourceS3.head_object(
       Bucket=conf['source']['bucket'],
       Key=objectPath
     )
-    if (debug):
-      pprint(sourceObject)
   except botocore.exceptions.ClientError as e:
 # if 404 not found, just skip, likely bad Shock node
     if ('404' in e.message):
@@ -151,6 +149,14 @@ def syncnode(id):
 
   if (debug):
     pprint ("copying %s to destination %s %s" % (id,conf['destination']['url'],objectPath) , stream=sys.stderr)
+
+  try:
+    sourceObject = sourceS3.get_object(
+      Bucket=conf['source']['bucket'],
+      Key=objectPath
+    )
+  except botocore.exceptions.ClientError as e:
+      raise(e)
 
   return 0
 
