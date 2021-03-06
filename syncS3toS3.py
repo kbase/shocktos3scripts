@@ -149,7 +149,7 @@ def syncnode(id):
   if (debug):
     pprint ("copying %s (size %d) to destination %s %s" % (id,sourceStat['ContentLength'],conf['destination']['url'],objectPath) , stream=sys.stderr)
   if (int(sourceStat['ContentLength']) > 20000000000):
-    pprint ("object %s is huge, size %d, skipping" % (id,sourceStat['ContentLength']) , stream=sys.stdout)
+    pprint ("object %s is huge, size %d, skipping" % (id,sourceStat['ContentLength']) )
     return 1
 
   try:
