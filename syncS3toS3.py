@@ -184,7 +184,7 @@ def syncnode(id):
     result = 0
   except botocore.exceptions.ClientError as e:
     # not sure what to do here yet
-    pprint(e.message)
+    pprint(e.message, stream=sys.stderr)
     pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
     writelog(conf['main']['retryfile'],id)
     result = 1
