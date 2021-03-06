@@ -167,7 +167,7 @@ def syncnode(id):
 #  return 0
 
   try:
-    destResult = destS3.upload_fileobj(
+    destResult = destTransferClient.upload_fileobj(
       sourceObject['Body'],
       conf['destination']['bucket'],
       objectPath,
@@ -260,6 +260,12 @@ if __name__ == '__main__':
         config=bcfg.Config(s3={'addressing_style': 'path'}),
 	verify=sslVerifyDest
     )
+  transferConfig=boto3.s3.transfer.TransferConfig(
+        multipart_threshold=9999999999999999,
+        max_concurrency=10,
+        num_download_attempts=10,
+    )
+  destTransferClient = boto3.s3.transfer.S3Transfer(destS3, transferConfig)
 
   pprint ('start = %s'%(start) , stream=sys.stderr)
   pprint ('end = %s'%(end) , stream=sys.stderr)
