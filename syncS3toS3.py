@@ -147,7 +147,7 @@ def syncnode(id):
       raise(e)
 
   if (debug):
-    pprint ("copying %s to destination %s %s" % (id,conf['destination']['url'],objectPath) , stream=sys.stderr)
+    pprint ("copying %s (size %d) to destination %s %s" % (id,sourceStat['ContentLength'],conf['destination']['url'],objectPath) , stream=sys.stderr)
 
   try:
     sourceObject = sourceS3.get_object(
