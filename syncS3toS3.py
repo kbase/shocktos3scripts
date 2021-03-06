@@ -167,20 +167,20 @@ def syncnode(id):
 #  return 0
 
   try:
-    destResult = destS3.upload_fileobj(
-      sourceObject['Body'],
-      conf['destination']['bucket'],
-      objectPath,
-      ExtraArgs={ 'Metadata': sourceObject['Metadata']},
-      Config=transferConfig
-    )
+#    destResult = destS3.upload_fileobj(
+#      sourceObject['Body'],
+#      conf['destination']['bucket'],
+#      objectPath,
+#      ExtraArgs={ 'Metadata': sourceObject['Metadata']},
+#      Config=transferConfig
+#    )
 
-#   destResult = destS3.put_object(
-#     Bucket=conf['destination']['bucket'],
-#     Key=objectPath,
-#     Body=sourceObject['Body'].read(),
-#     Metadata=sourceObject['Metadata']
-#   )
+   destResult = destS3.put_object(
+     Bucket=conf['destination']['bucket'],
+     Key=objectPath,
+     Body=sourceObject['Body'].read(),
+     Metadata=sourceObject['Metadata']
+   )
     writelog(conf['main']['logfile'],id)
     result = 0
   except botocore.exceptions.ClientError as e:
@@ -189,7 +189,7 @@ def syncnode(id):
     pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
     writelog(conf['main']['retryfile'],id)
     result = 1
-    raise(e)
+#    raise(e)
    
   return result 
 
