@@ -261,8 +261,9 @@ if __name__ == '__main__':
         config=bcfg.Config(s3={'addressing_style': 'path'}),
 	verify=sslVerifyDest
     )
+#        multipart_threshold=99999999999,
   transferConfig=boto3.s3.transfer.TransferConfig(
-        multipart_threshold=99999999999,
+        multipart_threshold=9999999999,
         max_concurrency=10,
         num_download_attempts=10,
     )
