@@ -264,9 +264,9 @@ if __name__ == '__main__':
     )
 #        multipart_threshold=99999999999,
   transferConfig=boto3.s3.transfer.TransferConfig(
-        multipart_threshold=8388608,
-        max_concurrency=10,
-        num_download_attempts=10,
+        multipart_threshold=67108864,
+        max_concurrency=1,
+        num_download_attempts=1,
     )
 
   pprint ('start = %s'%(start) , stream=sys.stderr)
