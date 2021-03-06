@@ -158,7 +158,8 @@ def syncnode(id):
   except botocore.exceptions.ClientError as e:
       raise(e)
 
-  return 0
+# leave early when debugging
+#  return 0
 
   try:
     destResult = destS3.put_object(
