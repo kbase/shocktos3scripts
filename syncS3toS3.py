@@ -47,7 +47,7 @@ def writelog(filename,node):
 
 def readlog(filename,list):
   if not os.path.exists(filename):
-    print "Warning: %s doesn't exist"%(filename)
+    pprint ("Warning: %s doesn't exist" % filename)
     return
   with open(filename,"r") as f:
     for id in f:
