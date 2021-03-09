@@ -32,7 +32,8 @@ import argparse
 import boto3
 import botocore
 import botocore.config as bcfg
-import smart_open
+# override system open()
+from smart_open import open
 
 done=dict()
 retry=dict()
@@ -157,32 +158,36 @@ def syncnode(id):
     pprint ("object %s is huge, size %d, skipping" % (id,sourceStat['ContentLength']) )
     return 1
 
+  
+  sourceS3url = conf['source']['s3url'] + '/' + objectPath
   try:
-    sourceObject = sourceS3.get_object(
-      Bucket=conf['source']['bucket'],
-      Key=objectPath
-    )
+#    sourceObject = sourceS3.get_object(
+#      Bucket=conf['source']['bucket'],
+#      Key=objectPath
+#    )
+    sourceObject = open(sourceS3url, transport_params=dict(client=boto3.client('s3')))
   except botocore.exceptions.ClientError as e:
       raise(e)
 
 # leave early when debugging
 #  return 0
 
+# future: maybe replace this with smart_open call too?
   try:
-#    destResult = destS3.upload_fileobj(
-#      sourceObject['Body'],
-#      conf['destination']['bucket'],
-#      objectPath,
-#      ExtraArgs={ 'Metadata': sourceObject['Metadata']},
-#      Config=transferConfig
-#    )
-
-    destResult = destS3.put_object(
-      Bucket=conf['destination']['bucket'],
-      Key=objectPath,
-      Body=sourceObject['Body'].read(),
-      Metadata=sourceObject['Metadata']
+    destResult = destS3.upload_fileobj(
+      sourceObject,
+      conf['destination']['bucket'],
+      objectPath,
+      ExtraArgs={ 'Metadata': sourceObject['Metadata']},
+      Config=transferConfig
     )
+
+#    destResult = destS3.put_object(
+#      Bucket=conf['destination']['bucket'],
+#      Key=objectPath,
+#      Body=sourceObject['Body'].read(),
+#      Metadata=sourceObject['Metadata']
+#    )
     writelog(conf['main']['logfile'],id)
     result = 0
   except botocore.exceptions.ClientError as e:
