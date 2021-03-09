@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!env python3
 
 '''
 This is a beta version modifying our existing synctool.py for Shock sync to do
