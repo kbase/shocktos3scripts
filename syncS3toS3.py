@@ -226,13 +226,14 @@ if __name__ == '__main__':
 
   if int(conf['source']['insecure']) == 1:
     sslVerifySource = False
-# these don't work right with python 3
-    import botocore.vendored.requests.packages.urllib3 as urllib3
+    import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    urllib3.disable_warnings(botocore.vendored.requests.packages.urllib3.exceptions.InsecureRequestWarning) 
   if int(conf['destination']['insecure']) == 1:
     sslVerifyDest = False
-    import botocore.vendored.requests.packages.urllib3 as urllib3
+    import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    urllib3.disable_warnings(botocore.vendored.requests.packages.urllib3.exceptions.InsecureRequestWarning) 
 
   readlog(conf['main']['logfile'],done)
   readlog(conf['main']['retryfile'],retry)
