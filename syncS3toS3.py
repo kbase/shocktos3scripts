@@ -155,7 +155,7 @@ def syncnode(id):
 #  if (int(sourceStat['ContentLength']) > 20000000000):
 # ~ 5gb
   if (int(sourceStat['ContentLength']) > 5000000000):
-    pprint ("object %s is huge, size %d, skipping" % (id,sourceStat['ContentLength']) )
+    pprint ("object %s is huge, size %d, falling back to mc" % (id,sourceStat['ContentLength']) )
 ##### put_object will read the entire body into memory, so for large files it is prohibitive
 ##### workaround to do:
 ## use download_file (or download_fileobj) to download to a tmp dir conf['main']['tmpdir']
