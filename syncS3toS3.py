@@ -164,7 +164,8 @@ def syncnode(id):
     localfile = conf['main']['tmpdir'] + '/' + id
     if (debug):
       pprint ("downloading %s to %s" % (objectPath,localfile) , stream=sys.stderr)
-#    sourceDownloadResult = sourceS3.download_file(conf['source']['bucket'],objectPath,localfile)
+    # need to check this result
+    sourceDownloadResult = sourceS3.download_file(conf['source']['bucket'],objectPath,localfile)
 ## generate destPath as an mc path
     destPath="%s/%s/%s"%(conf['destination']['mcendpoint'],conf['destination']['bucket'],id)
     if (conf['main']['mode'] == 'blobstore'):
@@ -175,10 +176,12 @@ def syncnode(id):
     mcCommand=(conf['main']['mcpath'],'--quiet','cp',localfile,destPath)
     if (debug):
       pprint(mcCommand, stream=sys.stderr)
-    # result = call(mcCommand)
-## if mc succeeds, remove file from tmpdir
-#    os.unlink (localfile)
+    result = call(mcCommand)
+## if mc succeeds, remove file from tmpdir, write log, and return 0
+    if (result == 0):
+      os.unlink (localfile)
 
+## for debugging: don't write log and return 1
     return 1
 
 # this doesn't work with google S3
@@ -201,7 +204,6 @@ def syncnode(id):
 # leave early when debugging
 #  return 0
 
-# future: maybe replace this with smart_open call too?
   try:
     destResult = destS3.put_object(
       Bucket=conf['destination']['bucket'],
