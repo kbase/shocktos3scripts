@@ -155,7 +155,32 @@ def syncnode(id):
 # ~ 5gb
   if (int(sourceStat['ContentLength']) > 5000000000):
     pprint ("object %s is huge, size %d, skipping" % (id,sourceStat['ContentLength']) )
+##### put_object will read the entire body into memory, so for large files it is prohibitive
+##### workaround to do:
+## use download_file (or download_fileobj) to download to a tmp dir conf['main']['tmpdir']
+    # don't bother with hash dirs, we're just going to remove later
+    # so no risk of putting too many files in one dir
+    localfile = conf['main']['tmpdir'] + '/' + id
+    if (debug):
+      pprint ("downloading %s to %s" % objectPath,localfile)
+#    sourceDownloadResult = sourceS3.download_file(conf['source']['bucket'],objectPath,localfile)
+## generate destPath as an mc path
+    destPath="%s/%s/%s"%(conf['destination']['mcendpoint'],conf['destination']['bucket'],id)
+    if (conf['main']['mode'] == 'blobstore'):
+      destPath="%s/%s/%s/%s/%s/%s"%(conf['destination']['mcendpoint'],conf['destination']['bucket'],id[0:2],id[2:4]
+,id[4:6],id)
+## use comm=(conf['main']['mcpath'],'--quiet','cp',localfile,destPath) to upload
+### optional: add filename metadata if it exists
+    mcCommand=(conf['main']['mcpath'],'--quiet','cp',localfile,destPath)
+    if (debug):
+      pprint(mcCommand)
+    # result = call(mcCommand)
+## if mc succeeds, remove file from tmpdir
+    unlink (localpath)
+
     return 1
+
+# this doesn't work with google S3
 #    destResult = destS3.upload_fileobj(
 #      sourceObject,
 #      conf['destination']['bucket'],
