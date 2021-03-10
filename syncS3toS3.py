@@ -174,7 +174,7 @@ def syncnode(id):
 ### optional: add filename metadata if it exists
     mcCommand=(conf['main']['mcpath'],'--quiet','cp',localfile,destPath)
     if (debug):
-      pprint(mcCommand)
+      pprint(mcCommand, stream=sys.stderr)
     # result = call(mcCommand)
 ## if mc succeeds, remove file from tmpdir
 #    os.unlink (localfile)
