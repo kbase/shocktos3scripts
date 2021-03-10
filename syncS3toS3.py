@@ -163,7 +163,7 @@ def syncnode(id):
     # so no risk of putting too many files in one dir
     localfile = conf['main']['tmpdir'] + '/' + id
     if (debug):
-      pprint ("downloading %s to %s" % objectPath,localfile)
+      pprint ("downloading %s to %s" % (objectPath,localfile) , stream=sys.stderr)
 #    sourceDownloadResult = sourceS3.download_file(conf['source']['bucket'],objectPath,localfile)
 ## generate destPath as an mc path
     destPath="%s/%s/%s"%(conf['destination']['mcendpoint'],conf['destination']['bucket'],id)
