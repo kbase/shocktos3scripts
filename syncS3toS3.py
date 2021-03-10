@@ -177,7 +177,7 @@ def syncnode(id):
       pprint(mcCommand)
     # result = call(mcCommand)
 ## if mc succeeds, remove file from tmpdir
-    os.unlink (localfile)
+#    os.unlink (localfile)
 
     return 1
 
