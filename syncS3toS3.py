@@ -119,7 +119,7 @@ def syncnode(id):
   except botocore.exceptions.ClientError as e:
 # if 404 not found, need to put
 #    pprint(e)
-    if ('404' in e):
+    if ('404' in str(e)):
       if (debug):
         pprint("%s not found at destination %s"%(id, objectPath) , stream=sys.stderr)
     else:
@@ -141,7 +141,7 @@ def syncnode(id):
     )
   except botocore.exceptions.ClientError as e:
 # if 404 not found, just skip, likely bad Shock node
-    if ('404' in e):
+    if ('404' in str(e)):
       pprint("%s not found at source %s, skipping" % (id, conf['source']['url']) , stream=sys.stderr)
       return 0
     else:
@@ -213,7 +213,7 @@ def syncnode(id):
     result = 0
   except botocore.exceptions.ClientError as e:
     # not sure what to do here yet
-    pprint(e, stream=sys.stderr)
+    pprint(str(e), stream=sys.stderr)
     pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
     writelog(conf['main']['retryfile'],id)
     result = 1
