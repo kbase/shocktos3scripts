@@ -103,7 +103,7 @@ else:
 
 def main():
 
-    print >> sys.stderr, "verifying blobstore S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE)
+    pprint ("verifying blobstore S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE), stream=sys.stderr)
 
     s3 = boto3.client(
         's3',
@@ -182,7 +182,7 @@ def main():
 #	    pprint (s3stat)
             except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
-		### TODO: look at Shock data dir to see if .data file is missing
+# need to fix for python3
                 if '404' in e.message:
                     count['bad_s3'] += 1
                     print(COLLECTION_SOURCE + ' node ' + node['id'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
