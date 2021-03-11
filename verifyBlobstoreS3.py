@@ -176,25 +176,25 @@ def main():
 #        pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
             s3path = ( node['id'][0:2] + '/' + node['id'][2:4] + '/' + node['id'][4:6] + '/' + node['id'] )
             try:
-	        s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3path)
+                s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3path)
 # use this instead to simulate a 404
 #	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
 #	    pprint (s3stat)
-	    except botocore.exceptions.ClientError as e:
+            except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
 		### TODO: look at Shock data dir to see if .data file is missing
-	        if '404' in e.message:
+                if '404' in e.message:
 	            count['bad_s3'] += 1
 	            print(COLLECTION_SOURCE + ' node ' + node['id'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
-	        else:
+                else:
 # otherwise, something bad happened, raise a real exception
-		    raise(e)
-	    else:
+                    raise(e)
+            else:
                 count['good_s3'] += 1
         count['processed'] += 1
-	if count['processed'] % 1000 == 0:
-	    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
-	    print(lastPrint)
+        if count['processed'] % 1000 == 0:
+            lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
+            print(lastPrint)
             pprint(count)
 
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
