@@ -182,8 +182,8 @@ def main():
 #	    pprint (s3stat)
             except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
-# need to fix for python3
-                if '404' in e.message:
+# need to verify fix for python3
+                if '404' in str(e):
                     count['bad_s3'] += 1
                     print(COLLECTION_SOURCE + ' node ' + node['id'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
                 else:
