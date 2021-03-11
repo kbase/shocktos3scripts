@@ -152,10 +152,7 @@ def syncnode(id):
   if (debug):
     pprint ("copying %s (size %d) to destination %s %s" % (id,sourceStat['ContentLength'],conf['destination']['url'],objectPath) , stream=sys.stderr)
 
-# ~ 20gb
-#  if (int(sourceStat['ContentLength']) > 20000000000):
-# ~ 5gb
-  if (int(sourceStat['ContentLength']) > 5000000000):
+  if (int(sourceStat['ContentLength']) > conf['main']['sizelimit']):
     pprint ("object %s is huge, size %d, falling back to mc" % (id,sourceStat['ContentLength']) )
 ##### put_object will read the entire body into memory, so for large files it is prohibitive
 ##### workaround to do:
@@ -165,27 +162,29 @@ def syncnode(id):
     localfile = conf['main']['tmpdir'] + '/' + id
     if (debug):
       pprint ("downloading %s to %s" % (objectPath,localfile) , stream=sys.stderr)
-    # need to check this result
+    # need to check this result for errors
     sourceDownloadResult = sourceS3.download_file(conf['source']['bucket'],objectPath,localfile)
-## generate destPath as an mc path
     destPath="%s/%s/%s"%(conf['destination']['mcendpoint'],conf['destination']['bucket'],id)
     if (conf['main']['mode'] == 'blobstore'):
       destPath="%s/%s/%s/%s/%s/%s"%(conf['destination']['mcendpoint'],conf['destination']['bucket'],id[0:2],id[2:4]
 ,id[4:6],id)
-## use comm=(conf['main']['mcpath'],'--quiet','cp',localfile,destPath) to upload
 ### optional: add filename metadata if it exists
     mcCommand=(conf['main']['mcpath'],'--quiet','cp',localfile,destPath)
     if (debug):
       pprint(mcCommand, stream=sys.stderr)
     result = call(mcCommand)
-## if mc succeeds, remove file from tmpdir, write log, and return 0
     if (result == 0):
-      os.unlink (localfile)
+      writelog(conf['main']['logfile'],id)
+    else:
+      pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
+      writelog(conf['main']['retryfile'],id)
+## with no way to ignore redownloading the file, may as well just unlink it no matter the result of mc
+    os.unlink (localfile)
 
-## for debugging: don't write log and return 1
-    return 1
+    return result
 
 # this doesn't work with google S3
+# if it works with minio, maybe use it instead of mc?
 #    destResult = destS3.upload_fileobj(
 #      sourceObject,
 #      conf['destination']['bucket'],
