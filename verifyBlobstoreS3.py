@@ -184,8 +184,8 @@ def main():
 # if 404 not found, just note the missing object and continue
 		### TODO: look at Shock data dir to see if .data file is missing
                 if '404' in e.message:
-	            count['bad_s3'] += 1
-	            print(COLLECTION_SOURCE + ' node ' + node['id'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
+                    count['bad_s3'] += 1
+                    print(COLLECTION_SOURCE + ' node ' + node['id'] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
                 else:
 # otherwise, something bad happened, raise a real exception
                     raise(e)
