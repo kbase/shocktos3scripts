@@ -157,20 +157,20 @@ def main():
 
     for node in sourceDb[COLLECTION_SOURCE].find(sourceQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
 #        pprint('examining node ' + node['id'] + ' in mongo collection ' + COLLECTION_BLOBSTORE)
-	if (args.mongosource =='shock'):
-	    blobstoreSingleQuery = {'id': node['id']}
+        if (args.mongosource =='shock'):
+            blobstoreSingleQuery = {'id': node['id']}
             blobstoreDoc = blobstoreDb[COLLECTION_BLOBSTORE].find_one(blobstoreSingleQuery)
-	else:
-	    blobstoreDoc = node
+        else:
+            blobstoreDoc = node
 
-	if (blobstoreDoc == None):
-	    print(COLLECTION_SOURCE + ' Shock node ' + node['id'] + ' is missing matching entry in blobstore ' + COLLECTION_BLOBSTORE)
-	    count['bad_mongo'] += 1
-	elif ( blobstoreDoc['md5'] == None ):
+        if (blobstoreDoc == None):
+            print(COLLECTION_SOURCE + ' Shock node ' + node['id'] + ' is missing matching entry in blobstore ' + COLLECTION_BLOBSTORE)
+            count['bad_mongo'] += 1
+        elif ( blobstoreDoc['md5'] == None ):
             count['good_mongo'] += 1
-	    print(COLLECTION_SOURCE + ' Shock node ' + node['id'] + ' found in blobstore but has no MD5, skipping S3 verify')
+            print(COLLECTION_SOURCE + ' Shock node ' + node['id'] + ' found in blobstore but has no MD5, skipping S3 verify')
             count['missing_md5'] += 1
-	else:
+        else:
             count['good_mongo'] += 1
 #	pprint(s3doc)
 #        pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
