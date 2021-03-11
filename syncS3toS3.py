@@ -5,6 +5,7 @@ This is a beta version modifying our existing synctool.py for Shock sync to do
 S3 to S3 sync instead.
 
 To do:
+  * better defaults if key not in config file
   * support for not reading entire object into memory before copying (in progress)
     * put_object reads entire body into memory so not suitable for large files
   * replace calling mc binary with making native python calls for not-too-large files
