@@ -6,9 +6,10 @@ S3 to S3 sync instead.
 
 To do:
   * support for not reading entire object into memory before copying (in progress)
-  * replace calling mc binary with making native python calls? (in progress)
+    * put_object reads entire body into memory so not suitable for large files
+  * replace calling mc binary with making native python calls for not-too-large files
     * currently mc stdout goes to the script stdout, which is a bit messy
-  * better documentation of config file (see syncS3ws.ini in this repo)
+  * better documentation of config file (see syncS3ws.ini in this repo) (in progress)
   * better and more organized logging (mostly done)
   * add support for start date on command line?
   * make it possible to use same config file for ws/blobstore?
