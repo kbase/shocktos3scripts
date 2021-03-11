@@ -153,7 +153,7 @@ def syncnode(id):
   if (debug):
     pprint ("copying %s (size %d) to destination %s %s" % (id,sourceStat['ContentLength'],conf['destination']['url'],objectPath) , stream=sys.stderr)
 
-  if (int(sourceStat['ContentLength']) > conf['main']['sizelimit']):
+  if (int(sourceStat['ContentLength']) > int(conf['main']['sizelimit'])):
     pprint ("object %s is huge, size %d, falling back to mc" % (id,sourceStat['ContentLength']) )
 ##### put_object will read the entire body into memory, so for large files it is prohibitive
 ##### workaround to do:
