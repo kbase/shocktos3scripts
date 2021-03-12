@@ -101,7 +101,7 @@ else:
 
 def main():
 
-    print >> sys.stderr, "verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE)
+    print ("verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE), stream=sys.stderr)
 
     s3 = boto3.client(
         's3',
