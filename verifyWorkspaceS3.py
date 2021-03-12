@@ -79,6 +79,9 @@ CONFIG_S3_REGION = conf['s3']['region']
 CONFIG_S3_VERIFY = True
 if ('insecure' in conf['s3'].keys() and int(conf['s3']['insecure']) != 0 ):
     CONFIG_S3_VERIFY = False
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    urllib3.disable_warnings(botocore.vendored.requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
 CONFIG_BATCH_SIZE = 10000
 
