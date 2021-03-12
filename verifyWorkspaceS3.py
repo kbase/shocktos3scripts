@@ -145,37 +145,37 @@ def main():
 #        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
 
         if (args.mongosource == 'shock'):
-	    s3Query = {'chksum': node['chksum']}
+            s3Query = {'chksum': node['chksum']}
             s3doc = db[COLLECTION_S3].find_one(s3Query)
-	else:
-	    s3doc = node
+        else:
+            s3doc = node
 
-	if (s3doc == None):
-	    pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
-	    count['bad_mongo'] += 1
-	else:
+        if (s3doc == None):
+            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
+            count['bad_mongo'] += 1
+        else:
             count['good_mongo'] += 1
 #	pprint(s3doc)
 #            pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
             try:
-	        s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
+                s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
 # use this instead to simulate a 404
 #	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
 #	    pprint (s3stat)
-	    except botocore.exceptions.ClientError as e:
+            except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
-	        if '404' in e.message:
-	            count['bad_s3'] += 1
-	            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
-	        else:
+                if '404' in e.message:
+                    count['bad_s3'] += 1
+                    pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
+                else:
 # otherwise, something bad happened, raise a real exception
-		    raise(e)
-	    else:
+                    raise(e)
+            else:
                 count['good_s3'] += 1
         count['processed'] += 1
-	if count['processed'] % 1000 == 0:
-	    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
-	    print(lastPrint)
+        if count['processed'] % 1000 == 0:
+            lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
+            print(lastPrint)
             pprint(count)
 
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
