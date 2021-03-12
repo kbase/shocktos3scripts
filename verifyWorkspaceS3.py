@@ -76,6 +76,9 @@ CONFIG_S3_BUCKET = conf['s3']['workspace_bucket']
 CONFIG_S3_ACCESS_KEY = conf['s3']['workspace_access_key']
 CONFIG_S3_SECRET_KEY = conf['s3']['workspace_secret_key']
 CONFIG_S3_REGION = conf['s3']['region']
+CONFIG_S3_VERIFY = True
+if ('insecure' in conf['s3'].keys() and int(conf['s3']['insecure']) != 0 ):
+    CONFIG_S3_VERIFY = False
 
 CONFIG_BATCH_SIZE = 10000
 
