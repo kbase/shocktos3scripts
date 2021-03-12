@@ -112,7 +112,8 @@ def main():
         aws_access_key_id=CONFIG_S3_ACCESS_KEY,
         aws_secret_access_key=CONFIG_S3_SECRET_KEY,
         region_name=CONFIG_S3_REGION,
-        config=bcfg.Config(s3={'addressing_style': 'path'})
+        config=bcfg.Config(s3={'addressing_style': 'path'}),
+	verify=CONFIG_S3_VERIFY
     )
 #    pprint(s3.list_buckets())
 #    try:
