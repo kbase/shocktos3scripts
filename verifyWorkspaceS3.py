@@ -180,6 +180,16 @@ def main():
     else:
         client = MongoClient(CONFIG_MONGO_HOST)
 
+    count = dict()
+    count['good_mongo'] = 0
+    count['bad_mongo'] = 0
+# bad_mongo for s3 checks is irrelevant
+    if (args.mongosource == 's3'):
+        count['bad_mongo'] = None
+    count['good_s3'] = 0
+    count['bad_s3'] = 0
+    count['processed'] = 0
+
     db = client[CONFIG_MONGO_DATABASE]
     idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 #    pprint(idQuery)
@@ -193,16 +203,6 @@ def main():
     results=pool.map(verifyObject, db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True))
 
 #    pprint(results)
-
-    count = dict()
-    count['good_mongo'] = 0
-    count['bad_mongo'] = 0
-# bad_mongo for s3 checks is irrelevant
-    if (args.mongosource == 's3'):
-        count['bad_mongo'] = None
-    count['good_s3'] = 0
-    count['bad_s3'] = 0
-    count['processed'] = 0
 
     for result in results:
         count[result] += 1
