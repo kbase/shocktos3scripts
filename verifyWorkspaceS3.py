@@ -133,6 +133,8 @@ def verifyObject(node):
 #        pprint(node)
 #        pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
 
+        result = 'unknown'
+
         if (args.mongosource == 'shock'):
             s3Query = {'chksum': node['chksum']}
             s3doc = db[COLLECTION_S3].find_one(s3Query)
@@ -142,6 +144,7 @@ def verifyObject(node):
         if (s3doc == None):
             pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
             count['bad_mongo'] += 1
+            result = 'bad_mongo'
         else:
             count['good_mongo'] += 1
 #            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' found matching chksum in ' + COLLECTION_S3)
@@ -156,18 +159,20 @@ def verifyObject(node):
 # if 404 not found, just note the missing object and continue
                 if '404' in str(e):
                     count['bad_s3'] += 1
+                    result = 'bad_s3'
                     pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
                 else:
 # otherwise, something bad happened, raise a real exception
                     raise(e)
             else:
                 count['good_s3'] += 1
+                result = 'good_s3'
         count['processed'] += 1
         if count['processed'] % 1000 == 0:
             lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
             print(lastPrint)
             pprint(count)
-#    pprint(result)
+        return result
 
 def main():
 
