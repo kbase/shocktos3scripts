@@ -27,6 +27,7 @@ import configparser
 import argparse
 import datetime
 import sys
+from multiprocessing import Pool
 
 parser = argparse.ArgumentParser(description='Validate Workspace Mongo records against an S3 store.')
 parser.add_argument('--config-file', dest='configfile', required=True,
@@ -105,6 +106,9 @@ elif (args.mongosource == 's3'):
 else:
     raise("invalid mongosource specified! use shock or s3")
 
+def verifyObject(result):
+    pprint(result)
+
 def main():
 
     pprint ("verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE), stream=sys.stderr)
@@ -147,6 +151,10 @@ def main():
 #    count = 0
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
+
+#    pool = Pool(processes=int(conf['main']['nthreads']))
+    pool = Pool(processes=2)
+    results=pool.map(verifyObject, db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True))
 
     for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
 #        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
