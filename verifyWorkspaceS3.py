@@ -86,7 +86,7 @@ if ('insecure' in conf['s3'].keys() and int(conf['s3']['insecure']) != 0 ):
 
 CONFIG_NTHREADS = 1
 if ('nthreads' in conf['main']):
-    CONFIG_NTHREADS = int(conf['main']['nthreads']
+    CONFIG_NTHREADS = int(conf['main']['nthreads'])
 CONFIG_BATCH_SIZE = 10000
 
 #### END CONFIGURATION VARIABLES ####
