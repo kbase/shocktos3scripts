@@ -119,16 +119,6 @@ s3 = boto3.client(
     verify=CONFIG_S3_VERIFY
 )
 
-count = dict()
-count['good_mongo'] = 0
-count['bad_mongo'] = 0
-# bad_mongo for s3 checks is irrelevant
-if (args.mongosource == 's3'):
-    count['bad_mongo'] = None
-count['good_s3'] = 0
-count['bad_s3'] = 0
-count['processed'] = 0
-
 def verifyObject(node):
 #        pprint(node)
 #        pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
@@ -143,10 +133,10 @@ def verifyObject(node):
 
         if (s3doc == None):
             pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
-            count['bad_mongo'] += 1
+#            count['bad_mongo'] += 1
             result = 'bad_mongo'
         else:
-            count['good_mongo'] += 1
+#            count['good_mongo'] += 1
 #            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' found matching chksum in ' + COLLECTION_S3)
 #	pprint(s3doc)
 #            pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
@@ -158,20 +148,20 @@ def verifyObject(node):
             except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
                 if '404' in str(e):
-                    count['bad_s3'] += 1
+#                    count['bad_s3'] += 1
                     result = 'bad_s3'
                     pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
                 else:
 # otherwise, something bad happened, raise a real exception
                     raise(e)
             else:
-                count['good_s3'] += 1
+#                count['good_s3'] += 1
                 result = 'good_s3'
-        count['processed'] += 1
-        if count['processed'] % 1000 == 0:
-            lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
-            print(lastPrint)
-            pprint(count)
+ #       count['processed'] += 1
+ #       if count['processed'] % 1000 == 0:
+ #           lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
+ #           print(lastPrint)
+ #           pprint(count)
         return result
 
 def main():
@@ -201,7 +191,21 @@ def main():
 #    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
     pool = Pool(processes=CONFIG_NTHREADS)
     results=pool.map(verifyObject, db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True))
-    pprint(results)
+
+#    pprint(results)
+
+    count = dict()
+    count['good_mongo'] = 0
+    count['bad_mongo'] = 0
+# bad_mongo for s3 checks is irrelevant
+    if (args.mongosource == 's3'):
+        count['bad_mongo'] = None
+    count['good_s3'] = 0
+    count['bad_s3'] = 0
+    count['processed'] = 0
+
+    for result in results:
+        count[result] += 1
 
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
