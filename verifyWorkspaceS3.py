@@ -130,8 +130,8 @@ count['bad_s3'] = 0
 count['processed'] = 0
 
 def verifyObject(node):
-        pprint(node)
-        pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
+#        pprint(node)
+#        pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
 
         if (args.mongosource == 'shock'):
             s3Query = {'chksum': node['chksum']}
@@ -144,7 +144,7 @@ def verifyObject(node):
             count['bad_mongo'] += 1
         else:
             count['good_mongo'] += 1
-            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' found matching chksum in ' + COLLECTION_S3)
+#            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' found matching chksum in ' + COLLECTION_S3)
 #	pprint(s3doc)
             pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
             try:
