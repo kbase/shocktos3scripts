@@ -146,7 +146,7 @@ def verifyObject(node):
             count['good_mongo'] += 1
 #            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' found matching chksum in ' + COLLECTION_S3)
 #	pprint(s3doc)
-            pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
+#            pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
             try:
                 s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
 # use this instead to simulate a 404
