@@ -85,7 +85,7 @@ if ('insecure' in conf['s3'].keys() and int(conf['s3']['insecure']) != 0 ):
     urllib3.disable_warnings(botocore.vendored.requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
 CONFIG_NTHREADS = 1
-if ('nthreads' in conf['main']):
+if ('nthreads' in conf['main'].keys()):
     CONFIG_NTHREADS = int(conf['main']['nthreads'])
 CONFIG_BATCH_SIZE = 10000
 
