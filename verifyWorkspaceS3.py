@@ -109,8 +109,8 @@ elif (args.mongosource == 's3'):
 else:
     raise("invalid mongosource specified! use shock or s3")
 
-def verifyObject(result):
-        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
+def verifyObject(node):
+        pprint('examining object ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
 
         if (args.mongosource == 'shock'):
             s3Query = {'chksum': node['chksum']}
