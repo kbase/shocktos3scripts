@@ -111,7 +111,7 @@ else:
 
 def verifyObject(node):
         pprint(node)
-        pprint('examining object ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
+        pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
 
         if (args.mongosource == 'shock'):
             s3Query = {'chksum': node['chksum']}
