@@ -181,11 +181,11 @@ def main():
         client = MongoClient(CONFIG_MONGO_HOST)
 
     count = dict()
-    count['good_mongo'] = 0
-    count['bad_mongo'] = 0
+#    count['good_mongo'] = 0
+#    count['bad_mongo'] = 0
 # bad_mongo for s3 checks is irrelevant
-    if (args.mongosource == 's3'):
-        count['bad_mongo'] = None
+#    if (args.mongosource == 's3'):
+#        count['bad_mongo'] = None
     count['good_s3'] = 0
     count['bad_s3'] = 0
     count['processed'] = 0
@@ -205,6 +205,7 @@ def main():
 #    pprint(results)
 
     for result in results:
+        count['processed'] += 1
         count[result] += 1
 
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
