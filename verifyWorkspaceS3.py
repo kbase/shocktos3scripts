@@ -84,6 +84,9 @@ if ('insecure' in conf['s3'].keys() and int(conf['s3']['insecure']) != 0 ):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     urllib3.disable_warnings(botocore.vendored.requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
+CONFIG_NTHREADS = 1
+if ('nthreads' in conf['main']):
+    CONFIG_NTHREADS = int(conf['main']['nthreads']
 CONFIG_BATCH_SIZE = 10000
 
 #### END CONFIGURATION VARIABLES ####
@@ -111,7 +114,7 @@ def verifyObject(result):
 
 def main():
 
-    pprint ("verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE), stream=sys.stderr)
+    pprint ("verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
     s3 = boto3.client(
         's3',
@@ -153,7 +156,7 @@ def main():
     print(lastPrint)
 
 #    pool = Pool(processes=int(conf['main']['nthreads']))
-    pool = Pool(processes=2)
+    pool = Pool(processes=CONFIG_NTHREADS)
     results=pool.map(verifyObject, db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True))
 
     for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
