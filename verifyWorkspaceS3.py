@@ -193,11 +193,10 @@ def main():
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
 
-#    pool = Pool(processes=int(conf['main']['nthreads']))
+#    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
     pool = Pool(processes=CONFIG_NTHREADS)
     results=pool.map(verifyObject, db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True))
-
-#    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
+    pprint(results)
 
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
