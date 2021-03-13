@@ -109,6 +109,26 @@ elif (args.mongosource == 's3'):
 else:
     raise("invalid mongosource specified! use shock or s3")
 
+s3 = boto3.client(
+    's3',
+    endpoint_url=CONFIG_S3_ENDPOINT,
+    aws_access_key_id=CONFIG_S3_ACCESS_KEY,
+    aws_secret_access_key=CONFIG_S3_SECRET_KEY,
+    region_name=CONFIG_S3_REGION,
+    config=bcfg.Config(s3={'addressing_style': 'path'}),
+    verify=CONFIG_S3_VERIFY
+)
+
+count = dict()
+count['good_mongo'] = 0
+count['bad_mongo'] = 0
+# bad_mongo for s3 checks is irrelevant
+if (args.mongosource == 's3'):
+    count['bad_mongo'] = None
+count['good_s3'] = 0
+count['bad_s3'] = 0
+count['processed'] = 0
+
 def verifyObject(node):
         pprint(node)
         pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
@@ -121,9 +141,9 @@ def verifyObject(node):
 
         if (s3doc == None):
             pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
-#            count['bad_mongo'] += 1
+            count['bad_mongo'] += 1
         else:
-#            count['good_mongo'] += 1
+            count['good_mongo'] += 1
             pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' found matching chksum in ' + COLLECTION_S3)
 #	pprint(s3doc)
             pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
@@ -153,15 +173,6 @@ def main():
 
     pprint ("verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
-    s3 = boto3.client(
-        's3',
-        endpoint_url=CONFIG_S3_ENDPOINT,
-        aws_access_key_id=CONFIG_S3_ACCESS_KEY,
-        aws_secret_access_key=CONFIG_S3_SECRET_KEY,
-        region_name=CONFIG_S3_REGION,
-        config=bcfg.Config(s3={'addressing_style': 'path'}),
-	verify=CONFIG_S3_VERIFY
-    )
 #    pprint(s3.list_buckets())
 #    try:
 #        pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.dat'))
@@ -173,16 +184,6 @@ def main():
             username=CONFIG_MONGO_USER, password=CONFIG_MONGO_PWD, retryWrites=False)
     else:
         client = MongoClient(CONFIG_MONGO_HOST)
-
-    count = dict()
-    count['good_mongo'] = 0
-    count['bad_mongo'] = 0
-# bad_mongo for s3 checks is irrelevant
-    if (args.mongosource == 's3'):
-        count['bad_mongo'] = None
-    count['good_s3'] = 0
-    count['bad_s3'] = 0
-    count['processed'] = 0
 
     db = client[CONFIG_MONGO_DATABASE]
     idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
