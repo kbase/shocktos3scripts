@@ -27,7 +27,7 @@ import configparser
 import argparse
 import datetime
 import sys
-from multiprocessing import Pool
+import multiprocessing
 
 parser = argparse.ArgumentParser(description='Validate Workspace Mongo records against an S3 store.')
 parser.add_argument('--config-file', dest='configfile', required=True,
@@ -122,7 +122,7 @@ s3 = boto3.client(
 def verifyObject(node):
 #        pprint(node)
 #        pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
-
+        pprint ('in thread %s' % multiprocessing.current_process(), stream=sys.stderr)
         result = 'unknown'
 
         if (args.mongosource == 'shock'):
@@ -199,7 +199,7 @@ def main():
     print(lastPrint)
 
 #    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
-    pool = Pool(processes=CONFIG_NTHREADS)
+    pool = multiprocessing.Pool(processes=CONFIG_NTHREADS)
     results=pool.imap_unordered(verifyObject, db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True), 1000)
 
 #    pprint(results)
