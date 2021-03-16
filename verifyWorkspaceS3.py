@@ -27,6 +27,7 @@ import configparser
 import argparse
 import datetime
 import sys
+import multiprocessing
 
 parser = argparse.ArgumentParser(description='Validate Workspace Mongo records against an S3 store.')
 parser.add_argument('--config-file', dest='configfile', required=True,
@@ -83,6 +84,9 @@ if ('insecure' in conf['s3'].keys() and int(conf['s3']['insecure']) != 0 ):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     urllib3.disable_warnings(botocore.vendored.requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
+CONFIG_NTHREADS = 1
+if ('nthreads' in conf['main'].keys()):
+    CONFIG_NTHREADS = int(conf['main']['nthreads'])
 CONFIG_BATCH_SIZE = 10000
 
 #### END CONFIGURATION VARIABLES ####
@@ -105,19 +109,65 @@ elif (args.mongosource == 's3'):
 else:
     raise("invalid mongosource specified! use shock or s3")
 
+s3 = boto3.client(
+    's3',
+    endpoint_url=CONFIG_S3_ENDPOINT,
+    aws_access_key_id=CONFIG_S3_ACCESS_KEY,
+    aws_secret_access_key=CONFIG_S3_SECRET_KEY,
+    region_name=CONFIG_S3_REGION,
+    config=bcfg.Config(s3={'addressing_style': 'path'}),
+    verify=CONFIG_S3_VERIFY
+)
+
+def verifyObject(node):
+#        pprint(node)
+#        pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
+#        pprint ('in thread %s' % multiprocessing.current_process(), stream=sys.stderr)
+        result = 'unknown'
+
+        if (args.mongosource == 'shock'):
+            s3Query = {'chksum': node['chksum']}
+            s3doc = db[COLLECTION_S3].find_one(s3Query)
+        else:
+            s3doc = node
+
+        if (s3doc == None):
+            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
+#            count['bad_mongo'] += 1
+            result = 'bad_mongo'
+        else:
+#            count['good_mongo'] += 1
+#            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' found matching chksum in ' + COLLECTION_S3)
+#	pprint(s3doc)
+#            pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
+            try:
+                s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
+# use this instead to simulate a 404
+#	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
+#	    pprint (s3stat)
+            except botocore.exceptions.ClientError as e:
+# if 404 not found, just note the missing object and continue
+                if '404' in str(e):
+#                    count['bad_s3'] += 1
+                    result = 'bad_s3'
+                    pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
+                else:
+# otherwise, something bad happened, raise a real exception
+                    raise(e)
+            else:
+#                count['good_s3'] += 1
+                result = 'good_s3'
+#        count['processed'] += 1
+#        if count['processed'] % 1000 == 0:
+#            lastPrint = 'Processed {}/{} records in thread {}'.format(count['processed'], count[COLLECTION_SOURCE], multiprocessing.current_process() )
+#            print(lastPrint)
+#            pprint(count)
+        return result
+
 def main():
 
-    pprint ("verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE), stream=sys.stderr)
+    pprint ("verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
-    s3 = boto3.client(
-        's3',
-        endpoint_url=CONFIG_S3_ENDPOINT,
-        aws_access_key_id=CONFIG_S3_ACCESS_KEY,
-        aws_secret_access_key=CONFIG_S3_SECRET_KEY,
-        region_name=CONFIG_S3_REGION,
-        config=bcfg.Config(s3={'addressing_style': 'path'}),
-	verify=CONFIG_S3_VERIFY
-    )
 #    pprint(s3.list_buckets())
 #    try:
 #        pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.dat'))
@@ -131,11 +181,11 @@ def main():
         client = MongoClient(CONFIG_MONGO_HOST)
 
     count = dict()
-    count['good_mongo'] = 0
-    count['bad_mongo'] = 0
+#    count['good_mongo'] = 0
+#    count['bad_mongo'] = 0
 # bad_mongo for s3 checks is irrelevant
-    if (args.mongosource == 's3'):
-        count['bad_mongo'] = None
+#    if (args.mongosource == 's3'):
+#        count['bad_mongo'] = None
     count['good_s3'] = 0
     count['bad_s3'] = 0
     count['processed'] = 0
@@ -148,42 +198,15 @@ def main():
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
 
-    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
-#        pprint('examining node ' + node['node'] + ' in mongo collection ' + COLLECTION_S3)
+#    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
+    pool = multiprocessing.Pool(processes=CONFIG_NTHREADS)
+    results=pool.imap_unordered(verifyObject, db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True), 1000)
 
-        if (args.mongosource == 'shock'):
-            s3Query = {'chksum': node['chksum']}
-            s3doc = db[COLLECTION_S3].find_one(s3Query)
-        else:
-            s3doc = node
+#    pprint(results)
 
-        if (s3doc == None):
-            pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
-            count['bad_mongo'] += 1
-        else:
-            count['good_mongo'] += 1
-#	pprint(s3doc)
-#            pprint('examining key ' + s3doc['key'] + ' in S3 endpoint ' + CONFIG_S3_ENDPOINT)
-            try:
-                s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
-# use this instead to simulate a 404
-#	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['chksum'])
-#	    pprint (s3stat)
-            except botocore.exceptions.ClientError as e:
-# if 404 not found, just note the missing object and continue
-                if '404' in str(e):
-                    count['bad_s3'] += 1
-                    pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
-                else:
-# otherwise, something bad happened, raise a real exception
-                    raise(e)
-            else:
-                count['good_s3'] += 1
+    for result in results:
         count['processed'] += 1
-        if count['processed'] % 1000 == 0:
-            lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
-            print(lastPrint)
-            pprint(count)
+        count[result] += 1
 
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
