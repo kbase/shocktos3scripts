@@ -120,11 +120,6 @@ s3 = boto3.client(
 )
 
 def verifyObject(node):
-        count = dict()
-        count['good_s3'] = 0
-        count['bad_s3'] = 0
-        count['processed'] = 0
-
 #        pprint(node)
 #        pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
 #        pprint ('in thread %s' % multiprocessing.current_process(), stream=sys.stderr)
@@ -138,7 +133,7 @@ def verifyObject(node):
 
         if (s3doc == None):
             pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
-            count['bad_mongo'] += 1
+#            count['bad_mongo'] += 1
             result = 'bad_mongo'
         else:
 #            count['good_mongo'] += 1
@@ -153,20 +148,20 @@ def verifyObject(node):
             except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
                 if '404' in str(e):
-                    count['bad_s3'] += 1
+#                    count['bad_s3'] += 1
                     result = 'bad_s3'
                     pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
                 else:
 # otherwise, something bad happened, raise a real exception
                     raise(e)
             else:
-                count['good_s3'] += 1
+#                count['good_s3'] += 1
                 result = 'good_s3'
-        count['processed'] += 1
-        if count['processed'] % 1000 == 0:
-            lastPrint = 'Processed {}/{} records in thread {}'.format(count['processed'], count[COLLECTION_SOURCE], multiprocessing.current_process() )
-            print(lastPrint)
-            pprint(count)
+#        count['processed'] += 1
+#        if count['processed'] % 1000 == 0:
+#            lastPrint = 'Processed {}/{} records in thread {}'.format(count['processed'], count[COLLECTION_SOURCE], multiprocessing.current_process() )
+#            print(lastPrint)
+#            pprint(count)
         return result
 
 def main():
@@ -205,7 +200,7 @@ def main():
 
 #    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
     pool = multiprocessing.Pool(processes=CONFIG_NTHREADS)
-    results=pool.imap_unordered(verifyObject, db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True), 2000)
+    results=pool.imap_unordered(verifyObject, db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True), 1000)
 
 #    pprint(results)
 
