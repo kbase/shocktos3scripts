@@ -200,7 +200,7 @@ def main():
 #    pprint(idQuery)
     count_source = db[COLLECTION_SOURCE].count_documents(idQuery)
 #    count = 0
-    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
+    lastPrint = 'Processed {}/{} records'.format(count_processed, count_source)
     print(lastPrint)
 
 #    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
