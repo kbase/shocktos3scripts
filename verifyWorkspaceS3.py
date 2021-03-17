@@ -132,7 +132,7 @@ def verifyObject(s3doc):
                     count_bad_s3.value += 1
 #                    count['bad_s3'] += 1
                 result = 'bad_s3'
-                pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
+                pprint(COLLECTION_SOURCE + ' node/key ' + s3doc[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
             else:
 # otherwise, something bad happened, raise a real exception
                 raise(e)
