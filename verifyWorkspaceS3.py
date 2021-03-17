@@ -182,10 +182,10 @@ def verifyObject(node):
 
 def main():
 
-    count = dict()
-    count['processed'] = 0
-    count['good_s3'] = 0
-    count['bad_s3'] = 0
+#    count = dict()
+#    count['processed'] = 0
+#    count['good_s3'] = 0
+#    count['bad_s3'] = 0
 
     pprint ("verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
@@ -207,7 +207,7 @@ def main():
     count_source.value = db[COLLECTION_SOURCE].count_documents(idQuery)
     count[COLLECTION_SOURCE] = db[COLLECTION_SOURCE].count_documents(idQuery)
 #    count = 0
-    lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source.value)
+    lastPrint = 'Processed {}/{} records in main thread'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
 #    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
@@ -216,15 +216,15 @@ def main():
 
 #    pprint(results)
 
-    for result in results:
-        count['processed'] += 1
-        count[result] += 1
+#    for result in results:
+#        count['processed'] += 1
+#        count[result] += 1
 
-    lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source.value)
+    lastPrint = 'Processed {}/{} records in main thread'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
     pprint('good_s3: {} ; bad_s3: {} ; processed: {} ; {}: {}'.format(count_good_s3.value,count_bad_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
-    pprint(count)
+#    pprint(count)
 
 if __name__ == '__main__':
     main()
