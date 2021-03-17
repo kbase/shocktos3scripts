@@ -223,7 +223,7 @@ def main():
     lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
-#    pprint('good_s3: {} ; bad_s3: {} ; processed: {} ; {}: {}'.format(count_good_s3.value,count_bad_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
+    pprint('good_s3: {} ; bad_s3: {} ; processed: {} ; {}: {}'.format(count_good_s3.value,count_bad_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
     pprint(count)
 
 if __name__ == '__main__':
