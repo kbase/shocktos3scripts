@@ -216,9 +216,9 @@ def main():
 
 #    pprint(results)
 
-#    for result in results:
-#        count['processed'] += 1
-#        count[result] += 1
+    for result in results:
+        count['processed'] += 1
+        count[result] += 1
 
     lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source.value)
     print(lastPrint)
