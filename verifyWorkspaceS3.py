@@ -158,7 +158,7 @@ def main():
     count['good_s3'] = 0
     count['bad_s3'] = 0
 
-    pprint ("verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
+    pprint ("verifying workspace S3 against mongo source " + COLLECTION_SOURCE + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
 #    pprint(s3.list_buckets())
 #    try:
