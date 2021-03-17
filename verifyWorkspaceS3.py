@@ -174,9 +174,9 @@ def verifyObject(node):
 #        count['processed'] += 1
             with count_processed.get_lock():
                 count_processed.value += 1
- #       if count_processed.value % 1000 == 0:
-        lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source.value, multiprocessing.current_process() )
-        print(lastPrint)
+        if count_processed.value % 1000 == 0:
+            lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source.value, multiprocessing.current_process() )
+            print(lastPrint)
 #            pprint(count)
         return result
 
