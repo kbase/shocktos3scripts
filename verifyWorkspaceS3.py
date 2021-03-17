@@ -28,6 +28,7 @@ import argparse
 import datetime
 import sys
 import multiprocessing
+import ctypes
 
 parser = argparse.ArgumentParser(description='Validate Workspace Mongo records against an S3 store.')
 parser.add_argument('--config-file', dest='configfile', required=True,
@@ -120,11 +121,11 @@ s3 = boto3.client(
 )
 
 # create vars shared across processes
-count_good_s3 = multiprocessing.Value(c_int)
+count_good_s3 = multiprocessing.Value(ctypes.c_int)
 count_good_s3.value = 0
-count_bad_s3 = multiprocessing.Value(c_int)
+count_bad_s3 = multiprocessing.Value(ctypes.c_int)
 count_bad_s3.value = 0
-count_processed = multiprocessing.Value(c_int)
+count_processed = multiprocessing.Value(ctypes.c_int)
 count_processed.value = 0
 count_source = 0
 
