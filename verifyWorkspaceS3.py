@@ -177,7 +177,7 @@ def verifyObject(node):
         if count_processed.value % 1000 == 0:
             lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source.value, multiprocessing.current_process() )
             print(lastPrint)
-#            pprint(count)
+            pprint('good_s3: {} ; bad_s3: {} ; processed: {} ; {}: {}'.format(count_good_s3.value,count_bad_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
         return result
 
 def main():
@@ -215,6 +215,7 @@ def main():
 
 #    pprint(results)
 
+# apparently need to iterate over the results to get it to do anything
     for result in results:
         pass
 #        count['processed'] += 1
