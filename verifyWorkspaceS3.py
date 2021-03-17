@@ -173,10 +173,10 @@ def verifyObject(node):
 #        count['processed'] += 1
             with count_processed.get_lock():
                 count_processed.value += 1
-        if count_processed.value % 1000 == 0:
-            lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source, multiprocessing.current_process() )
-            print(lastPrint)
-            pprint(count)
+ #       if count_processed.value % 1000 == 0:
+        lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source, multiprocessing.current_process() )
+        print(lastPrint)
+#            pprint(count)
         return result
 
 def main():
@@ -200,7 +200,7 @@ def main():
 #    pprint(idQuery)
     count_source = db[COLLECTION_SOURCE].count_documents(idQuery)
 #    count = 0
-    lastPrint = 'Processed {}/{} records'.format(count_processed, count_source)
+    lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source)
     print(lastPrint)
 
 #    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
