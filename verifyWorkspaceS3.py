@@ -120,7 +120,6 @@ def verifyObject(s3doc):
 #        pprint ('in thread %s' % multiprocessing.current_process(), stream=sys.stderr)
         result = 'unknown'
 
-        s3doc = node
         try:
             s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3doc['key'])
 # use this instead to simulate a 404
