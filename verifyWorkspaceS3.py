@@ -182,6 +182,11 @@ def verifyObject(node):
 
 def main():
 
+    count = dict()
+    count['processed'] = 0
+    count['good_s3'] = 0
+    count['bad_s3'] = 0
+
     pprint ("verifying workspace S3 against mongo source " + args.mongosource + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
 #    pprint(s3.list_buckets())
@@ -200,6 +205,7 @@ def main():
     idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 #    pprint(idQuery)
     count_source.value = db[COLLECTION_SOURCE].count_documents(idQuery)
+    count[COLLECTION_SOURCE] = db[COLLECTION_SOURCE].count_documents(idQuery)
 #    count = 0
     lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source.value)
     print(lastPrint)
@@ -217,8 +223,8 @@ def main():
     lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
-    pprint('good_s3: {} ; bad_s3: {} ; processed: {} ; {}: {}'.format(count_good_s3.value,count_bad_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
-
+#    pprint('good_s3: {} ; bad_s3: {} ; processed: {} ; {}: {}'.format(count_good_s3.value,count_bad_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
+    pprint(count)
 
 if __name__ == '__main__':
     main()
