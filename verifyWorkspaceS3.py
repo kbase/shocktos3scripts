@@ -205,8 +205,7 @@ def main():
     idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 #    pprint(idQuery)
     count_source.value = db[COLLECTION_SOURCE].count_documents(idQuery)
-    count[COLLECTION_SOURCE] = db[COLLECTION_SOURCE].count_documents(idQuery)
-#    count = 0
+#    count[COLLECTION_SOURCE] = db[COLLECTION_SOURCE].count_documents(idQuery)
     lastPrint = 'Processed {}/{} records in main thread'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
