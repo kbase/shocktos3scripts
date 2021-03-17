@@ -119,6 +119,15 @@ s3 = boto3.client(
     verify=CONFIG_S3_VERIFY
 )
 
+# create vars shared across processes
+count_good_s3 = multiprocessing.Value(c_int)
+count_good_s3.value = 0
+count_bad_s3 = multiprocessing.Value(c_int)
+count_bad_s3.value = 0
+count_processed = multiprocessing.Value(c_int)
+count_processed.value = 0
+count_source = 0
+
 def verifyObject(node):
 #        pprint(node)
 #        pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
@@ -133,7 +142,6 @@ def verifyObject(node):
 
         if (s3doc == None):
             pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching chksum in ' + COLLECTION_S3)
-#            count['bad_mongo'] += 1
             result = 'bad_mongo'
         else:
 #            count['good_mongo'] += 1
@@ -148,6 +156,8 @@ def verifyObject(node):
             except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
                 if '404' in str(e):
+                    with count_bad_s3.get_lock():
+                        count_bad_s3.value += 1
 #                    count['bad_s3'] += 1
                     result = 'bad_s3'
                     pprint(COLLECTION_SOURCE + ' node/key ' + node[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
@@ -156,12 +166,16 @@ def verifyObject(node):
                     raise(e)
             else:
 #                count['good_s3'] += 1
+                with count_good_s3.get_lock():
+                    count_good_s3.value += 1
                 result = 'good_s3'
 #        count['processed'] += 1
-#        if count['processed'] % 1000 == 0:
-#            lastPrint = 'Processed {}/{} records in thread {}'.format(count['processed'], count[COLLECTION_SOURCE], multiprocessing.current_process() )
-#            print(lastPrint)
-#            pprint(count)
+            with count_processed.get_lock():
+                count_processed.value += 1
+        if count_processed.value % 1000 == 0:
+            lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source, multiprocessing.current_process() )
+            print(lastPrint)
+            pprint(count)
         return result
 
 def main():
@@ -180,20 +194,10 @@ def main():
     else:
         client = MongoClient(CONFIG_MONGO_HOST)
 
-    count = dict()
-#    count['good_mongo'] = 0
-#    count['bad_mongo'] = 0
-# bad_mongo for s3 checks is irrelevant
-#    if (args.mongosource == 's3'):
-#        count['bad_mongo'] = None
-    count['good_s3'] = 0
-    count['bad_s3'] = 0
-    count['processed'] = 0
-
     db = client[CONFIG_MONGO_DATABASE]
     idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 #    pprint(idQuery)
-    count[COLLECTION_SOURCE] = db[COLLECTION_SOURCE].count_documents(idQuery)
+    count_source = db[COLLECTION_SOURCE].count_documents(idQuery)
 #    count = 0
     lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
     print(lastPrint)
@@ -208,10 +212,10 @@ def main():
         count['processed'] += 1
         count[result] += 1
 
-    lastPrint = 'Processed {}/{} records'.format(count['processed'], count[COLLECTION_SOURCE])
+    lastPrint = 'Processed {}/{} records'.format(count_processed, count_source)
     print(lastPrint)
 
-    pprint(count)
+    pprint('good_s3: {} ; bad_s3: {} ; processed: {} ; {}: {}'.format(count_good_s3.value,count_bad_s3.value,count_processed.value,count_source)
 
 
 if __name__ == '__main__':
