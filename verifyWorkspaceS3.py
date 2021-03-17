@@ -122,12 +122,13 @@ s3 = boto3.client(
 
 # create vars shared across processes
 count_good_s3 = multiprocessing.Value(ctypes.c_int)
-count_good_s3.value = 0
+#count_good_s3.value = 0
 count_bad_s3 = multiprocessing.Value(ctypes.c_int)
-count_bad_s3.value = 0
+#count_bad_s3.value = 0
 count_processed = multiprocessing.Value(ctypes.c_int)
-count_processed.value = 0
-count_source = 0
+#count_processed.value = 0
+count_source = multiprocessing.Value(ctypes.c_int)
+#count_source = 0
 
 def verifyObject(node):
 #        pprint(node)
@@ -174,7 +175,7 @@ def verifyObject(node):
             with count_processed.get_lock():
                 count_processed.value += 1
  #       if count_processed.value % 1000 == 0:
-        lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source, multiprocessing.current_process() )
+        lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source.value, multiprocessing.current_process() )
         print(lastPrint)
 #            pprint(count)
         return result
@@ -198,9 +199,9 @@ def main():
     db = client[CONFIG_MONGO_DATABASE]
     idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
 #    pprint(idQuery)
-    count_source = db[COLLECTION_SOURCE].count_documents(idQuery)
+    count_source.value = db[COLLECTION_SOURCE].count_documents(idQuery)
 #    count = 0
-    lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source)
+    lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
 #    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
@@ -213,10 +214,10 @@ def main():
 #        count['processed'] += 1
 #        count[result] += 1
 
-    lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source)
+    lastPrint = 'Processed {}/{} records'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
-    pprint('good_s3: {} ; bad_s3: {} ; processed: {} ; {}: {}'.format(count_good_s3.value,count_bad_s3.value,count_processed.value,COLLECTION_SOURCE,count_source))
+    pprint('good_s3: {} ; bad_s3: {} ; processed: {} ; {}: {}'.format(count_good_s3.value,count_bad_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
 
 
 if __name__ == '__main__':
