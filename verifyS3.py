@@ -70,17 +70,6 @@ if ('nthreads' in conf['main'].keys()):
     CONFIG_NTHREADS = int(conf['main']['nthreads'])
 CONFIG_BATCH_SIZE = 10000
 
-#### END CONFIGURATION VARIABLES ####
-
-COLLECTION_WS = 's3_objects'
-COLLECTION_BLOBSTORE = 'nodes'
-
-KEY_SHOCK_CHKSUM = 'chksum'
-KEY_SHOCK_NODE = 'node'
-
-KEY_S3_CHKSUM = 'chksum'
-KEY_S3_KEY = 'key'
-
 if (args.sourcemode == 'workspace'):
     CONFIG_S3_BUCKET = conf['s3']['workspace_bucket']
     CONFIG_S3_ACCESS_KEY = conf['s3']['workspace_access_key']
@@ -94,8 +83,9 @@ if (args.sourcemode == 'workspace'):
         config=bcfg.Config(s3={'addressing_style': 'path'}),
         verify=CONFIG_S3_VERIFYCERT
     )
-    COLLECTION_SOURCE=COLLECTION_WS
-    KEY_SOURCEID = KEY_S3_KEY
+    COLLECTION_SOURCE='s3_objects'
+    OBJID_KEY = 'key'
+    CHKSUM_KEY = 'chksum'
     CONFIG_MONGO_HOST = conf['workspace']['mongo_host']
     CONFIG_MONGO_DATABASE = conf['workspace']['mongo_database']
     CONFIG_MONGO_USER = conf['workspace']['mongo_user']
@@ -113,14 +103,17 @@ elif (args.sourcemode == 'blobstore'):
         config=bcfg.Config(s3={'addressing_style': 'path'}),
         verify=CONFIG_S3_VERIFYCERT
     )
-    COLLECTION_SOURCE=COLLECTION_BLOBSTORE
-    KEY_SOURCEID = KEY_S3_KEY
+    COLLECTION_SOURCE='nodes'
+    OBJID_KEY = 'id'
+    CHKSUM_KEY = 'md5'
     CONFIG_MONGO_HOST = conf['blobstore']['mongo_host']
     CONFIG_MONGO_DATABASE = conf['blobstore']['mongo_database']
     CONFIG_MONGO_USER = conf['blobstore']['mongo_user']
     CONFIG_MONGO_PWD = conf['blobstore']['mongo_pwd']
 else:
     sys.exit("Invalid --source-mode specified!")
+
+#### END CONFIGURATION VARIABLES ####
 
 # create vars shared across processes
 count_good_s3 = multiprocessing.Value(ctypes.c_int)
@@ -133,15 +126,15 @@ count_source = multiprocessing.Value(ctypes.c_int)
 #count_source = 0
 
 def verifyObject(obj):
-#        pprint(node)
-#        pprint('examining object ' + node[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
+#        pprint(obj)
+#        pprint('examining object ' + obj[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
 #        pprint ('in thread %s' % multiprocessing.current_process(), stream=sys.stderr)
         result = 'unknown'
 
         try:
-            s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=obj['key'])
+            s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=obj[OBJID_KEY])
 # use this instead to simulate a 404
-#	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=obj['chksum'])
+#	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=obj[CHKSUM])
 #	    pprint (s3stat)
         except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
@@ -150,7 +143,7 @@ def verifyObject(obj):
                     count_bad_s3.value += 1
 #                    count['bad_s3'] += 1
                 result = 'bad_s3'
-                pprint(COLLECTION_SOURCE + ' object ' + obj[KEY_SOURCEID] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
+                pprint(COLLECTION_SOURCE + ' object ' + obj[OBJID_KEY] + ' is missing matching object in S3 ' + CONFIG_S3_ENDPOINT)
             else:
 # otherwise, something bad happened, raise a real exception
                 raise(e)
