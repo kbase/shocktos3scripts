@@ -164,7 +164,6 @@ def verifyObject(obj):
                 with count_good_s3.get_lock():
                     count_good_s3.value += 1
                 result = 'good_s3'
-#        count['processed'] += 1
         with count_processed.get_lock():
             count_processed.value += 1
         if count_processed.value % 1000 == 0:
@@ -181,12 +180,6 @@ def main():
     count['bad_s3'] = 0
 
     pprint ("verifying " + args.sourcemode + " S3 against mongo source collection " + COLLECTION_SOURCE + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
-
-#    pprint(s3.list_buckets())
-#    try:
-#        pprint(s3.head_object(Bucket=CONFIG_S3_BUCKET,Key='eb/e5/b8/ebe5b84a-47be-4d49-a54b-fd85fdeb1550/ebe5b84a-47be-4d49-a54b-fd85fdeb1550.dat'))
-#    except botocore.exceptions.ClientError as e:
-#	pprint(e)
 
     if CONFIG_MONGO_USER:
         client = MongoClient(CONFIG_MONGO_HOST, authSource=CONFIG_MONGO_DATABASE,
@@ -206,7 +199,6 @@ def main():
     lastPrint = 'Processed {}/{} records in main thread'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
-#    for node in db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True):
     pool = multiprocessing.Pool(processes=CONFIG_NTHREADS)
     results=pool.imap_unordered(verifyObject, db[COLLECTION_SOURCE].find(idQuery, batch_size=CONFIG_BATCH_SIZE, no_cursor_timeout=True), 1000)
 
