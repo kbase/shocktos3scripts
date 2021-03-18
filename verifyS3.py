@@ -97,7 +97,6 @@ KEY_SHOCK_NODE = 'node'
 KEY_S3_CHKSUM = 'chksum'
 KEY_S3_KEY = 'key'
 
-
 if (args.sourcemode == 'workspace'):
     s3 = boto3.client(
         's3',
@@ -123,8 +122,7 @@ elif (args.sourcemode == 'workspace'):
     COLLECTION_SOURCE=COLLECTION_S3
     KEY_SOURCEID = KEY_S3_KEY
 else:
-    pprint("Invalid --source-mode specified!")
-    exit
+    sys.exit("Invalid --source-mode specified!")
 
 # create vars shared across processes
 count_good_s3 = multiprocessing.Value(ctypes.c_int)
