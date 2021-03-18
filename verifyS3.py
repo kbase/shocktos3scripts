@@ -132,9 +132,13 @@ def verifyObject(obj):
         result = 'unknown'
 
 #### TO DO: munge obj[OBJID_KEY] for blobstore mode
+        s3path = obj[OBJID_KEY]
+        if (args.sourcemode == 'blobstore'):
+            id = obj[OBJID_KEY]
+            s3path="%s/%s/%s/%s"%(id[0:2],id[2:4],id[4:6],id)
 
         try:
-            s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=obj[OBJID_KEY])
+            s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=s3path)
 # use this instead to simulate a 404
 #	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=obj[CHKSUM])
         except botocore.exceptions.ClientError as e:
@@ -150,13 +154,13 @@ def verifyObject(obj):
         else:
 # in minio and google cloud, the HTTP response has double quotes around the Etag value, making comparing weird
             if ( s3stat['ETag'] != '"{}"'.format(obj[CHKSUM_KEY]) ):
-                pprint(s3stat)
-                pprint(str(s3stat['ETag']))
-                pprint(obj[CHKSUM_KEY])
+#                pprint(s3stat)
+#                pprint(str(s3stat['ETag']))
+#                pprint(obj[CHKSUM_KEY])
                 with count_bad_s3.get_lock():
                     count_bad_s3.value += 1
                 result = 'bad_s3'
-                print('{} object {} has matching object in S3 {} but MD5 does not match'.format(COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT))
+                print('{} object {} has matching object in S3 {} but MD5s do not match'.format(COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT))
             else:
                 with count_good_s3.get_lock():
                     count_good_s3.value += 1
@@ -177,7 +181,7 @@ def main():
     count['good_s3'] = 0
     count['bad_s3'] = 0
 
-    pprint ("verifying " + args.sourcemode + " S3 against mongo source " + COLLECTION_SOURCE + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
+    pprint ("verifying " + args.sourcemode + " S3 against mongo source collection " + COLLECTION_SOURCE + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
 #    pprint(s3.list_buckets())
 #    try:
