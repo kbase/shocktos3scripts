@@ -131,6 +131,8 @@ def verifyObject(obj):
 #        pprint ('in thread %s' % multiprocessing.current_process(), stream=sys.stderr)
         result = 'unknown'
 
+#### TO DO: munge obj[OBJID_KEY] for blobstore mode
+
         try:
             s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=obj[OBJID_KEY])
 # use this instead to simulate a 404
@@ -195,9 +197,9 @@ def main():
         idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(CONFIG_START_DATE) , '$lt': bson.ObjectId.from_datetime(CONFIG_END_DATE)} }
     elif (args.sourcemode == 'blobstore'):
         idQuery = {'time': {'$gt': CONFIG_START_DATE , '$lt': CONFIG_END_DATE} }
-    pprint(idQuery, stream=sys.stderr)
+#    pprint(idQuery, stream=sys.stderr)
     count_source.value = db[COLLECTION_SOURCE].count_documents(idQuery)
-#    count[COLLECTION_SOURCE] = db[COLLECTION_SOURCE].count_documents(idQuery)
+    count[COLLECTION_SOURCE] = db[COLLECTION_SOURCE].count_documents(idQuery)
     lastPrint = 'Processed {}/{} records in main thread'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
