@@ -147,6 +147,8 @@ def verifyObject(obj):
                 raise(e)
         else:
             if (s3stat['ETag'] != obj[CHKSUM_KEY]):
+		pprint(s3stat['Etag'])
+		pprint(obj[CHKSUM_KEY])
                 with count_bad_s3.get_lock():
                     count_bad_s3.value += 1
                 result = 'bad_s3'
