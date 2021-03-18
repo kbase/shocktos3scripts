@@ -147,9 +147,11 @@ def verifyObject(obj):
                 raise(e)
         else:
             if (s3stat['ETag'] != obj[CHKSUM_KEY]):
-                print('{} object {} has matching object in S3 {} but MD5 does not match'.format(COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT))
+                with count_bad_s3.get_lock():
+                    count_bad_s3.value += 1
                 result = 'bad_s3'
-	    else:
+                print('{} object {} has matching object in S3 {} but MD5 does not match'.format(COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT))
+            else:
                 with count_good_s3.get_lock():
                     count_good_s3.value += 1
                 result = 'good_s3'
