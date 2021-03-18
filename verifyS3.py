@@ -91,8 +91,8 @@ if (args.sourcemode == 'workspace'):
     s3 = boto3.client(
         's3',
         endpoint_url=CONFIG_S3_ENDPOINT,
-        aws_access_key_id=CONFIG_WS_S3_ACCESS_KEY,
-        aws_secret_access_key=CONFIG_WS_S3_SECRET_KEY,
+        aws_access_key_id=CONFIG_S3_ACCESS_KEY,
+        aws_secret_access_key=CONFIG_S3_SECRET_KEY,
         region_name=CONFIG_S3_REGION,
         config=bcfg.Config(s3={'addressing_style': 'path'}),
         verify=CONFIG_S3_VERIFYCERT
@@ -110,8 +110,8 @@ elif (args.sourcemode == 'blobstore'):
     s3 = boto3.client(
         's3',
         endpoint_url=CONFIG_S3_ENDPOINT,
-        aws_access_key_id=CONFIG_BLOBSTORE_S3_ACCESS_KEY,
-        aws_secret_access_key=CONFIG_BLOBSTORE_S3_SECRET_KEY,
+        aws_access_key_id=CONFIG_S3_ACCESS_KEY,
+        aws_secret_access_key=CONFIG_S3_SECRET_KEY,
         region_name=CONFIG_S3_REGION,
         config=bcfg.Config(s3={'addressing_style': 'path'}),
         verify=CONFIG_S3_VERIFYCERT
