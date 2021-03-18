@@ -135,7 +135,7 @@ def verifyObject(obj):
             s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=obj[OBJID_KEY])
 # use this instead to simulate a 404
 #	    s3stat = s3.head_object(Bucket=CONFIG_S3_BUCKET,Key=obj[CHKSUM])
-	    pprint (s3stat)
+            pprint (s3stat)
 	    pprint (obj[MD5_KEY])
         except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
