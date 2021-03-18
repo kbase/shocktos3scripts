@@ -120,6 +120,9 @@ elif (args.sourcemode == 'workspace'):
         config=bcfg.Config(s3={'addressing_style': 'path'}),
         verify=CONFIG_S3_VERIFYCERT
     )
+else:
+    pprint("Invalid --source-mode specified!")
+    exit
 
 # create vars shared across processes
 count_good_s3 = multiprocessing.Value(ctypes.c_int)
