@@ -60,12 +60,6 @@ CONFIG_WS_OBJECTID_START = bson.ObjectId.from_datetime(CONFIG_START_DATE)
 CONFIG_WS_OBJECTID_END = bson.ObjectId.from_datetime(CONFIG_END_DATE)
 
 CONFIG_S3_ENDPOINT = conf['s3']['endpoint']
-CONFIG_WS_S3_BUCKET = conf['s3']['workspace_bucket']
-CONFIG_WS_S3_ACCESS_KEY = conf['s3']['workspace_access_key']
-CONFIG_WS_S3_SECRET_KEY = conf['s3']['workspace_secret_key']
-CONFIG_BLOBSTORE_S3_BUCKET = conf['s3']['blobstore_bucket']
-CONFIG_BLOBSTORE_S3_ACCESS_KEY = conf['s3']['blobstore_access_key']
-CONFIG_BLOBSTORE_S3_SECRET_KEY = conf['s3']['blobstore_secret_key']
 CONFIG_S3_REGION = conf['s3']['region']
 CONFIG_S3_VERIFYCERT = True
 if ('insecure' in conf['s3'].keys() and int(conf['s3']['insecure']) != 0 ):
@@ -91,6 +85,9 @@ KEY_S3_CHKSUM = 'chksum'
 KEY_S3_KEY = 'key'
 
 if (args.sourcemode == 'workspace'):
+    CONFIG_S3_BUCKET = conf['s3']['workspace_bucket']
+    CONFIG_S3_ACCESS_KEY = conf['s3']['workspace_access_key']
+    CONFIG_S3_SECRET_KEY = conf['s3']['workspace_secret_key']
     s3 = boto3.client(
         's3',
         endpoint_url=CONFIG_S3_ENDPOINT,
@@ -106,7 +103,10 @@ if (args.sourcemode == 'workspace'):
     CONFIG_MONGO_DATABASE = conf['workspace']['mongo_database']
     CONFIG_MONGO_USER = conf['workspace']['mongo_user']
     CONFIG_MONGO_PWD = conf['workspace']['mongo_pwd']
-elif (args.sourcemode == 'workspace'):
+elif (args.sourcemode == 'blobstore'):
+    CONFIG_S3_BUCKET = conf['s3']['blobstore_bucket']
+    CONFIG_S3_ACCESS_KEY = conf['s3']['blobstore_access_key']
+    CONFIG_S3_SECRET_KEY = conf['s3']['blobstore_secret_key']
     s3 = boto3.client(
         's3',
         endpoint_url=CONFIG_S3_ENDPOINT,
