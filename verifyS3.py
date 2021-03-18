@@ -23,7 +23,7 @@ import sys
 import multiprocessing
 import ctypes
 
-parser = argparse.ArgumentParser(description='Validate Workspace Mongo records against an S3 store.')
+parser = argparse.ArgumentParser(description='Validate workspace or blobstore mongo records against an S3 store.')
 parser.add_argument('--config-file', dest='configfile', required=True,
 		    help='Path to config file (INI format). (required)')
 parser.add_argument('--start-date', dest='startdate', type=str,
@@ -116,7 +116,7 @@ elif (args.sourcemode == 'blobstore'):
         config=bcfg.Config(s3={'addressing_style': 'path'}),
         verify=CONFIG_S3_VERIFYCERT
     )
-    COLLECTION_SOURCE=COLLECTION_S3
+    COLLECTION_SOURCE=COLLECTION_BLOBSTORE
     KEY_SOURCEID = KEY_S3_KEY
     CONFIG_MONGO_HOST = conf['blobstore']['mongo_host']
     CONFIG_MONGO_DATABASE = conf['blobstore']['mongo_database']
