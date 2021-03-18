@@ -146,7 +146,7 @@ def verifyObject(obj):
 # otherwise, something bad happened, raise a real exception
                 raise(e)
         else:
-            if (s3stat['ETag'] != obj[CHKSUM_KEY]):
+            if (str(s3stat['ETag']) != obj[CHKSUM_KEY]):
                 pprint(s3stat)
                 pprint(s3stat['ETag'])
                 pprint(obj[CHKSUM_KEY])
