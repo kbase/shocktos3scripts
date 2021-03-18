@@ -97,8 +97,6 @@ KEY_SHOCK_NODE = 'node'
 KEY_S3_CHKSUM = 'chksum'
 KEY_S3_KEY = 'key'
 
-COLLECTION_SOURCE=COLLECTION_S3
-KEY_SOURCEID = KEY_S3_KEY
 
 if (args.sourcemode == 'workspace'):
     s3 = boto3.client(
@@ -110,6 +108,8 @@ if (args.sourcemode == 'workspace'):
         config=bcfg.Config(s3={'addressing_style': 'path'}),
         verify=CONFIG_S3_VERIFYCERT
     )
+    COLLECTION_SOURCE=COLLECTION_WS
+    KEY_SOURCEID = KEY_S3_KEY
 elif (args.sourcemode == 'workspace'):
     s3 = boto3.client(
         's3',
@@ -120,6 +120,8 @@ elif (args.sourcemode == 'workspace'):
         config=bcfg.Config(s3={'addressing_style': 'path'}),
         verify=CONFIG_S3_VERIFYCERT
     )
+    COLLECTION_SOURCE=COLLECTION_S3
+    KEY_SOURCEID = KEY_S3_KEY
 else:
     pprint("Invalid --source-mode specified!")
     exit
