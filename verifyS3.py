@@ -179,7 +179,7 @@ def main():
     count['good_s3'] = 0
     count['bad_s3'] = 0
 
-    pprint ("verifying " + args.sourcemode + " S3 against mongo source collection " + COLLECTION_SOURCE + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
+    pprint ("verifying S3 instance " + CONFIG_S3_ENDPOINT + " against " + args.sourcemode + " mongo source collection " + COLLECTION_SOURCE + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
     if CONFIG_MONGO_USER:
         client = MongoClient(CONFIG_MONGO_HOST, authSource=CONFIG_MONGO_DATABASE,
