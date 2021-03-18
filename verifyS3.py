@@ -191,8 +191,9 @@ def main():
 
     db = client[CONFIG_MONGO_DATABASE]
 
-    idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(CONFIG_START_DATE) , '$lt': bson.ObjectId.from_datetime(CONFIG_END_DATE)} }
-    if (conf['main']['mode'] == 'blobstore'):
+    if (args.sourcemode == 'workspace'):
+        idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(CONFIG_START_DATE) , '$lt': bson.ObjectId.from_datetime(CONFIG_END_DATE)} }
+    elif (args.sourcemode == 'blobstore'):
         idQuery = {'time': {'$gt': CONFIG_START_DATE , '$lt': CONFIG_END_DATE} }
     pprint(idQuery, stream=sys.stderr)
     count_source.value = db[COLLECTION_SOURCE].count_documents(idQuery)
