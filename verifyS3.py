@@ -131,7 +131,6 @@ def verifyObject(obj):
 #        pprint ('in thread %s' % multiprocessing.current_process(), stream=sys.stderr)
         result = 'unknown'
 
-#### TO DO: munge obj[OBJID_KEY] for blobstore mode
         s3path = obj[OBJID_KEY]
         if (args.sourcemode == 'blobstore'):
             id = obj[OBJID_KEY]
