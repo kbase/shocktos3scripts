@@ -56,9 +56,6 @@ if args.enddate is not None:
 CONFIG_START_DATE = datetime.datetime(int(CONFIG_START_YEAR),int(CONFIG_START_MONTH),int(CONFIG_START_DAY),0,0,0)
 CONFIG_END_DATE = datetime.datetime(int(CONFIG_END_YEAR),int(CONFIG_END_MONTH),int(CONFIG_END_DAY),0,0,0)
 
-CONFIG_WS_OBJECTID_START = bson.ObjectId.from_datetime(CONFIG_START_DATE)
-CONFIG_WS_OBJECTID_END = bson.ObjectId.from_datetime(CONFIG_END_DATE)
-
 CONFIG_S3_ENDPOINT = conf['s3']['endpoint']
 CONFIG_S3_REGION = conf['s3']['region']
 CONFIG_S3_VERIFYCERT = True
@@ -193,8 +190,11 @@ def main():
         client = MongoClient(CONFIG_MONGO_HOST)
 
     db = client[CONFIG_MONGO_DATABASE]
-    idQuery = {'_id': {'$gt': CONFIG_WS_OBJECTID_START, '$lt': CONFIG_WS_OBJECTID_END }}
-#    pprint(idQuery)
+
+    idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(CONFIG_START_DATE) , '$lt': bson.ObjectId.from_datetime(CONFIG_END_DATE)} }
+    if (conf['main']['mode'] == 'blobstore'):
+        idQuery = {'time': {'$gt': CONFIG_START_DATE , '$lt': CONFIG_END_DATE} }
+    pprint(idQuery, stream=sys.stderr)
     count_source.value = db[COLLECTION_SOURCE].count_documents(idQuery)
 #    count[COLLECTION_SOURCE] = db[COLLECTION_SOURCE].count_documents(idQuery)
     lastPrint = 'Processed {}/{} records in main thread'.format(count_processed.value, count_source.value)
