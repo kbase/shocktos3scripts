@@ -146,7 +146,7 @@ def verifyObject(obj):
 # otherwise, something bad happened, raise a real exception
                 raise(e)
         else:
-            if (s3stat['ETag'] != obj[CHKSUM_KEY])"
+            if (s3stat['ETag'] != obj[CHKSUM_KEY]):
                 print('{} object {} has matching object in S3 {} but MD5 does not match'.format(COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT))
                 result = 'bad_s3'
 	    else:
