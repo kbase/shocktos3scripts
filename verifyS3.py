@@ -40,13 +40,6 @@ conf.read(configfile)
 
 ###### CONFIGURATION VARIABLES ######
 
-CONFIG_WS_MONGO_HOST = conf['workspace']['mongo_host']
-CONFIG_WS_MONGO_DATABASE = conf['workspace']['mongo_database']
-#CONFIG_MONGO_DATABASE = 'workspace_conv_test'
-#CONFIG_MONGO_DATABASE = 'workspace_conv_test_many_recs'
-CONFIG_WS_MONGO_USER = conf['workspace']['mongo_user']
-CONFIG_WS_MONGO_PWD = conf['workspace']['mongo_pwd']
-
 # dumb but lazy
 CONFIG_START_YEAR = conf['workspace']['start_year'] or 2000
 CONFIG_START_MONTH = conf['workspace']['start_month'] or 1
@@ -109,6 +102,10 @@ if (args.sourcemode == 'workspace'):
     )
     COLLECTION_SOURCE=COLLECTION_WS
     KEY_SOURCEID = KEY_S3_KEY
+    CONFIG_MONGO_HOST = conf['workspace']['mongo_host']
+    CONFIG_MONGO_DATABASE = conf['workspace']['mongo_database']
+    CONFIG_MONGO_USER = conf['workspace']['mongo_user']
+    CONFIG_MONGO_PWD = conf['workspace']['mongo_pwd']
 elif (args.sourcemode == 'workspace'):
     s3 = boto3.client(
         's3',
@@ -121,6 +118,10 @@ elif (args.sourcemode == 'workspace'):
     )
     COLLECTION_SOURCE=COLLECTION_S3
     KEY_SOURCEID = KEY_S3_KEY
+    CONFIG_MONGO_HOST = conf['blobstore']['mongo_host']
+    CONFIG_MONGO_DATABASE = conf['blobstore']['mongo_database']
+    CONFIG_MONGO_USER = conf['blobstore']['mongo_user']
+    CONFIG_MONGO_PWD = conf['blobstore']['mongo_pwd']
 else:
     sys.exit("Invalid --source-mode specified!")
 
