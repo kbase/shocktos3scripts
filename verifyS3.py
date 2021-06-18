@@ -8,6 +8,9 @@ or blobstore nodes), that the object exists in S3 and the MD5 matches.  This can
 used to validate any copy of the primary S3 instance (e.g., at a secondary site,
 or in a cloud S3 instance, or even the primary S3 instance).
 
+NOTE: before June 2018, a small percentage of objects were not saved properly, causing
+an MD5 mismatch between MongoDB and the object store.  Unless a user complains, these
+errors should just be ignored.
 '''
 
 from pymongo.mongo_client import MongoClient
