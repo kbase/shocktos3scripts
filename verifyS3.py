@@ -8,9 +8,17 @@ or blobstore nodes), that the object exists in S3 and the MD5 matches.  This can
 used to validate any copy of the primary S3 instance (e.g., at a secondary site,
 or in a cloud S3 instance, or even the primary S3 instance).
 
-NOTE: before June 2018, a small percentage of objects were not saved properly, causing
+NOTE 1: before June 2018, a small percentage of objects were not saved properly, causing
 an MD5 mismatch between MongoDB and the object store.  Unless a user complains, these
 errors should just be ignored.
+
+NOTE 2: before February 2020, copying data from Shock to Minio resulted in some
+chunked uploads (for a subset of objects > 128MB), which makes that object's ETag
+different from the MD5 recorded in MongoDB. (The ETag is calculated by checksumming
+the checksums of the individual chunks, then a `-NN` label is added to the end to
+denote how many chunks there were.)  There may not be an easy way to have Minio
+recalculate the MD5 on the full file, so those ETags will cause an MD5 mismatch too.
+
 '''
 
 from pymongo.mongo_client import MongoClient
