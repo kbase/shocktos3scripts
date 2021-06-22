@@ -170,7 +170,7 @@ def verifyObject(obj):
                 extra_mesg = '(may be bad upload before SCT-636)'
                 if '-' in s3stat['ETag']:
                     extra_mesg = '(may have been chunked)'
-                print('{} object {} has matching object in S3 {} but MD5s do not match {}'.format(
+                print('{} object {} has existing object in S3 {} but MD5s do not match {}'.format(
 		    COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT,extra_mesg))
                 print('source: {} dest: {} '.format(s3stat['ETag'], obj[CHKSUM_KEY]))
             else:
