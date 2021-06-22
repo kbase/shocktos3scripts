@@ -167,7 +167,7 @@ def verifyObject(obj):
                 with count_md5_mismatch.get_lock():
                     count_md5_mismatch.value += 1
                 result = 'md5_mismatch'
-		extra_mesg = '(may be bad upload before SCT-636)'
+                extra_mesg = '(may be bad upload before SCT-636)'
 		if '-' in s3stat['ETag']:
 		    extra_mesg = '(may have been chunked)'
                 print('{} object {} has matching object in S3 {} but MD5s do not match {}'.format(
