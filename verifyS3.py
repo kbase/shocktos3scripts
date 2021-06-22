@@ -122,6 +122,7 @@ else:
 count_good_s3 = multiprocessing.Value(ctypes.c_int)
 #count_good_s3.value = 0
 count_bad_s3 = multiprocessing.Value(ctypes.c_int)
+count_md5_mismatch = multiprocessing.Value(ctypes.c_int)
 #count_bad_s3.value = 0
 count_processed = multiprocessing.Value(ctypes.c_int)
 #count_processed.value = 0
@@ -159,9 +160,9 @@ def verifyObject(obj):
 #                pprint(s3stat)
 #                pprint(str(s3stat['ETag']))
 #                pprint(obj[CHKSUM_KEY])
-                with count_bad_s3.get_lock():
-                    count_bad_s3.value += 1
-                result = 'bad_s3'
+                with count_md5_mismatch.get_lock():
+                    count_md5_mismatch.value += 1
+                result = 'md5_mismatch'
                 print('{} object {} has matching object in S3 {} but MD5s do not match'.format(COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT))
                 print('source: {} dest: {} '.format(s3stat['ETag'], obj[CHKSUM_KEY]))
             else:
@@ -173,7 +174,8 @@ def verifyObject(obj):
         if count_processed.value % 1000 == 0:
             lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source.value, multiprocessing.current_process() )
             print(lastPrint)
-            pprint('bad_s3: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(count_bad_s3.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
+            pprint('bad_s3: {} ; md5_mismatch: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(
+		    count_bad_s3.value,count_md5_mismatch.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
         return result
 
 def main():
@@ -182,6 +184,7 @@ def main():
     count['processed'] = 0
     count['good_s3'] = 0
     count['bad_s3'] = 0
+    count['md5_mismatch'] = 0
 
     pprint ("verifying S3 instance " + CONFIG_S3_ENDPOINT + " against " + args.sourcemode + " mongo source collection " + COLLECTION_SOURCE + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
@@ -217,7 +220,8 @@ def main():
     lastPrint = 'Processed {}/{} records in main thread'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
-    pprint('bad_s3: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(count_bad_s3.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
+    pprint('bad_s3: {} ; md5_mismatch: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(
+	    count_bad_s3.value,count_md5_mismatch.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
     pprint(count)
 
 if __name__ == '__main__':
