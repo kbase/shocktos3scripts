@@ -120,14 +120,10 @@ else:
 
 # create vars shared across processes
 count_good_s3 = multiprocessing.Value(ctypes.c_int)
-#count_good_s3.value = 0
 count_bad_s3 = multiprocessing.Value(ctypes.c_int)
 count_md5_mismatch = multiprocessing.Value(ctypes.c_int)
-#count_bad_s3.value = 0
 count_processed = multiprocessing.Value(ctypes.c_int)
-#count_processed.value = 0
 count_source = multiprocessing.Value(ctypes.c_int)
-#count_source = 0
 
 def verifyObject(obj):
 #        pprint(obj)
@@ -164,7 +160,7 @@ def verifyObject(obj):
                     count_md5_mismatch.value += 1
                 result = 'md5_mismatch'
                 print('{} object {} has matching object in S3 {} but MD5s do not match'.format(COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT))
-                print('source: {} dest: {} '.format(s3stat['ETag'], obj[CHKSUM_KEY]))
+#                print('source: {} dest: {} '.format(s3stat['ETag'], obj[CHKSUM_KEY]))
             else:
                 with count_good_s3.get_lock():
                     count_good_s3.value += 1
