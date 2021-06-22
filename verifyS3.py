@@ -159,7 +159,7 @@ def verifyObject(obj):
                 with count_md5_mismatch.get_lock():
                     count_md5_mismatch.value += 1
                 result = 'md5_mismatch'
-                print('{} object {} has matching object in S3 {} but MD5s do not match'.format(COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT))
+                print('{} object {} has matching object in S3 {} but MD5s do not match (may have been chunked)'.format(COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT))
                 print('source: {} dest: {} '.format(s3stat['ETag'], obj[CHKSUM_KEY]))
             else:
                 with count_good_s3.get_lock():
