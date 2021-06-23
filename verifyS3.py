@@ -8,9 +8,8 @@ or blobstore nodes), that the object exists in S3 and the MD5 matches.  This can
 used to validate any copy of the primary S3 instance (e.g., at a secondary site,
 or in a cloud S3 instance, or even the primary S3 instance).
 
-NOTE 1: before June 2018, a small percentage of objects were not saved properly, causing
-an MD5 mismatch between MongoDB and the object store.  Unless a user complains, these
-errors should just be ignored.
+NOTE 1: before February 2020, some blobstore nodes may be missing in the target S3
+due to bugs in Shock.  These can generally be ignored.  
 
 NOTE 2: before February 2020, copying data from Shock to Minio resulted in some
 chunked uploads (for a subset of objects > 128MB), which makes that object's ETag
@@ -18,6 +17,12 @@ different from the MD5 recorded in MongoDB. (The ETag is calculated by checksumm
 the checksums of the individual chunks, then a `-NN` label is added to the end to
 denote how many chunks there were.)  There may not be an easy way to have Minio
 recalculate the MD5 on the full file, so those ETags will cause an MD5 mismatch too.
+(New objects created by workspace, blobstore, or the current sync scripts in this
+repo should not have this issue.)
+
+NOTE 3: before June 2018, a small percentage of objects were not saved properly, causing
+an MD5 mismatch between MongoDB and the object store (see JIRA issue SCT-636).  Unless
+a user complains, these errors can be ignored.
 
 '''
 
@@ -128,7 +133,7 @@ else:
 
 # create vars shared across processes
 count_good_s3 = multiprocessing.Value(ctypes.c_int)
-count_bad_s3 = multiprocessing.Value(ctypes.c_int)
+count_missing_s3 = multiprocessing.Value(ctypes.c_int)
 count_md5_mismatch = multiprocessing.Value(ctypes.c_int)
 count_processed = multiprocessing.Value(ctypes.c_int)
 count_source = multiprocessing.Value(ctypes.c_int)
@@ -151,9 +156,9 @@ def verifyObject(obj):
         except botocore.exceptions.ClientError as e:
 # if 404 not found, just note the missing object and continue
             if '404' in str(e):
-                with count_bad_s3.get_lock():
-                    count_bad_s3.value += 1
-                result = 'bad_s3'
+                with count_missing_s3.get_lock():
+                    count_missing_s3.value += 1
+                result = 'missing_s3'
                 print('{} object {} is missing matching object in S3 {}'.format(COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT))
             else:
 # otherwise, something bad happened, raise a real exception
@@ -182,8 +187,8 @@ def verifyObject(obj):
         if count_processed.value % 1000 == 0:
             lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source.value, multiprocessing.current_process() )
             print(lastPrint)
-            pprint('bad_s3: {} ; md5_mismatch: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(
-		    count_bad_s3.value,count_md5_mismatch.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
+            pprint('missing_s3: {} ; md5_mismatch: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(
+		    count_missing_s3.value,count_md5_mismatch.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
         return result
 
 def main():
@@ -191,7 +196,7 @@ def main():
     count = dict()
     count['processed'] = 0
     count['good_s3'] = 0
-    count['bad_s3'] = 0
+    count['missing_s3'] = 0
     count['md5_mismatch'] = 0
 
     pprint ("verifying S3 instance " + CONFIG_S3_ENDPOINT + " against " + args.sourcemode + " mongo source collection " + COLLECTION_SOURCE + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
@@ -228,8 +233,8 @@ def main():
     lastPrint = 'Processed {}/{} records in main thread'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
-    pprint('bad_s3: {} ; md5_mismatch: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(
-	    count_bad_s3.value,count_md5_mismatch.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
+    pprint('missing_s3: {} ; md5_mismatch: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(
+	    count_missing_s3.value,count_md5_mismatch.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
     pprint(count)
 
 if __name__ == '__main__':
