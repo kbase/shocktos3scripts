@@ -177,7 +177,7 @@ def verifyObject(obj):
                     extra_mesg = '(may have been chunked)'
                 print('{} object {} has existing object in S3 {} but MD5s do not match {}'.format(
 		    COLLECTION_SOURCE, obj[OBJID_KEY],CONFIG_S3_ENDPOINT,extra_mesg))
-                print('{} ETag: {} ; {} {} key: {} '.format(CONFIG_S3_ENDPOINT, s3stat['ETag'], COLLECTION_SOURCE CHKSUM_KEY, obj[CHKSUM_KEY]))
+                print('{} ETag: {} ; {} {} key: {} '.format(CONFIG_S3_ENDPOINT, s3stat['ETag'], COLLECTION_SOURCE, CHKSUM_KEY, obj[CHKSUM_KEY]))
             else:
                 with count_good_s3.get_lock():
                     count_good_s3.value += 1
