@@ -24,6 +24,10 @@ NOTE 3: before June 2018, a small percentage of objects were not saved properly,
 an MD5 mismatch between MongoDB and the object store (see JIRA issue SCT-636).  Unless
 a user complains, these errors can be ignored.
 
+NOTE 4: before August 2014, the vast majority of workspace objects have an MD5 mismatch
+between MongoDB and Minio.  It is not clear why, but may not be related to SCT-636.  Since
+these objects are extremely old, these errors may possibly be ignored.
+
 '''
 
 from pymongo.mongo_client import MongoClient
