@@ -25,7 +25,8 @@ an MD5 mismatch between MongoDB and the object store (see JIRA issue SCT-636).  
 a user complains, these errors can be ignored.
 
 NOTE 4: between April and August 2014, the vast majority of workspace objects have an MD5
-mismatch between MongoDB and Minio. Unless a user complains, these errors can be ignored.
+mismatch between MongoDB and the object store. Unless a user complains, these errors can
+be ignored.
 See https://github.com/kbase/workspace_deluxe/blob/master/docsource/releasenotes.rst#version-016-released-3314
 
 '''
