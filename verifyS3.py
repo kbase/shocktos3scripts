@@ -24,9 +24,9 @@ NOTE 3: before June 2018, a small percentage of objects were not saved properly,
 an MD5 mismatch between MongoDB and the object store (see JIRA issue SCT-636).  Unless
 a user complains, these errors can be ignored.
 
-NOTE 4: between April and August 2014, the vast majority of workspace objects have an MD5
-mismatch between MongoDB and the object store. Unless a user complains, these errors can
-be ignored.
+NOTE 4: between late March and mid July 2014, the vast majority of workspace objects have
+an MD5 mismatch between MongoDB and the object store. Unless a user complains, these errors
+can be ignored.
 See https://github.com/kbase/workspace_deluxe/blob/master/docsource/releasenotes.rst#version-016-released-3314
 
 '''
