@@ -215,14 +215,9 @@ def syncnode(id):
     )
     writelog(conf['main']['logfile'],id)
     result = 0
-  except botocore.exceptions.ClientError as e:
-    # not sure what to do here yet
-    pprint(str(e), stream=sys.stderr)
-    pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
-    writelog(conf['main']['retryfile'],id)
-    result = 1
-#    raise(e)
-  except botocore.exceptions.ParamValidationError as e:
+#  except botocore.exceptions.ClientError as e:
+# aggressively capture all exceptions here so the object id gets logged to retry file
+  except Exception as e:
     # not sure what to do here yet
     pprint(str(e), stream=sys.stderr)
     pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
