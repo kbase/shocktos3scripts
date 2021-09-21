@@ -222,6 +222,13 @@ def syncnode(id):
     writelog(conf['main']['retryfile'],id)
     result = 1
 #    raise(e)
+  except botocore.exceptions.ParamValidationError as e:
+    # not sure what to do here yet
+    pprint(str(e), stream=sys.stderr)
+    pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
+    writelog(conf['main']['retryfile'],id)
+    result = 1
+#    raise(e)
    
   return result 
 
