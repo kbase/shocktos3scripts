@@ -35,6 +35,7 @@ import argparse
 import boto3
 import botocore
 import botocore.config as bcfg
+import unicodedata
 
 done=dict()
 retry=dict()
@@ -207,11 +208,14 @@ def syncnode(id):
 #  return 0
 
   try:
+    metadata = sourceObject['Metadata']
+# normalize filename to ASCII
+    metadata['filename'] = unicodedata.normalize('NFKD', sourceObject['Metadata']['filename']).encode('ascii', 'ignore').decode()
     destResult = destS3.put_object(
       Bucket=conf['destination']['bucket'],
       Key=objectPath,
       Body=sourceObject['Body'].read(),
-      Metadata=sourceObject['Metadata']
+      Metadata=metadata
     )
     writelog(conf['main']['logfile'],id)
     result = 0
