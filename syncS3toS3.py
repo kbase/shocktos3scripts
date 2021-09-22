@@ -210,7 +210,8 @@ def syncnode(id):
   try:
     metadata = sourceObject['Metadata']
 # normalize filename to ASCII
-    metadata['filename'] = unicodedata.normalize('NFKD', sourceObject['Metadata']['filename']).encode('ascii', 'ignore').decode()
+    if 'filename' in metadata.keys():
+      metadata['filename'] = unicodedata.normalize('NFKD', sourceObject['Metadata']['filename']).encode('ascii', 'ignore').decode()
     destResult = destS3.put_object(
       Bucket=conf['destination']['bucket'],
       Key=objectPath,
