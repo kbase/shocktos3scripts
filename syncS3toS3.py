@@ -103,6 +103,8 @@ def getObjects(start, end):
 
 def syncnode(id):
 
+  # this if *should* now be redundant, since done is checked before pool.map in main()
+  # (but can't hurt and should be very fast)
   if id in done:
     #writelog(conf['logfile'],id)
     if (debug):
