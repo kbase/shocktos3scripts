@@ -330,7 +330,7 @@ if __name__ == '__main__':
     if objectId in done:
     #writelog(conf['logfile'],id)
       if (debug):
-        pprint ("%s found in log, not adding to sync list" % (id), stream=sys.stderr)
+        pprint ("%s found in log, not adding to sync list" % (objectId), stream=sys.stderr)
     else:
       syncObjectList.append(objectId)
 
