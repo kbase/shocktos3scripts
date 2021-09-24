@@ -35,6 +35,7 @@ import argparse
 import boto3
 import botocore
 import botocore.config as bcfg
+import unicodedata
 
 done=dict()
 retry=dict()
@@ -102,6 +103,8 @@ def getObjects(start, end):
 
 def syncnode(id):
 
+  # this if *should* now be redundant, since done is checked before pool.map in main()
+  # (but can't hurt and should be very fast)
   if id in done:
     #writelog(conf['logfile'],id)
     if (debug):
@@ -207,15 +210,21 @@ def syncnode(id):
 #  return 0
 
   try:
+    metadata = sourceObject['Metadata']
+# normalize filename to ASCII
+    if 'filename' in metadata.keys():
+      metadata['filename'] = unicodedata.normalize('NFKD', sourceObject['Metadata']['filename']).encode('ascii', 'ignore').decode()
     destResult = destS3.put_object(
       Bucket=conf['destination']['bucket'],
       Key=objectPath,
       Body=sourceObject['Body'].read(),
-      Metadata=sourceObject['Metadata']
+      Metadata=metadata
     )
     writelog(conf['main']['logfile'],id)
     result = 0
-  except botocore.exceptions.ClientError as e:
+#  except botocore.exceptions.ClientError as e:
+# aggressively capture all exceptions here so the object id gets logged to retry file
+  except Exception as e:
     # not sure what to do here yet
     pprint(str(e), stream=sys.stderr)
     pprint("id %s failed to copy, writing to retry file"%(id) , stream=sys.stderr)
@@ -318,8 +327,20 @@ if __name__ == '__main__':
 
   initlog(conf['main']['retryfile'])
 
+# creating this list here means everything fed into pool.map needs to be synced
+# should avoid potential problem where one subprocess runs out of objects to sync
+# while other subprocesses have a lot of objects to sync
+  syncObjectList = list()
+  for objectId in objectList:
+    if objectId in done:
+    #writelog(conf['logfile'],id)
+      if (debug):
+        pprint ("%s found in log, not adding to sync list" % (objectId), stream=sys.stderr)
+    else:
+      syncObjectList.append(objectId)
+
   pool = Pool(processes=int(conf['main']['nthreads']))
-  results=pool.map(syncnode, objectList)
+  results=pool.map(syncnode, syncObjectList)
   failed=0
   for result in results:
     if result:
