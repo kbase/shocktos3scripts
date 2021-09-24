@@ -327,6 +327,9 @@ if __name__ == '__main__':
 
   initlog(conf['main']['retryfile'])
 
+# creating this list here means everything fed into pool.map needs to be synced
+# should avoid potential problem where one subprocess runs out of objects to sync
+# while other subprocesses have a lot of objects to sync
   syncObjectList = list()
   for objectId in objectList:
     if objectId in done:
