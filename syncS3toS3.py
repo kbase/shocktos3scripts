@@ -325,8 +325,17 @@ if __name__ == '__main__':
 
   initlog(conf['main']['retryfile'])
 
+  syncObjectList = list()
+  for objectId in objectList:
+    if objectId in done:
+    #writelog(conf['logfile'],id)
+      if (debug):
+        pprint ("%s found in log, not adding to sync list" % (id), stream=sys.stderr)
+    else:
+      syncObjectList.append(objectId)
+
   pool = Pool(processes=int(conf['main']['nthreads']))
-  results=pool.map(syncnode, objectList)
+  results=pool.map(syncnode, syncObjectList)
   failed=0
   for result in results:
     if result:
