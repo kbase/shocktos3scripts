@@ -8,10 +8,10 @@ or blobstore nodes), that the object exists in S3 and the MD5 matches.  This can
 used to validate any copy of the primary S3 instance (e.g., at a secondary site,
 or in a cloud S3 instance, or even the primary S3 instance).
 
-NOTE 1: before February 2020, some blobstore nodes may be missing in the target S3
+NOTE 1: before February 2021, some blobstore nodes may be missing in the target S3
 due to bugs in Shock.  These can generally be ignored.  
 
-NOTE 2: before February 2020, copying data from Shock to Minio resulted in some
+NOTE 2: before February 2021, copying data from Shock to Minio resulted in some
 chunked uploads (for a subset of objects > 128MB), which makes that object's ETag
 different from the MD5 recorded in MongoDB. (The ETag is calculated by checksumming
 the checksums of the individual chunks, then a `-NN` label is added to the end to
