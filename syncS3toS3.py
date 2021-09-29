@@ -214,6 +214,7 @@ def syncnode(id):
 # normalize filename to ASCII
     if 'filename' in metadata.keys():
       metadata['filename'] = unicodedata.normalize('NFKD', sourceObject['Metadata']['filename']).encode('ascii', 'ignore').decode()
+### TO DO: optionally specify StorageClass='REDUCED_REDUNDANCY' if in config file
     destResult = destS3.put_object(
       Bucket=conf['destination']['bucket'],
       Key=objectPath,
