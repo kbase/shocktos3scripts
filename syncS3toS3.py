@@ -1,10 +1,11 @@
 #!env python3
 
 '''
-This is a beta version modifying our existing synctool.py for Shock sync to do
-S3 to S3 sync instead.
+Tool to sync workspace or blobstore S3 instances.
+(adapted from old synctool.py for Shock)
 
 To do:
+  * support different storage classes
   * --dry-run flag to report objects and sizes that would be copied
   * better defaults if key not in config file
   * support for not reading entire object into memory before copying (in progress)
