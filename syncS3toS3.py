@@ -229,7 +229,7 @@ def syncnode(id):
         putOptions['StorageClass'] = 'REDUCED_REDUNDANCY'
     if debug:
         pprint('putOptions: ' + str(putOptions))
-    destResult = destS3.put_object( putOptions )
+    destResult = destS3.put_object( **putOptions )
     writelog(conf['main']['logfile'],id)
     result = 0
 #  except botocore.exceptions.ClientError as e:
