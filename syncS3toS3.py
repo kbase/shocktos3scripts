@@ -218,10 +218,10 @@ def syncnode(id):
       metadata['filename'] = unicodedata.normalize('NFKD', sourceObject['Metadata']['filename']).encode('ascii', 'ignore').decode()
 ### TO DO: optionally specify StorageClass='REDUCED_REDUNDANCY' if in config file
     putOptions = {
-      Bucket: conf['destination']['bucket'],
-      Key: objectPath,
-      Body: sourceObject['Body'].read(),
-      Metadata: metadata
+      'Bucket': conf['destination']['bucket'],
+      'Key': objectPath,
+      'Body': sourceObject['Body'].read(),
+      'Metadata': metadata
     }
     if debug:
         pprint('putOptions: ' + putOptions)
