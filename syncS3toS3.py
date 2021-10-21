@@ -224,11 +224,11 @@ def syncnode(id):
       'Metadata': metadata
     }
     if debug:
-        pprint('putOptions: ' + putOptions)
+        pprint('putOptions: ' + str(putOptions))
     if 'storageclass' in conf['main']:
         putOptions['StorageClass'] = 'REDUCED_REDUNDANCY'
     if debug:
-        pprint('putOptions: ' + putOptions)
+        pprint('putOptions: ' + str(putOptions))
     destResult = destS3.put_object( putOptions )
     writelog(conf['main']['logfile'],id)
     result = 0
