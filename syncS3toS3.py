@@ -178,7 +178,7 @@ def syncnode(id):
 ### TO DO: optionally specify '--storage-class REDUCED_REDUNDANCY' if in config file
     mcCommand=(conf['main']['mcpath'],'--quiet','cp',localfile,destPath)
     if 'storageclass' in conf['main']:
-      mcCommand=(conf['main']['mcpath'],'--quiet','--storage-class',conf['main']['storageclass'],'cp',localfile,destPath)
+      mcCommand=(conf['main']['mcpath'],'--quiet','cp','--storage-class',conf['main']['storageclass'],localfile,destPath)
     if (debug):
       pprint(mcCommand, stream=sys.stderr)
     result = call(mcCommand)
