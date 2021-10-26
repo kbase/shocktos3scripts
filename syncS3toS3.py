@@ -177,6 +177,8 @@ def syncnode(id):
 ### optional: add filename metadata if it exists
 ### TO DO: optionally specify '--storage-class REDUCED_REDUNDANCY' if in config file
     mcCommand=(conf['main']['mcpath'],'--quiet','cp',localfile,destPath)
+    if 'storageclass' in conf['main']:
+      mcCommand=(conf['main']['mcpath'],'--quiet','--storage-class',conf['main']['storageclass'],'cp',localfile,destPath)
     if (debug):
       pprint(mcCommand, stream=sys.stderr)
     result = call(mcCommand)
@@ -229,6 +231,7 @@ def syncnode(id):
         putOptions['StorageClass'] = 'REDUCED_REDUNDANCY'
 #    if debug:
 #        pprint('putOptions: ' + str(putOptions))
+# need ** to feed putOptions as keywords
     destResult = destS3.put_object( **putOptions )
     writelog(conf['main']['logfile'],id)
     result = 0
