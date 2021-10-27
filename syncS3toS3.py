@@ -1,8 +1,8 @@
 #!env python3
 
 '''
-This is a beta version modifying our existing synctool.py for Shock sync to do
-S3 to S3 sync instead.
+Tool to sync workspace or blobstore S3 instances.
+(adapted from old synctool.py for Shock)
 
 To do:
   * --dry-run flag to report objects and sizes that would be copied
@@ -15,11 +15,6 @@ To do:
   * better and more organized logging (mostly done)
   * add support for start date on command line?
   * make it possible to use same config file for ws/blobstore?
-  * support ws/blobstore mode (done)
-  * check for target object and skip if exists (done)
-    * verify MD5 too?
-    * make a cmdline/config option (in case don't want to spend money and read ops on remote S3)
-  * add support for end date (done)
 '''
 
 import os
@@ -176,6 +171,8 @@ def syncnode(id):
 ### optional: add filename metadata if it exists
 ### TO DO: optionally specify '--storage-class REDUCED_REDUNDANCY' if in config file
     mcCommand=(conf['main']['mcpath'],'--quiet','cp',localfile,destPath)
+    if 'storageclass' in conf['main']:
+      mcCommand=(conf['main']['mcpath'],'--quiet','cp','--storage-class',conf['main']['storageclass'],localfile,destPath)
     if (debug):
       pprint(mcCommand, stream=sys.stderr)
     result = call(mcCommand)
@@ -216,12 +213,20 @@ def syncnode(id):
     if 'filename' in metadata.keys():
       metadata['filename'] = unicodedata.normalize('NFKD', sourceObject['Metadata']['filename']).encode('ascii', 'ignore').decode()
 ### TO DO: optionally specify StorageClass='REDUCED_REDUNDANCY' if in config file
-    destResult = destS3.put_object(
-      Bucket=conf['destination']['bucket'],
-      Key=objectPath,
-      Body=sourceObject['Body'].read(),
-      Metadata=metadata
-    )
+    putOptions = {
+      'Bucket': conf['destination']['bucket'],
+      'Key': objectPath,
+      'Body': sourceObject['Body'].read(),
+      'Metadata': metadata
+    }
+#    if debug:
+#        pprint('putOptions: ' + str(putOptions))
+    if 'storageclass' in conf['main']:
+        putOptions['StorageClass'] = 'REDUCED_REDUNDANCY'
+#    if debug:
+#        pprint('putOptions: ' + str(putOptions))
+# need ** to feed putOptions as keywords
+    destResult = destS3.put_object( **putOptions )
     writelog(conf['main']['logfile'],id)
     result = 0
 #  except botocore.exceptions.ClientError as e:
