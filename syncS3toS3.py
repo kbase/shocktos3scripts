@@ -5,7 +5,6 @@ Tool to sync workspace or blobstore S3 instances.
 (adapted from old synctool.py for Shock)
 
 To do:
-  * support different storage classes
   * --dry-run flag to report objects and sizes that would be copied
   * better defaults if key not in config file
   * support for not reading entire object into memory before copying (in progress)
@@ -16,11 +15,6 @@ To do:
   * better and more organized logging (mostly done)
   * add support for start date on command line?
   * make it possible to use same config file for ws/blobstore?
-  * support ws/blobstore mode (done)
-  * check for target object and skip if exists (done)
-    * verify MD5 too?
-    * make a cmdline/config option (in case don't want to spend money and read ops on remote S3)
-  * add support for end date (done)
 '''
 
 import os
