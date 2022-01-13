@@ -20,9 +20,10 @@ recalculate the MD5 on the full file, so those ETags will cause an MD5 mismatch 
 (New objects created by workspace, blobstore, or the current sync scripts in this
 repo should not have this issue.)
 
-NOTE 2a: For large objects, syncS3toS3 calls `mc`, which also chunks uploads to minio
-(not sure if it chunks uploading to Google S3).  So those large objects will also report
-an MD5 mismatch.
+NOTE 2a: For large objects, syncS3toS3 calls `mc`, which also chunks uploads to minio,
+which reports the chunked MD5.  (It may also chunk uploads to Google S3, but it appears
+that Google S3 reports the MD5 of the final object, not the chunks.)  So there may be
+MD5 mismatches reported for large objects in a Minio mirror.
 
 NOTE 3: before June 2018, a small percentage of objects were not saved properly, causing
 an MD5 mismatch between MongoDB and the object store (see JIRA issue SCT-636).  Unless
