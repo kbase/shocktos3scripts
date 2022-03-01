@@ -219,7 +219,7 @@ def main():
     count['good_s3'] = 0
     count['missing_s3'] = 0
     count['md5_mismatch'] = 0
-    count['deleted'] = 0
+    count['comment_deleted'] = 0
 
     pprint ("verifying S3 instance " + CONFIG_S3_ENDPOINT + " against " + args.sourcemode + " mongo source collection " + COLLECTION_SOURCE + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
