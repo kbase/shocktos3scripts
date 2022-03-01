@@ -148,6 +148,7 @@ else:
 count_good_s3 = multiprocessing.Value(ctypes.c_int)
 count_missing_s3 = multiprocessing.Value(ctypes.c_int)
 count_md5_mismatch = multiprocessing.Value(ctypes.c_int)
+count_comment_deleted = multiprocessing.Value(ctypes.c_int)
 count_processed = multiprocessing.Value(ctypes.c_int)
 count_source = multiprocessing.Value(ctypes.c_int)
 
@@ -156,6 +157,13 @@ def verifyObject(obj):
 #        pprint('examining object ' + obj[KEY_SOURCEID] + ' in mongo collection ' + COLLECTION_S3)
 #        pprint ('in thread %s' % multiprocessing.current_process(), stream=sys.stderr)
         result = 'unknown'
+
+# to do: ignore objects with a comment that contains "deleted" (DEVOPS-731)
+# (perhaps look in obj['comment'] ?)
+        if ('comment' in obj):
+            if ('deleted' in obj['comment']):
+                print('{} object {} is marked as deleted, skipping'.format(COLLECTION_SOURCE, obj[OBJID_KEY]))
+                return 'comment_deleted'
 
         s3path = obj[OBJID_KEY]
         if (args.sourcemode == 'blobstore'):
@@ -200,8 +208,8 @@ def verifyObject(obj):
         if count_processed.value % 1000 == 0:
             lastPrint = 'Processed {}/{} records in thread {}'.format(count_processed.value, count_source.value, multiprocessing.current_process() )
             print(lastPrint)
-            pprint('missing_s3: {} ; md5_mismatch: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(
-		    count_missing_s3.value,count_md5_mismatch.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
+            pprint('missing_s3: {} ; md5_mismatch: {} ; comment_deleted: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(
+		    count_missing_s3.value,count_md5_mismatch.value,count_comment_deleted.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
         return result
 
 def main():
@@ -211,6 +219,7 @@ def main():
     count['good_s3'] = 0
     count['missing_s3'] = 0
     count['md5_mismatch'] = 0
+    count['deleted'] = 0
 
     pprint ("verifying S3 instance " + CONFIG_S3_ENDPOINT + " against " + args.sourcemode + " mongo source collection " + COLLECTION_SOURCE + " for dates " + str(CONFIG_START_DATE) + " to " + str(CONFIG_END_DATE) + ' with ' + str(CONFIG_NTHREADS) + ' threads', stream=sys.stderr)
 
@@ -222,7 +231,6 @@ def main():
 
     db = client[CONFIG_MONGO_DATABASE]
 
-# to do: ignore objects with a comment that contains "deleted" (DEVOPS-731)
     if (args.sourcemode == 'workspace'):
         idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(CONFIG_START_DATE) , '$lt': bson.ObjectId.from_datetime(CONFIG_END_DATE)} }
     elif (args.sourcemode == 'blobstore'):
@@ -247,8 +255,8 @@ def main():
     lastPrint = 'Processed {}/{} records in main thread'.format(count_processed.value, count_source.value)
     print(lastPrint)
 
-    pprint('missing_s3: {} ; md5_mismatch: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(
-	    count_missing_s3.value,count_md5_mismatch.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
+    pprint('missing_s3: {} ; md5_mismatch: {} ; comment_deleted: {} ; good_s3: {} ; processed: {} ; {}: {}'.format(
+	    count_missing_s3.value,count_md5_mismatch.value,count_comment_deleted.value,count_good_s3.value,count_processed.value,COLLECTION_SOURCE,count_source.value))
     pprint(count)
 
 if __name__ == '__main__':
