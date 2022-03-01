@@ -163,6 +163,7 @@ def verifyObject(obj):
         if ('comment' in obj):
             if ('deleted' in obj['comment']):
                 print('{} object {} is marked as deleted, skipping'.format(COLLECTION_SOURCE, obj[OBJID_KEY]))
+                count_comment_deleted.value += 1
                 return 'comment_deleted'
 
         s3path = obj[OBJID_KEY]
