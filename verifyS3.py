@@ -34,6 +34,9 @@ an MD5 mismatch between MongoDB and the object store. Unless a user complains, t
 can be ignored.
 See https://github.com/kbase/workspace_deluxe/blob/master/docsource/releasenotes.rst#version-016-released-3314
 
+NOTE 5: in February 2022 we had to delete seven items from the objectstore, which were
+originally uploaded in October-December 2021.  See DEVOPS-731.  These errors can be ignored.
+
 '''
 
 from pymongo.mongo_client import MongoClient
@@ -219,6 +222,7 @@ def main():
 
     db = client[CONFIG_MONGO_DATABASE]
 
+# to do: ignore objects with a comment that contains "deleted" (DEVOPS-731)
     if (args.sourcemode == 'workspace'):
         idQuery = {'_id': {'$gt': bson.ObjectId.from_datetime(CONFIG_START_DATE) , '$lt': bson.ObjectId.from_datetime(CONFIG_END_DATE)} }
     elif (args.sourcemode == 'blobstore'):
