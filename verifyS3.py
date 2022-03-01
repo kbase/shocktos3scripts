@@ -35,7 +35,8 @@ can be ignored.
 See https://github.com/kbase/workspace_deluxe/blob/master/docsource/releasenotes.rst#version-016-released-3314
 
 NOTE 5: in February 2022 we had to delete seven items from the objectstore, which were
-originally uploaded in October-December 2021.  See DEVOPS-731.  These errors can be ignored.
+originally uploaded in October-December 2021.  See DEVOPS-731.  These errors should be
+reported in the `comment_deleted` field and can be ignored.
 
 '''
 
