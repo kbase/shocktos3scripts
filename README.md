@@ -13,3 +13,4 @@ X.X.1.6 next06
 ```
 * for the first run, it will create a "now" file with the timestamp. You can cancel the run, and edit the file, and set the date to the year 2000
 * you can monitor progress in the rsync log at blobstoresync.log 
+* it may help to enable debug mode or add print statements to help figure out what the script is doing
