@@ -169,10 +169,14 @@ def syncnode(id):
       destPath="%s/%s/%s/%s/%s/%s"%(conf['destination']['mcendpoint'],conf['destination']['bucket'],id[0:2],id[2:4]
 ,id[4:6],id)
 ### optional: add filename metadata if it exists
-### TO DO: optionally specify '--storage-class REDUCED_REDUNDANCY' if in config file
-    mcCommand=(conf['main']['mcpath'],'--quiet','cp',localfile,destPath)
+### TO DO: optionally specify '--disable-multipart' if in config file
+    mcCommand=list()
+    mcCommand.extend([conf['main']['mcpath'],'--quiet','cp'])
     if 'storageclass' in conf['main']:
-      mcCommand=(conf['main']['mcpath'],'--quiet','cp','--storage-class',conf['main']['storageclass'],localfile,destPath)
+      mcCommand.extend(['--storage-class',conf['main']['storageclass']])
+    if 'disable_multipart' in conf['main'] and int(conf['main']['disable_multipart'])==1:
+      mcCommand.append('--disable-multipart')
+    mcCommand.extend([localfile,destPath])
     if (debug):
       pprint(mcCommand, stream=sys.stderr)
     result = call(mcCommand)
