@@ -1,6 +1,6 @@
 # Shock to S3 scripts
 
-Scripts for moving / transforming KBase data files and database records as part of the Shock to S3 data storage conversion.
+Scripts for moving and transforming KBase data files and database records as part of the Shock to S3 data storage conversion.
 
 # Transferring S3 to S3
 * Use syncs3tos3.py
