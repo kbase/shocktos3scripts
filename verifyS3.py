@@ -93,7 +93,7 @@ if ('insecure' in conf['s3'].keys() and int(conf['s3']['insecure']) != 0 ):
     CONFIG_S3_VERIFYCERT = False
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    urllib3.disable_warnings(botocore.vendored.requests.packages.urllib3.exceptions.InsecureRequestWarning)
+#    urllib3.disable_warnings(botocore.vendored.requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
 CONFIG_NTHREADS = 1
 if ('nthreads' in conf['main'].keys()):
