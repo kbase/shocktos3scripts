@@ -171,7 +171,10 @@ def syncnode(id):
 ### optional: add filename metadata if it exists
 ### TO DO: optionally specify '--disable-multipart' if in config file
     mcCommand=list()
-    mcCommand.extend([conf['main']['mcpath'],'--quiet','cp'])
+    if ( ('insecure' in conf['source'] and int(conf['source']['insecure'])==1) or ('insecure' in conf['destination'] and int(conf['destination']['insecure'])==1) ):
+      mcCommand.extend([conf['main']['mcpath'],'--quiet','--insecure','cp'])
+    else:
+      mcCommand.extend([conf['main']['mcpath'],'--quiet','cp'])
     if 'storageclass' in conf['main']:
       mcCommand.extend(['--storage-class',conf['main']['storageclass']])
     if 'disable_multipart' in conf['main'] and int(conf['main']['disable_multipart'])==1:
